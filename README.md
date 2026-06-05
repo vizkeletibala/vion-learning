@@ -23,6 +23,26 @@ Only the landing page (`/`) shows both certifications. Every track experience is
 
 The seed practice and curated CLF-C02 questions are original learning content derived from official AWS task statements and documentation. Do not import or copy real exam questions, brain dumps, or unauthorized proprietary course material. Current limitations are shown in each track source report; YouTube publish dates/transcripts and authenticated Skill Builder internals still need richer refresh.
 
+## Source ingestion workflow
+
+Milestone 2 uses a local-first source registry rather than a vector database. Source candidates live in `data/sources/source_catalog.json`; generated per-track ingestion artifacts live in `data/sources/<trackId>/ingested_sources.json`; the human-readable provenance report lives at `docs/reports/source-provenance.md`.
+
+Use the workflow below when refreshing or adding sources:
+
+1. Add or update one catalog record per certification track. Keep ids deterministic with the `<track_id>:<source_type>:<slug>` pattern and keep `exam_relevance.exam_code` aligned with `track_id`.
+2. Prefer official AWS exam guides, AWS documentation, AWS FAQs/whitepapers/blogs, and public certification/training pages. Third-party videos/articles may be cataloged as candidate teaching aids, but they should not drive quiz facts unless independently verified against official/public AWS sources.
+3. Run `npm run ingest:sources` only when public fetches are acceptable. The ingestion script records HTTP failures honestly as `needs_refresh`, preserves prior hashes when available, and never invents replacement content for unreachable pages.
+4. Run `npm run sources:check` after every catalog or generated-artifact change. It validates the source schema, duplicate ids, ISO timestamps, hash format, freshness status, and track/envelope isolation.
+5. Run `npm run sources:report` if you only need to rebuild `docs/reports/source-provenance.md` from checked-in local artifacts.
+6. Finish with `npm test`, `npm run lint`, and `npm run build` before handing off.
+
+Ethical sourcing rules:
+
+- Cite and summarize public sources; do not copy source text wholesale into cards, questions, or explanations.
+- Never import real exam questions, brain dumps, leaked prep material, or proprietary course text/transcripts.
+- Auth-gated material must stay marked `auth_gated` or `unverified` unless a human with legitimate access records a permissible summary and citation boundary.
+- Do not dedupe source records across tracks by URL. If a URL supports both CLF-C02 and AIF-C01, create separate track-specific records with separate domains, concepts, summaries, and exam relevance.
+
 ## Commands
 
 ```bash
@@ -30,6 +50,9 @@ npm install
 npm test
 npm run lint
 npm run build
+npm run ingest:sources
+npm run sources:check
+npm run sources:report
 npm run seed
 npm run reset
 npm run export

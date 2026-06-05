@@ -24,6 +24,7 @@ test('learning model keeps CLF-C02 and AIF-C01 content strictly track scoped', (
     assert.equal(track.cards.every((card) => card.track_id === trackId), true);
     assert.equal(track.questions.every((question) => question.track_id === trackId), true);
     assert.equal(track.domains.every((domain) => domain.track_id === trackId), true);
+    assert.equal(track.sources.every((source) => source.track_id === trackId), true);
   }
 
   const clfCardIds = new Set(model.tracks['clf-c02'].cards.map((card) => card.id));
@@ -49,6 +50,8 @@ test('CLF-C02 exposes richer concept records and curated exam-style questions wi
     assert.ok(concept.common_misconceptions.length > 0);
     assert.ok(concept.decision_rules.length > 0);
     assert.ok(concept.source_urls.length > 0);
+    assert.ok(concept.source_ids.length > 0, `${concept.id} should resolve checked-in source ids`);
+    assert.equal(concept.source_ids.every((sourceId) => sourceId.startsWith('clf-c02:')), true);
   }
 
   for (const question of clf.questionBank) {
@@ -62,6 +65,7 @@ test('CLF-C02 exposes richer concept records and curated exam-style questions wi
     assert.ok(question.scenario.length > 20);
     assert.ok(question.exam_angle.length > 15);
     assert.ok(question.source_links.length > 0);
+    assert.ok(question.source_ids.length > 0);
     assert.equal(question.options.length, 4);
     assert.equal(question.options.filter((option) => option.id === question.correct_option_id).length, 1, 'question should have exactly one correct option id');
     assert.equal(new Set(question.options.map((option) => option.label)).size, 4, 'distractors should not be duplicate labels');
@@ -128,6 +132,7 @@ test('answer evaluation returns detailed review data and spaced repetition still
   assert.ok(result.mapping.difficulty);
   assert.ok(result.mapping.services.length > 0);
   assert.ok(result.mapping.concepts.length > 0);
+  assert.ok(result.mapping.source_ids.length > 0);
   assert.equal(model.progress['clf-c02'].history.length, 1);
   assert.ok(model.progress['clf-c02'].readiness_score >= before);
 

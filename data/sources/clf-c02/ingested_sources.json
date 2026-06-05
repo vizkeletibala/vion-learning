@@ -1,0 +1,1090 @@
+{
+  "track_id": "clf-c02",
+  "schema_version": "source-ingestion/v1",
+  "generated_at": "2026-06-05T13:34:13.567Z",
+  "sources": [
+    {
+      "id": "clf-c02:aws-exam-guide:clf-c02",
+      "track_id": "clf-c02",
+      "title": "AWS Certified Cloud Practitioner (CLF-C02) Exam Guide",
+      "source_type": "aws_exam_guide",
+      "url": "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "publisher": "AWS",
+      "aws_service": [],
+      "domains": [
+        {
+          "domain_id": "1",
+          "domain_name": "Cloud Concepts",
+          "task_statement_ids": [
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4"
+          ],
+          "weight_percent": 24
+        },
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.1",
+            "2.2",
+            "2.3",
+            "2.4"
+          ],
+          "weight_percent": 30
+        },
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.1",
+            "3.2",
+            "3.3",
+            "3.4"
+          ],
+          "weight_percent": 34
+        },
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.1",
+            "4.2",
+            "4.3"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "exam domains",
+        "exam duration",
+        "passing score",
+        "question formats"
+      ],
+      "summary": "Official exam blueprint for CLF-C02 domains, weights, task statements, candidate profile, scoring, and delivery facts.",
+      "extracted_facts": [
+        {
+          "fact": "The CLF-C02 exam guide defines four weighted domains: Cloud Concepts, Security and Compliance, Cloud Technology and Services, and Billing, Pricing, and Support.",
+          "fact_type": "exam_fact",
+          "source_locator": "Exam guide domains",
+          "confidence": "high"
+        },
+        {
+          "fact": "The Cloud Practitioner exam is 90 minutes with 65 questions and a passing score of 700 on a 100-1000 scale.",
+          "fact_type": "exam_fact",
+          "source_locator": "Exam guide exam overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Primary source for exam scope, domain weights, and exam metadata.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02-only mapping for Cloud Practitioner domains; do not reuse for AIF-C01 without a separate AI Practitioner record."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:ba81d8c415f93f348989fd1967dac1032b172d78aea60c19a266c997dcfc1e88",
+      "license_or_usage_note": "AWS public documentation; summarize, cite, and link rather than copying source text wholesale.",
+      "citation_text": "AWS, AWS Certified Cloud Practitioner (CLF-C02) Exam Guide, https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "freshness_status": "fresh",
+      "notes": [
+        "PDF fetched and hashed as binary; text extraction intentionally skipped to avoid ingestion dependencies."
+      ],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-certification-page:certified-cloud-practitioner",
+      "track_id": "clf-c02",
+      "title": "AWS Certified Cloud Practitioner",
+      "source_type": "aws_certification_page",
+      "url": "https://aws.amazon.com/certification/certified-cloud-practitioner/",
+      "publisher": "AWS",
+      "aws_service": [],
+      "domains": [
+        {
+          "domain_id": "1",
+          "domain_name": "Cloud Concepts",
+          "task_statement_ids": [
+            "1.1"
+          ],
+          "weight_percent": 24
+        },
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.3"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "certification overview",
+        "candidate profile",
+        "exam registration"
+      ],
+      "summary": "AWS certification landing page for Cloud Practitioner audience, exam overview, preparation resources, and registration path.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Certified Cloud Practitioner validates foundational AWS Cloud, services, and terminology knowledge.",
+          "fact_type": "exam_fact",
+          "source_locator": "Certification overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports candidate expectations, exam purpose, and prep navigation.",
+        "question_use": [
+          "learning_card",
+          "study_plan"
+        ],
+        "separation_note": "CLF-C02 certification context only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:aa2c6c4261b0b4491110a20ae4d4e05a5b7cd5df591eb1379e2ccbfae2abfdf4",
+      "license_or_usage_note": "AWS public web page; summarize, cite, and link.",
+      "citation_text": "AWS, AWS Certified Cloud Practitioner, https://aws.amazon.com/certification/certified-cloud-practitioner/",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:well-architected-framework",
+      "track_id": "clf-c02",
+      "title": "AWS Well-Architected Framework",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Well-Architected Tool"
+      ],
+      "domains": [
+        {
+          "domain_id": "1",
+          "domain_name": "Cloud Concepts",
+          "task_statement_ids": [
+            "1.2"
+          ],
+          "weight_percent": 24
+        },
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.1"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "well-architected framework",
+        "six pillars",
+        "design principles"
+      ],
+      "summary": "Authoritative framework source for cloud design principles and the six Well-Architected pillars used in foundational AWS questions.",
+      "extracted_facts": [
+        {
+          "fact": "The AWS Well-Architected Framework organizes best practices into pillars including operational excellence, security, reliability, performance efficiency, cost optimization, and sustainability.",
+          "fact_type": "teaching_hint",
+          "source_locator": "Well-Architected overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Maps directly to design principle and framework recognition questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 cloud design framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:6d19940e9458fbe1f32466d19d7634a1eda17fd9684ec85b09928d9260f184cd",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, AWS Well-Architected Framework, https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:shared-responsibility-model",
+      "track_id": "clf-c02",
+      "title": "Shared Responsibility Model",
+      "source_type": "aws_docs",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/",
+      "publisher": "AWS",
+      "aws_service": [],
+      "domains": [
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.1"
+          ],
+          "weight_percent": 30
+        }
+      ],
+      "concepts": [
+        "shared responsibility",
+        "security of the cloud",
+        "security in the cloud"
+      ],
+      "summary": "Explains how AWS and customers divide security responsibilities depending on the consumed service model.",
+      "extracted_facts": [
+        {
+          "fact": "AWS is responsible for security of the cloud, while customers are responsible for security in the cloud.",
+          "fact_type": "responsibility_boundary",
+          "source_locator": "Shared Responsibility Model overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Core source for responsibility-boundary questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact",
+          "quiz_distractor_context"
+        ],
+        "separation_note": "CLF-C02 cloud security responsibility content only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:ae453ff695828239173e7100fcd8130a32ef9f904d623d4725b05fdb7edb5ba6",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, Shared Responsibility Model, https://aws.amazon.com/compliance/shared-responsibility-model/",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:iam-introduction",
+      "track_id": "clf-c02",
+      "title": "What is IAM?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Identity and Access Management"
+      ],
+      "domains": [
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.2",
+            "2.3"
+          ],
+          "weight_percent": 30
+        }
+      ],
+      "concepts": [
+        "IAM",
+        "users",
+        "groups",
+        "roles",
+        "policies",
+        "least privilege"
+      ],
+      "summary": "IAM user guide introduction covering identities, policies, and access management foundations.",
+      "extracted_facts": [
+        {
+          "fact": "IAM helps securely control access to AWS resources by managing identities and permissions.",
+          "fact_type": "service_capability",
+          "source_locator": "IAM introduction",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Covers authentication, authorization, and least-privilege fundamentals.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 security and access-management framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:b4dac883e3de8a35fc4c11f56ce0e3a8d87d5e76a89acab497e00315764a0135",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is IAM?, https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:s3-welcome",
+      "track_id": "clf-c02",
+      "title": "What is Amazon S3?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "Amazon Simple Storage Service",
+        "Amazon S3"
+      ],
+      "domains": [
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.2",
+            "3.3"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "object storage",
+        "buckets",
+        "durability",
+        "storage classes"
+      ],
+      "summary": "Amazon S3 user guide introduction for object storage concepts, bucket/resource framing, and common storage use cases.",
+      "extracted_facts": [
+        {
+          "fact": "Amazon S3 is object storage built to store and retrieve any amount of data from anywhere.",
+          "fact_type": "service_capability",
+          "source_locator": "S3 introduction",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports storage service selection and basic S3 capability questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 service-selection framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:7f30528007f2d77032e60ded75ca2274ee15d3b2c0c56ddfc8b89d5d9c8406e9",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is Amazon S3?, https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:ec2-what-is",
+      "track_id": "clf-c02",
+      "title": "What is Amazon EC2?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "Amazon Elastic Compute Cloud"
+      ],
+      "domains": [
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.2",
+            "3.3"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "virtual servers",
+        "instances",
+        "AMI",
+        "security groups"
+      ],
+      "summary": "EC2 user guide introduction for scalable virtual server capacity and foundational compute terminology.",
+      "extracted_facts": [
+        {
+          "fact": "Amazon EC2 provides scalable computing capacity as virtual servers in the AWS Cloud.",
+          "fact_type": "service_capability",
+          "source_locator": "EC2 concepts",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports compute service identification and responsibility comparisons.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 compute service framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:5731e50059c2eb3b40c5b542733100f7c4b0ddd481322b3d6efd99286ce2b49e",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is Amazon EC2?, https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:rds-welcome",
+      "track_id": "clf-c02",
+      "title": "What is Amazon RDS?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "Amazon Relational Database Service"
+      ],
+      "domains": [
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.2",
+            "3.3"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "managed relational database",
+        "Multi-AZ",
+        "database engines"
+      ],
+      "summary": "RDS user guide introduction for managed relational database use cases and operational offload concepts.",
+      "extracted_facts": [
+        {
+          "fact": "Amazon RDS is a managed relational database service that automates common database administration tasks.",
+          "fact_type": "service_capability",
+          "source_locator": "RDS welcome",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports managed service and database selection questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 database service framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:c8c2a97580278af7e121308b353ed417a1796c6ce0a907414662067d0e832938",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is Amazon RDS?, https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:cloudwatch-what-is",
+      "track_id": "clf-c02",
+      "title": "What is Amazon CloudWatch?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "Amazon CloudWatch"
+      ],
+      "domains": [
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.4"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "monitoring",
+        "metrics",
+        "alarms",
+        "logs"
+      ],
+      "summary": "CloudWatch documentation source for monitoring, metrics, logs, alarms, and operational visibility.",
+      "extracted_facts": [
+        {
+          "fact": "Amazon CloudWatch monitors AWS resources and applications using metrics, logs, alarms, and events.",
+          "fact_type": "service_capability",
+          "source_locator": "CloudWatch overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Core for monitoring and observability service identification.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 operations and monitoring framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:7d2df2bc6506f18197b674075d334f7d84c27d1b88e52a28208bcd802b17647a",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is Amazon CloudWatch?, https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:cloudtrail-user-guide",
+      "track_id": "clf-c02",
+      "title": "What Is AWS CloudTrail?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS CloudTrail"
+      ],
+      "domains": [
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.4"
+          ],
+          "weight_percent": 30
+        },
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.4"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "audit logging",
+        "API activity",
+        "governance"
+      ],
+      "summary": "CloudTrail user guide source for auditing API activity, governance, operational risk, and compliance investigations.",
+      "extracted_facts": [
+        {
+          "fact": "AWS CloudTrail records account activity and API events for governance, compliance, and operational auditing.",
+          "fact_type": "service_capability",
+          "source_locator": "CloudTrail overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports audit and compliance scenario questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 auditing and governance framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:6ca54c89ada0ca84140b09844f807959adbe842858f1e0f14cf57c9620ce1029",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What Is AWS CloudTrail?, https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:config-developer-guide",
+      "track_id": "clf-c02",
+      "title": "What Is AWS Config?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Config"
+      ],
+      "domains": [
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.4"
+          ],
+          "weight_percent": 30
+        },
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.4"
+          ],
+          "weight_percent": 34
+        }
+      ],
+      "concepts": [
+        "resource configuration",
+        "compliance rules",
+        "change tracking"
+      ],
+      "summary": "AWS Config source for resource configuration inventory, compliance evaluation, and configuration history.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Config records configuration changes and evaluates resources against desired configurations.",
+          "fact_type": "service_capability",
+          "source_locator": "AWS Config overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports governance, compliance, and configuration tracking questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 resource governance framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:d06a8ec7ff0e40a756cee0f72931c2850c2b63808129f539e6a18ff110227f0f",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What Is AWS Config?, https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:vpc-what-is",
+      "track_id": "clf-c02",
+      "title": "What is Amazon VPC?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "Amazon Virtual Private Cloud"
+      ],
+      "domains": [
+        {
+          "domain_id": "3",
+          "domain_name": "Cloud Technology and Services",
+          "task_statement_ids": [
+            "3.2",
+            "3.3"
+          ],
+          "weight_percent": 34
+        },
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.2"
+          ],
+          "weight_percent": 30
+        }
+      ],
+      "concepts": [
+        "network isolation",
+        "subnets",
+        "route tables",
+        "security groups"
+      ],
+      "summary": "Amazon VPC source for logically isolated networking, subnetting, routing, and security boundary basics.",
+      "extracted_facts": [
+        {
+          "fact": "Amazon VPC lets you define a logically isolated virtual network for AWS resources.",
+          "fact_type": "service_capability",
+          "source_locator": "VPC overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports networking service and architecture foundation questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 networking framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:04649dbe1c9da5a68dbc7e9ab2587487caa9169476cddfce593e3055807cc145",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is Amazon VPC?, https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:organizations-service-control-policies",
+      "track_id": "clf-c02",
+      "title": "Service control policies (SCPs)",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Organizations"
+      ],
+      "domains": [
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.2",
+            "2.3"
+          ],
+          "weight_percent": 30
+        },
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.2"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "AWS Organizations",
+        "SCPs",
+        "multi-account governance"
+      ],
+      "summary": "AWS Organizations SCP documentation for multi-account permission guardrails and centralized governance.",
+      "extracted_facts": [
+        {
+          "fact": "Service control policies set maximum available permissions for accounts in an organization but do not grant permissions by themselves.",
+          "fact_type": "responsibility_boundary",
+          "source_locator": "SCP overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Core source for organization-level governance and permission boundary questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 account governance framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:e59a53daf4139a5c03e87c06eb4921f525173dd9f83f2dafd9278b499a6671cf",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, Service control policies (SCPs), https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:pricing-calculator",
+      "track_id": "clf-c02",
+      "title": "AWS Pricing Calculator",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Pricing Calculator"
+      ],
+      "domains": [
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.1",
+            "4.2"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "pricing calculator",
+        "cost estimates",
+        "billing estimates"
+      ],
+      "summary": "Pricing Calculator documentation for estimating AWS service costs before deployment.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Pricing Calculator helps create cost estimates for AWS services and planned workloads.",
+          "fact_type": "pricing_or_support",
+          "source_locator": "Pricing Calculator overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports cost estimation and billing tool selection questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 cost-estimation framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:65c7fa037d44bac7203385f057d3b143d81d0f6ece30bb449c797ba35d40f2f6",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, AWS Pricing Calculator, https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:cost-explorer",
+      "track_id": "clf-c02",
+      "title": "Analyzing your costs with AWS Cost Explorer",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Cost Explorer"
+      ],
+      "domains": [
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.1",
+            "4.2"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "Cost Explorer",
+        "cost analysis",
+        "usage trends"
+      ],
+      "summary": "Cost Explorer user guide source for visualizing and analyzing AWS costs and usage over time.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Cost Explorer lets you view and analyze costs and usage with reports and filtering.",
+          "fact_type": "pricing_or_support",
+          "source_locator": "Cost Explorer overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports cost visibility and trend analysis questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 cost-analysis framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:e9fd23f00ea2c38e909eaf465195c0dbc6c8ceb29ec09e29b74e923760f19e8d",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, Analyzing your costs with AWS Cost Explorer, https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:trusted-advisor",
+      "track_id": "clf-c02",
+      "title": "AWS Trusted Advisor",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Trusted Advisor"
+      ],
+      "domains": [
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.2",
+            "4.3"
+          ],
+          "weight_percent": 12
+        },
+        {
+          "domain_id": "2",
+          "domain_name": "Security and Compliance",
+          "task_statement_ids": [
+            "2.4"
+          ],
+          "weight_percent": 30
+        }
+      ],
+      "concepts": [
+        "Trusted Advisor",
+        "recommendations",
+        "checks"
+      ],
+      "summary": "Trusted Advisor documentation for recommendations across cost optimization, security, fault tolerance, performance, and service limits.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Trusted Advisor provides checks and recommendations that can include cost optimization, security, fault tolerance, performance, and service limit categories.",
+          "fact_type": "pricing_or_support",
+          "source_locator": "Trusted Advisor overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports billing, support tool, and recommendation questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 support and optimization framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:2c9d15a027466a4f9ce2773fd33591d74e28b258aa5bc936d4e9a038a8946ba7",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, AWS Trusted Advisor, https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:support-plans",
+      "track_id": "clf-c02",
+      "title": "Compare AWS Support Plans",
+      "source_type": "aws_docs",
+      "url": "https://aws.amazon.com/premiumsupport/plans/",
+      "publisher": "AWS",
+      "aws_service": [],
+      "domains": [
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.3"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "support plans",
+        "Developer Support",
+        "Business Support",
+        "Enterprise Support"
+      ],
+      "summary": "AWS Support Plans page for support tier differences, response expectations, and account support boundaries.",
+      "extracted_facts": [
+        {
+          "fact": "AWS offers multiple support plan tiers for different technical support and business needs.",
+          "fact_type": "pricing_or_support",
+          "source_locator": "Support plans comparison",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Primary source for support plan selection questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 support-plan framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:9b49f36efb23c596804788d25967b3178d782bdb81669327819dacf75029aa89",
+      "license_or_usage_note": "AWS public web page; summarize and cite.",
+      "citation_text": "AWS, Compare AWS Support Plans, https://aws.amazon.com/premiumsupport/plans/",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    },
+    {
+      "id": "clf-c02:aws-doc:billing-cost-management",
+      "track_id": "clf-c02",
+      "title": "What is AWS Billing and Cost Management?",
+      "source_type": "aws_docs",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-what-is.html",
+      "publisher": "AWS",
+      "aws_service": [
+        "AWS Billing and Cost Management"
+      ],
+      "domains": [
+        {
+          "domain_id": "4",
+          "domain_name": "Billing, Pricing, and Support",
+          "task_statement_ids": [
+            "4.1",
+            "4.2"
+          ],
+          "weight_percent": 12
+        }
+      ],
+      "concepts": [
+        "billing dashboard",
+        "budgets",
+        "cost management"
+      ],
+      "summary": "Billing and Cost Management source for paying bills, monitoring usage, organizing costs, and controlling spend.",
+      "extracted_facts": [
+        {
+          "fact": "AWS Billing and Cost Management provides tools to pay bills, monitor usage, analyze costs, and manage purchasing or budgets.",
+          "fact_type": "pricing_or_support",
+          "source_locator": "Billing and Cost Management overview",
+          "confidence": "high"
+        }
+      ],
+      "exam_relevance": {
+        "exam_code": "CLF-C02",
+        "relevance_level": "core",
+        "why_it_matters": "Supports cost management tool identification and billing workflow questions.",
+        "question_use": [
+          "learning_card",
+          "concept_card",
+          "quiz_fact"
+        ],
+        "separation_note": "CLF-C02 billing and cost-management framing only."
+      },
+      "last_checked_at": "2026-06-05T13:34:13.567Z",
+      "retrieved_at": "2026-06-05T13:34:13.567Z",
+      "content_hash": "sha256:124ea4e34046652dd279f8399b9a4384622fe124b1cb5d132bff19b64b7d3d88",
+      "license_or_usage_note": "AWS public documentation; summarize and cite.",
+      "citation_text": "AWS, What is AWS Billing and Cost Management?, https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-what-is.html",
+      "freshness_status": "fresh",
+      "notes": [],
+      "stale_after_days": 45
+    }
+  ]
+}

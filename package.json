@@ -10,6 +10,9 @@
     "build": "vite build",
     "test": "node --test tests/*.test.js",
     "lint": "node scripts/lint.mjs",
+    "ingest:sources": "node scripts/source-ingestion.mjs ingest",
+    "sources:check": "node scripts/source-ingestion.mjs check",
+    "sources:report": "node scripts/source-ingestion.mjs report",
     "seed": "node scripts/seed.mjs",
     "reset": "node scripts/seed.mjs --reset",
     "export": "node scripts/export.mjs"

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createSourceIndex, createSourceRegistry, loadGeneratedSourceRecords, resolveSourceIdsFromUrls, resolveSourceRegistry } from './sourceRegistry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -68,6 +69,7 @@ function option(id, label, explanation) {
 function buildQuestionFromCard(trackId, card, index) {
   const points = unique(card.expected_answer_points || card.concepts || []);
   const taskId = card.topic_id || card.task_statement_id || 'unmapped';
+  const sourceIds = unique(card.source_ids || []);
   const correct = card.short_answer || points.slice(0, 2).join('; ') || card.domain_name;
   const misconceptions = unique(card.misconceptions || card.common_misconceptions || []).slice(0, 2);
   const wrongs = [
@@ -107,12 +109,14 @@ function buildQuestionFromCard(trackId, card, index) {
       distractors: options.filter((candidate) => candidate.id !== 'opt-1').map((candidate) => ({ option_id: candidate.id, explanation: candidate.explanation })),
     },
     source_links: card.source_links || [],
+    source_ids: sourceIds,
   };
 }
 
-function buildCards(trackId, rawCards, verifiedDate) {
+function buildCards(trackId, rawCards, verifiedDate, sourceIndex) {
   return rawCards.map((raw, index) => {
     const points = raw.expected_answer_points || [];
+    const sourceLinks = raw.source_links || [];
     return {
       id: raw.id,
       track_id: trackId,
@@ -126,7 +130,8 @@ function buildCards(trackId, rawCards, verifiedDate) {
       services: serviceTags(points),
       concepts: points,
       difficulty: index % 3 === 0 ? 'foundation' : index % 3 === 1 ? 'intermediate' : 'review',
-      source_links: raw.source_links,
+      source_links: sourceLinks,
+      source_ids: resolveSourceIdsFromUrls(sourceLinks, sourceIndex),
       last_verified: verifiedDate,
       tags: [trackId, `domain-${raw.domain_id}`, raw.task_statement_id, ...points.slice(0, 3).map((point) => slugify(point))].filter(Boolean),
       status: 'new',
@@ -137,7 +142,7 @@ function buildCards(trackId, rawCards, verifiedDate) {
   });
 }
 
-function buildConceptCards(trackId, concepts, verifiedDate) {
+function buildConceptCards(trackId, concepts, verifiedDate, sourceIndex) {
   if (!Array.isArray(concepts) || !concepts.length) return [];
   return concepts.map((concept, index) => ({
     id: `${concept.id}-card`,
@@ -158,6 +163,7 @@ function buildConceptCards(trackId, concepts, verifiedDate) {
     misconceptions: unique(concept.common_misconceptions),
     decision_rules: unique(concept.decision_rules),
     source_links: unique(concept.source_urls),
+    source_ids: resolveSourceIdsFromUrls(concept.source_urls, sourceIndex),
     last_verified: verifiedDate,
     tags: [trackId, `domain-${concept.domain.id}`, concept.domain.task_statement_id, ...concept.services.map((service) => slugify(service)), ...concept.concepts.map((item) => slugify(item))].slice(0, 12),
     status: 'new',
@@ -187,7 +193,7 @@ function resourceDomain(entry, domains) {
   return { ...mapped, domain_name: domain?.name || mapped.domain_name };
 }
 
-function buildServiceResources(trackId, corpus, domains, verifiedDate) {
+function buildServiceResources(trackId, corpus, domains, verifiedDate, sourceIndex) {
   if (trackId !== 'clf-c02' || !corpus?.entries) return [];
   return corpus.entries.map((entry) => {
     const mapping = resourceDomain(entry, domains);
@@ -207,7 +213,8 @@ function buildServiceResources(trackId, corpus, domains, verifiedDate) {
       misconceptions: entry.common_misconceptions || [],
       comparison: entry.adjacent_services_comparison,
       official_docs_url: entry.official_docs_url,
-      source_citations: sourceLinks.map((url, index) => ({ id: `${entry.id}-source-${index + 1}`, url, type: url.includes('Exam-Guide') ? 'exam_guide' : 'official_docs', last_verified_date: verifiedDate })),
+      source_citations: sourceLinks.map((url, index) => ({ id: `${entry.id}-source-${index + 1}`, url, type: url.includes('Exam-Guide') ? 'exam_guide' : 'official_docs', last_verified_date: verifiedDate, source_id: resolveSourceIdsFromUrls([url], sourceIndex)[0] || null })),
+      source_ids: resolveSourceIdsFromUrls(sourceLinks, sourceIndex),
       last_verified: verifiedDate,
       weak_area_mappings: [{ track_id: trackId, domain_id: mapping.domain_id, topic_id: mapping.topic_id, reason: `${entry.family} questions can expose weak understanding of ${mapping.domain_name}.` }],
     };
@@ -234,6 +241,7 @@ function buildResourceCards(trackId, resources) {
       concepts: unique([resource.name, resource.family, ...resource.exam_clues]),
       difficulty: resource.priority === 'P0' ? 'foundation' : resource.priority === 'P1' ? 'intermediate' : 'review',
       source_links: resource.source_citations.map((source) => source.url),
+      source_ids: unique(resource.source_citations.map((source) => source.source_id).filter(Boolean)),
       last_verified: resource.last_verified,
       tags: [trackId, `domain-${mapping.domain_id}`, mapping.topic_id, slugify(resource.family), slugify(resource.name)],
       status: 'new',
@@ -248,7 +256,7 @@ function buildResourceCards(trackId, resources) {
   });
 }
 
-function normalizeQuestion(rawQuestion) {
+function normalizeQuestion(rawQuestion, sourceIndex) {
   const options = rawQuestion.options.map((candidate) => ({ id: candidate.id, label: candidate.label, explanation: candidate.explanation, is_correct: Boolean(candidate.is_correct) }));
   const correct = options.find((candidate) => candidate.is_correct);
   return {
@@ -275,6 +283,7 @@ function normalizeQuestion(rawQuestion) {
       distractors: options.filter((candidate) => candidate.id !== correct?.id).map((candidate) => ({ option_id: candidate.id, explanation: candidate.explanation })),
     },
     source_links: unique(rawQuestion.source_urls),
+    source_ids: resolveSourceIdsFromUrls(rawQuestion.source_urls, sourceIndex),
     answer_pattern_signature: options.map((candidate) => (candidate.is_correct ? 'C' : 'W')).join(''),
   };
 }
@@ -325,6 +334,9 @@ function sourceRows(trackId, metadata) {
     title,
     url,
     type,
+    citation_text: `Local seed metadata, ${title}, ${url}`,
+    last_checked_at: `${metadata.last_verified_date}T00:00:00.000Z`,
+    freshness_status: 'fresh',
     last_verified_date: metadata.last_verified_date,
     refresh_status: 'verified',
     stale_warning: false,
@@ -358,18 +370,24 @@ function buildTrack(trackId) {
   const outline = readJson(`data/sources/${trackId}/seed_outline.json`);
   const rawCards = readJson(`data/sources/${trackId}/learning_cards.json`);
   const resourceCorpus = tryReadJson(`data/sources/${trackId}/resource_explanation_corpus.json`, null);
-  const conceptRecords = tryReadJson(`data/sources/${trackId}/concept_records.json`, []);
+  const rawConceptRecords = tryReadJson(`data/sources/${trackId}/concept_records.json`, []);
   const questionBank = tryReadJson(`data/sources/${trackId}/question_bank.json`, []);
+  const generatedSources = loadGeneratedSourceRecords(trackId);
+  const sourceIndex = createSourceIndex(generatedSources);
+  const conceptRecords = rawConceptRecords.map((concept) => ({
+    ...concept,
+    source_ids: resolveSourceIdsFromUrls(concept.source_urls || [], sourceIndex),
+  }));
   const domains = metadata.domains.map((domain) => ({ ...domain, track_id: trackId, progress: 0, accuracy: 0, due_card_count: 0 }));
-  const seedCards = buildCards(trackId, rawCards, metadata.last_verified_date);
-  const serviceResources = buildServiceResources(trackId, resourceCorpus, domains, metadata.last_verified_date);
+  const seedCards = buildCards(trackId, rawCards, metadata.last_verified_date, sourceIndex);
+  const serviceResources = buildServiceResources(trackId, resourceCorpus, domains, metadata.last_verified_date, sourceIndex);
   const resourceCards = buildResourceCards(trackId, serviceResources);
-  const conceptCards = buildConceptCards(trackId, conceptRecords, metadata.last_verified_date);
+  const conceptCards = buildConceptCards(trackId, conceptRecords, metadata.last_verified_date, sourceIndex);
   const cards = [...conceptCards, ...seedCards, ...resourceCards];
   domains.forEach((domain) => { domain.due_card_count = cards.filter((card) => String(card.domain_id) === String(domain.id)).length; });
 
   const generatedQuestions = cards.map((card, index) => buildQuestionFromCard(trackId, card, index));
-  const curatedQuestions = questionBank.map(normalizeQuestion);
+  const curatedQuestions = questionBank.map((question) => normalizeQuestion(question, sourceIndex));
   const questions = trackId === 'clf-c02'
     ? uniqueBy([...curatedQuestions, ...generatedQuestions], (question) => question.id)
     : generatedQuestions;
@@ -393,7 +411,8 @@ function buildTrack(trackId) {
     serviceResources,
     studyPlans: buildStudyPlans(trackId, domains),
     consoleGuides,
-    sources: sourceRows(trackId, metadata),
+    sources: generatedSources.length ? generatedSources : sourceRows(trackId, metadata),
+    sourceIndex,
     videos: buildVideos(trackId, metadata.last_verified_date),
     milestones: [
       { track_id: trackId, id: `${trackId}-m1`, title: 'Finish first quick quiz', complete: false },
@@ -471,7 +490,8 @@ function repeatToCount(items, count) {
 export function loadLearningModel() {
   const tracks = Object.fromEntries(TRACK_IDS.map((id) => [id, buildTrack(id)]));
   const progress = Object.fromEntries(Object.values(tracks).map((track) => [track.id, initialProgress(track)]));
-  return { app: { name: 'Vion Learning', version: '0.1.0' }, tracks, progress, logs: [], runtime: { quiz_serial: 0, track_serials: {} } };
+  const sourceRegistry = createSourceRegistry(Object.fromEntries(Object.values(tracks).map((track) => [track.id, track.sources])));
+  return { app: { name: 'Vion Learning', version: '0.1.0' }, tracks, progress, logs: [], runtime: { quiz_serial: 0, track_serials: {} }, sourceRegistry };
 }
 
 export function getTrack(model, trackId) {
@@ -564,6 +584,7 @@ export function evaluateAnswer(model, { trackId, questionId, selectedOptionId })
       services: question.services,
       concepts: question.concepts,
       source_links: question.source_links,
+      source_ids: question.source_ids || [],
     },
     readiness_score: progress.readiness_score,
     next_actions: correct ? ['Continue mixed review', 'Raise difficulty', 'Mark linked card known'] : ['Read the linked concept explanation', 'Compare the selected distractor with the correct service or principle', 'Retake a weakness drill'],
@@ -609,6 +630,11 @@ export function landingPayload(model) {
 
 export function trackPayload(model, trackId) {
   const track = getTrack(model, trackId);
+  const sourceStatusCounts = track.sources.reduce((acc, source) => {
+    const key = source.freshness_status || source.refresh_status || 'unknown';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
   return {
     track: { id: track.id, code: track.code, name: track.name, accent: track.accent, last_verified_date: track.last_verified_date, official_facts: track.official_facts },
     progress: model.progress[trackId],
@@ -626,8 +652,27 @@ export function trackPayload(model, trackId) {
     quizModes: ['quick', 'domain', 'full', 'weakness', 'mixed'],
     studyPlans: track.studyPlans,
     consoleGuides: track.consoleGuides,
-    sourceReport: { track_id: trackId, sources: track.sources, last_verified_date: track.last_verified_date, stale_warning: track.limitations.length > 0, limitations: track.limitations },
+    sourceReport: {
+      track_id: trackId,
+      sources: track.sources,
+      last_verified_date: track.last_verified_date,
+      freshness: sourceStatusCounts,
+      stale_warning: Boolean(sourceStatusCounts.stale || sourceStatusCounts.needs_refresh || sourceStatusCounts.unverified || sourceStatusCounts.auth_gated),
+      limitations: track.limitations,
+    },
   };
+}
+
+export function sourcesPayload(model, trackId, filters = {}) {
+  getTrack(model, trackId);
+  const registry = model.sourceRegistry || createSourceRegistry(Object.fromEntries(Object.values(model.tracks).map((track) => [track.id, track.sources])));
+  const sources = resolveSourceRegistry(registry, {
+    trackId,
+    ids: filters.ids || [],
+    service: filters.service,
+    concept: filters.concept,
+  });
+  return { track_id: trackId, filters, count: sources.length, sources };
 }
 
 export function resourcesPayload(model, trackId) {

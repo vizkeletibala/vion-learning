@@ -24,6 +24,22 @@ test('health endpoint reports ok and source freshness', async () => {
   });
 });
 
+test('API exposes track-scoped source records and filtering without cross-track leakage', async () => {
+  await withServer(async (base) => {
+    const all = await (await fetch(`${base}/api/tracks/clf-c02/sources`)).json();
+    assert.equal(all.track_id, 'clf-c02');
+    assert.equal(all.count >= 15, true);
+    assert.equal(all.sources.every((source) => source.track_id === 'clf-c02'), true);
+
+    const filtered = await (await fetch(`${base}/api/tracks/clf-c02/sources?service=Amazon%20S3`)).json();
+    assert.equal(filtered.sources.length >= 1, true);
+    assert.equal(filtered.sources.every((source) => source.aws_service.includes('Amazon S3')), true);
+
+    const aif = await (await fetch(`${base}/api/tracks/aif-c01/sources`)).json();
+    assert.equal(aif.sources.some((source) => source.id.startsWith('clf-')), false);
+  });
+});
+
 test('API exposes landing and track scoped payloads without mixed content', async () => {
   await withServer(async (base) => {
     const landing = await (await fetch(`${base}/api/landing`)).json();

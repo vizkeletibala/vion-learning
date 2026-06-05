@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vion-learning.local/schemas/source-ingestion.v1.json",
+  "title": "Vion Learning normalized source ingestion artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["track_id", "schema_version", "generated_at", "sources"],
+  "properties": {
+    "track_id": {
+      "type": "string",
+      "enum": ["clf-c02", "aif-c01"]
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "source-ingestion/v1"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/source" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "track_id": { "const": "clf-c02" } }, "required": ["track_id"] },
+      "then": {
+        "properties": {
+          "sources": {
+            "items": {
+              "properties": {
+                "track_id": { "const": "clf-c02" },
+                "exam_relevance": {
+                  "properties": { "exam_code": { "const": "CLF-C02" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "track_id": { "const": "aif-c01" } }, "required": ["track_id"] },
+      "then": {
+        "properties": {
+          "sources": {
+            "items": {
+              "properties": {
+                "track_id": { "const": "aif-c01" },
+                "exam_relevance": {
+                  "properties": { "exam_code": { "const": "AIF-C01" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "track_id",
+        "title",
+        "source_type",
+        "url",
+        "publisher",
+        "aws_service",
+        "domains",
+        "concepts",
+        "summary",
+        "extracted_facts",
+        "exam_relevance",
+        "last_checked_at",
+        "retrieved_at",
+        "content_hash",
+        "license_or_usage_note",
+        "citation_text",
+        "freshness_status",
+        "notes"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(clf-c02|aif-c01):[a-z0-9-]+:[a-z0-9][a-z0-9-]*$"
+        },
+        "track_id": {
+          "type": "string",
+          "enum": ["clf-c02", "aif-c01"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "aws_exam_guide",
+            "aws_certification_page",
+            "aws_docs",
+            "aws_skill_builder",
+            "aws_blog",
+            "aws_whitepaper",
+            "aws_faq",
+            "aws_workshop",
+            "aws_youtube",
+            "third_party_video",
+            "third_party_article",
+            "other"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aws_service": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "domains": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/domainMapping" },
+          "uniqueItems": true
+        },
+        "concepts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extracted_facts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/extractedFact" }
+        },
+        "exam_relevance": {
+          "$ref": "#/$defs/examRelevance"
+        },
+        "last_checked_at": {
+          "anyOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        },
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "content_hash": {
+          "anyOf": [
+            { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "license_or_usage_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "citation_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freshness_status": {
+          "type": "string",
+          "enum": ["fresh", "stale", "needs_refresh", "unverified", "auth_gated"]
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "track_id": { "const": "clf-c02" } }, "required": ["track_id"] },
+          "then": {
+            "properties": {
+              "id": { "pattern": "^clf-c02:" },
+              "exam_relevance": {
+                "properties": { "exam_code": { "const": "CLF-C02" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "track_id": { "const": "aif-c01" } }, "required": ["track_id"] },
+          "then": {
+            "properties": {
+              "id": { "pattern": "^aif-c01:" },
+              "exam_relevance": {
+                "properties": { "exam_code": { "const": "AIF-C01" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "domainMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain_id", "domain_name", "task_statement_ids", "weight_percent"],
+      "properties": {
+        "domain_id": { "type": "string", "minLength": 1 },
+        "domain_name": { "type": "string", "minLength": 1 },
+        "task_statement_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "weight_percent": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "extractedFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fact", "fact_type", "source_locator", "confidence"],
+      "properties": {
+        "fact": { "type": "string", "minLength": 1 },
+        "fact_type": {
+          "type": "string",
+          "enum": [
+            "exam_fact",
+            "service_capability",
+            "responsibility_boundary",
+            "pricing_or_support",
+            "limitation",
+            "teaching_hint"
+          ]
+        },
+        "source_locator": { "type": "string", "minLength": 1 },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+      }
+    },
+    "examRelevance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exam_code", "relevance_level", "why_it_matters", "question_use", "separation_note"],
+      "properties": {
+        "exam_code": { "type": "string", "enum": ["CLF-C02", "AIF-C01"] },
+        "relevance_level": { "type": "string", "enum": ["core", "supporting", "background", "candidate"] },
+        "why_it_matters": { "type": "string", "minLength": 1 },
+        "question_use": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "learning_card",
+              "concept_card",
+              "quiz_fact",
+              "quiz_distractor_context",
+              "study_plan",
+              "console_guide",
+              "do_not_use_for_questions"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "separation_note": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadLearningModel, landingPayload, trackPayload, resourcesPayload, createQuiz, evaluateAnswer, markCard, exportSnapshot } from '../src/lib/learningModel.js';
+import { loadLearningModel, landingPayload, trackPayload, sourcesPayload, resourcesPayload, createQuiz, evaluateAnswer, markCard, exportSnapshot } from '../src/lib/learningModel.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -51,6 +51,10 @@ export function createServer({ log = true } = {}) {
       if (trackMatch) {
         const [, trackId, rest = ''] = trackMatch;
         if (req.method === 'GET' && rest === '') return json(res, 200, trackPayload(model, trackId));
+        if (req.method === 'GET' && rest === 'sources') {
+          const ids = url.searchParams.get('ids')?.split(',').map((value) => value.trim()).filter(Boolean) || [];
+          return json(res, 200, sourcesPayload(model, trackId, { service: url.searchParams.get('service') || undefined, concept: url.searchParams.get('concept') || undefined, ids }));
+        }
         if (req.method === 'GET' && rest === 'resources') return json(res, 200, resourcesPayload(model, trackId));
         const cardMatch = rest.match(/^cards\/([^/]+)$/);
         if (req.method === 'GET' && cardMatch) {
