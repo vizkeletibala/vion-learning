@@ -1,0 +1,258 @@
+{
+  "cert": "aif-c01",
+  "last_verified_date": "2026-06-03",
+  "modules": [
+    {
+      "module_id": "aif-c01-domain-1",
+      "title": "Fundamentals of AI and ML",
+      "weight_percent": 20,
+      "tasks": [
+        {
+          "task_statement_id": "1.1",
+          "title": "Explain basic AI concepts and terminologies.",
+          "seed_topics": [
+            "AI",
+            "ML",
+            "deep learning",
+            "neural networks",
+            "computer vision",
+            "NLP",
+            "model",
+            "algorithm",
+            "training",
+            "inferencing",
+            "bias",
+            "fairness",
+            "fit",
+            "LLM",
+            "supervised/unsupervised/reinforcement learning",
+            "data types"
+          ]
+        },
+        {
+          "task_statement_id": "1.2",
+          "title": "Identify practical use cases for AI.",
+          "seed_topics": [
+            "assist decision making",
+            "scalability",
+            "automation",
+            "when AI is not appropriate",
+            "regression",
+            "classification",
+            "clustering",
+            "fraud detection",
+            "forecasting",
+            "recommendations",
+            "AWS managed AI services"
+          ]
+        },
+        {
+          "task_statement_id": "1.3",
+          "title": "Describe the ML development lifecycle.",
+          "seed_topics": [
+            "data collection",
+            "EDA",
+            "preprocessing",
+            "feature engineering",
+            "training",
+            "hyperparameter tuning",
+            "evaluation",
+            "deployment",
+            "monitoring",
+            "model sources",
+            "MLOps",
+            "business metrics"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "aif-c01-domain-2",
+      "title": "Fundamentals of Generative AI",
+      "weight_percent": 24,
+      "tasks": [
+        {
+          "task_statement_id": "2.1",
+          "title": "Explain the basic concepts of generative AI.",
+          "seed_topics": [
+            "foundation models",
+            "large language models",
+            "tokens",
+            "embedding",
+            "transformers",
+            "diffusion",
+            "pre-training",
+            "fine-tuning",
+            "inference",
+            "multimodal models"
+          ]
+        },
+        {
+          "task_statement_id": "2.2",
+          "title": "Understand the capabilities and limitations of generative AI for solving business problems.",
+          "seed_topics": [
+            "summarization",
+            "content generation",
+            "chatbots",
+            "semantic search",
+            "limitations",
+            "hallucinations",
+            "toxicity",
+            "cost",
+            "latency",
+            "data quality"
+          ]
+        },
+        {
+          "task_statement_id": "2.3",
+          "title": "Describe AWS infrastructure and technologies for building generative AI applications.",
+          "seed_topics": [
+            "Amazon Bedrock",
+            "Amazon SageMaker JumpStart",
+            "Amazon Q",
+            "foundation model access",
+            "guardrails",
+            "agents",
+            "knowledge bases",
+            "vector stores"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "aif-c01-domain-3",
+      "title": "Applications of Foundation Models",
+      "weight_percent": 28,
+      "tasks": [
+        {
+          "task_statement_id": "3.1",
+          "title": "Describe design considerations for applications that use foundation models.",
+          "seed_topics": [
+            "RAG",
+            "embeddings",
+            "vector databases",
+            "model selection",
+            "cost/performance tradeoffs",
+            "latency",
+            "data privacy",
+            "prompt lifecycle"
+          ]
+        },
+        {
+          "task_statement_id": "3.2",
+          "title": "Choose effective prompt engineering techniques.",
+          "seed_topics": [
+            "zero-shot",
+            "few-shot",
+            "chain-of-thought awareness",
+            "prompt templates",
+            "context windows",
+            "negative prompting",
+            "prompt versioning",
+            "prompt evaluation"
+          ]
+        },
+        {
+          "task_statement_id": "3.3",
+          "title": "Describe the training and fine-tuning process for foundation models.",
+          "seed_topics": [
+            "continued pre-training",
+            "fine-tuning",
+            "instruction tuning",
+            "RLHF concept",
+            "dataset quality",
+            "overfitting",
+            "transfer learning",
+            "SageMaker/Bedrock customization"
+          ]
+        },
+        {
+          "task_statement_id": "3.4",
+          "title": "Describe methods to evaluate foundation model performance.",
+          "seed_topics": [
+            "offline evaluation",
+            "human evaluation",
+            "benchmarks",
+            "business KPIs",
+            "toxicity",
+            "bias",
+            "accuracy",
+            "relevance",
+            "hallucination rate",
+            "cost and latency"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "aif-c01-domain-4",
+      "title": "Guidelines for Responsible AI",
+      "weight_percent": 14,
+      "tasks": [
+        {
+          "task_statement_id": "4.1",
+          "title": "Explain the development of AI systems that are responsible.",
+          "seed_topics": [
+            "fairness",
+            "privacy",
+            "safety",
+            "security",
+            "robustness",
+            "transparency",
+            "human-centered design",
+            "risk management",
+            "governance"
+          ]
+        },
+        {
+          "task_statement_id": "4.2",
+          "title": "Recognize the importance of transparent and explainable models.",
+          "seed_topics": [
+            "explainability",
+            "interpretability",
+            "model cards",
+            "data provenance",
+            "auditability",
+            "stakeholder communication"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "aif-c01-domain-5",
+      "title": "Security, Compliance, and Governance for AI Solutions",
+      "weight_percent": 14,
+      "tasks": [
+        {
+          "task_statement_id": "5.1",
+          "title": "Explain methods to secure AI systems.",
+          "seed_topics": [
+            "IAM",
+            "KMS",
+            "Secrets Manager",
+            "VPC endpoints",
+            "encryption",
+            "least privilege",
+            "data privacy",
+            "Bedrock security",
+            "logging and monitoring"
+          ]
+        },
+        {
+          "task_statement_id": "5.2",
+          "title": "Recognize governance and compliance regulations for AI systems.",
+          "seed_topics": [
+            "AWS Artifact",
+            "Audit Manager",
+            "CloudTrail",
+            "Config",
+            "compliance evidence",
+            "governance controls",
+            "responsible AI policies",
+            "regulatory awareness"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,495 @@
+[
+  {
+    "id": "clf-c02-domain-1-task-1.1-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Cloud Concepts",
+    "task_statement_id": "1.1",
+    "prompt": "Explain: Define the benefits of the AWS Cloud.",
+    "expected_answer_points": [
+      "value proposition of AWS Cloud",
+      "economies of scale",
+      "benefits of global infrastructure",
+      "high availability",
+      "elasticity",
+      "agility"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-1-task-1.2-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Cloud Concepts",
+    "task_statement_id": "1.2",
+    "prompt": "Explain: Identify design principles of the AWS Cloud.",
+    "expected_answer_points": [
+      "AWS Well-Architected Framework",
+      "operational excellence",
+      "security",
+      "reliability",
+      "performance efficiency",
+      "cost optimization"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-1-task-1.3-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Cloud Concepts",
+    "task_statement_id": "1.3",
+    "prompt": "Explain: Understand the benefits of and strategies for migration to the AWS Cloud.",
+    "expected_answer_points": [
+      "cloud adoption strategies",
+      "AWS Cloud Adoption Framework",
+      "migration strategies",
+      "AWS Snowball",
+      "database replication"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-1-task-1.4-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Cloud Concepts",
+    "task_statement_id": "1.4",
+    "prompt": "Explain: Understand concepts of cloud economics.",
+    "expected_answer_points": [
+      "fixed vs variable costs",
+      "on-premises cost drivers",
+      "BYOL vs included licenses",
+      "rightsizing",
+      "automation",
+      "managed services"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-2-task-2.1-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Security and Compliance",
+    "task_statement_id": "2.1",
+    "prompt": "Explain: Understand the AWS shared responsibility model.",
+    "expected_answer_points": [
+      "customer responsibilities",
+      "AWS responsibilities",
+      "shared controls",
+      "service-dependent responsibility shifts for EC2, Lambda, RDS"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-2-task-2.2-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Security and Compliance",
+    "task_statement_id": "2.2",
+    "prompt": "Explain: Understand AWS Cloud security, governance, and compliance concepts.",
+    "expected_answer_points": [
+      "encryption",
+      "least privilege",
+      "root account protection",
+      "AWS compliance programs",
+      "AWS Artifact",
+      "where compliance requirements vary by service"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-2-task-2.3-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Security and Compliance",
+    "task_statement_id": "2.3",
+    "prompt": "Explain: Identify AWS access management capabilities.",
+    "expected_answer_points": [
+      "IAM users groups roles policies",
+      "MFA",
+      "principle of least privilege",
+      "AWS Organizations",
+      "SCPs",
+      "AWS IAM Identity Center"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-2-task-2.4-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Security and Compliance",
+    "task_statement_id": "2.4",
+    "prompt": "Explain: Identify components and resources for security.",
+    "expected_answer_points": [
+      "security groups",
+      "network ACLs",
+      "AWS WAF",
+      "AWS Shield",
+      "AWS Trusted Advisor",
+      "Amazon GuardDuty"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.1-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.1",
+    "prompt": "Explain: Define methods of deploying and operating in the AWS Cloud.",
+    "expected_answer_points": [
+      "AWS Management Console",
+      "AWS CLI",
+      "SDKs",
+      "infrastructure as code",
+      "CloudFormation",
+      "Elastic Beanstalk"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.2-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.2",
+    "prompt": "Explain: Define the AWS global infrastructure.",
+    "expected_answer_points": [
+      "Regions",
+      "Availability Zones",
+      "edge locations",
+      "regional vs global services",
+      "high availability",
+      "disaster recovery"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.3-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.3",
+    "prompt": "Explain: Identify AWS compute services.",
+    "expected_answer_points": [
+      "EC2",
+      "Auto Scaling",
+      "Elastic Load Balancing",
+      "Lambda",
+      "ECS",
+      "EKS"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.4-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.4",
+    "prompt": "Explain: Identify AWS database services.",
+    "expected_answer_points": [
+      "RDS",
+      "Aurora",
+      "DynamoDB",
+      "ElastiCache",
+      "MemoryDB",
+      "Neptune"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.5-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.5",
+    "prompt": "Explain: Identify AWS network services.",
+    "expected_answer_points": [
+      "VPC",
+      "subnets",
+      "route tables",
+      "security groups",
+      "NACLs",
+      "Route 53"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.6-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.6",
+    "prompt": "Explain: Identify AWS storage services.",
+    "expected_answer_points": [
+      "S3",
+      "S3 Glacier",
+      "EBS",
+      "EFS",
+      "FSx",
+      "Storage Gateway"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.7-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.7",
+    "prompt": "Explain: Identify AWS AI/ML services and analytics services.",
+    "expected_answer_points": [
+      "SageMaker",
+      "Comprehend",
+      "Kendra",
+      "Lex",
+      "Polly",
+      "Rekognition"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-3-task-3.8-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Cloud Technology and Services",
+    "task_statement_id": "3.8",
+    "prompt": "Explain: Identify services from other in-scope AWS service categories.",
+    "expected_answer_points": [
+      "EventBridge",
+      "SNS",
+      "SQS",
+      "Step Functions",
+      "CloudWatch",
+      "CloudTrail"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-4-task-4.1-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "4",
+    "domain_name": "Billing, Pricing, and Support",
+    "task_statement_id": "4.1",
+    "prompt": "Explain: Compare AWS pricing models.",
+    "expected_answer_points": [
+      "On-Demand",
+      "Reserved Instances",
+      "Savings Plans",
+      "Spot Instances",
+      "Dedicated Hosts/Instances",
+      "free tier"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-4-task-4.2-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "4",
+    "domain_name": "Billing, Pricing, and Support",
+    "task_statement_id": "4.2",
+    "prompt": "Explain: Understand resources for billing, budget, and cost management.",
+    "expected_answer_points": [
+      "Pricing Calculator",
+      "Billing Dashboard",
+      "Cost Explorer",
+      "AWS Budgets",
+      "Cost and Usage Report",
+      "Organizations consolidated billing"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-domain-4-task-4.3-concept-check",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": "4",
+    "domain_name": "Billing, Pricing, and Support",
+    "task_statement_id": "4.3",
+    "prompt": "Explain: Identify AWS technical resources and AWS Support options.",
+    "expected_answer_points": [
+      "AWS Support plans",
+      "Trusted Advisor",
+      "Knowledge Center",
+      "re:Post",
+      "documentation",
+      "whitepapers"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "clf-c02-shared-responsibility-by-service",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Classify customer vs AWS responsibilities for EC2, Lambda, and RDS.",
+    "expected_answer_points": [
+      "EC2 has more customer OS/application responsibility than managed services",
+      "Lambda abstracts servers/runtime patching but customer owns code/data/IAM",
+      "RDS shifts database engine maintenance options toward AWS but customer owns data/access/config"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "clf-c02-global-infra-scenario",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Choose Region, AZ, edge location, and global service for common availability/latency scenarios.",
+    "expected_answer_points": [
+      "Region is geographic area",
+      "AZ is isolated datacenter grouping",
+      "edge locations support low-latency delivery via CloudFront/Route 53"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "clf-c02-pricing-model-choice",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Select an AWS pricing model for steady, interruptible, or unpredictable workloads.",
+    "expected_answer_points": [
+      "On-Demand flexibility",
+      "Savings Plans/RIs for committed steady usage",
+      "Spot for fault-tolerant interruptible work"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "clf-c02-cost-tools-match",
+    "cert": "clf-c02",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Match Cost Explorer, Budgets, CUR, Pricing Calculator, and Trusted Advisor to use cases.",
+    "expected_answer_points": [
+      "Pricing Calculator estimates",
+      "Budgets alerts",
+      "Cost Explorer analyzes spend",
+      "CUR gives detailed raw reports",
+      "Trusted Advisor can surface cost optimization checks"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  }
+]

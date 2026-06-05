@@ -1,0 +1,22 @@
+services:
+  aws-cert-trainer:
+    container_name: aws-cert-trainer
+    image: vion-learning:kanban
+    build: .
+    restart: unless-stopped
+    ports:
+      # Private deployment: bind to loopback only, then publish privately with Tailscale Serve.
+      # Do not change this to 0.0.0.0 unless you explicitly want non-tailnet access.
+      - "127.0.0.1:9140:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./var:/app/var
+      - ./backups:/app/backups
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,433 @@
+[
+  {
+    "id": "aif-c01-domain-1-task-1.1-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Fundamentals of AI and ML",
+    "task_statement_id": "1.1",
+    "prompt": "Explain: Explain basic AI concepts and terminologies.",
+    "expected_answer_points": [
+      "AI",
+      "ML",
+      "deep learning",
+      "neural networks",
+      "computer vision",
+      "NLP"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-1-task-1.2-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Fundamentals of AI and ML",
+    "task_statement_id": "1.2",
+    "prompt": "Explain: Identify practical use cases for AI.",
+    "expected_answer_points": [
+      "assist decision making",
+      "scalability",
+      "automation",
+      "when AI is not appropriate",
+      "regression",
+      "classification"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-1-task-1.3-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "1",
+    "domain_name": "Fundamentals of AI and ML",
+    "task_statement_id": "1.3",
+    "prompt": "Explain: Describe the ML development lifecycle.",
+    "expected_answer_points": [
+      "data collection",
+      "EDA",
+      "preprocessing",
+      "feature engineering",
+      "training",
+      "hyperparameter tuning"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-2-task-2.1-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Fundamentals of Generative AI",
+    "task_statement_id": "2.1",
+    "prompt": "Explain: Explain the basic concepts of generative AI.",
+    "expected_answer_points": [
+      "foundation models",
+      "large language models",
+      "tokens",
+      "embedding",
+      "transformers",
+      "diffusion"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-2-task-2.2-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Fundamentals of Generative AI",
+    "task_statement_id": "2.2",
+    "prompt": "Explain: Understand the capabilities and limitations of generative AI for solving business problems.",
+    "expected_answer_points": [
+      "summarization",
+      "content generation",
+      "chatbots",
+      "semantic search",
+      "limitations",
+      "hallucinations"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-2-task-2.3-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "2",
+    "domain_name": "Fundamentals of Generative AI",
+    "task_statement_id": "2.3",
+    "prompt": "Explain: Describe AWS infrastructure and technologies for building generative AI applications.",
+    "expected_answer_points": [
+      "Amazon Bedrock",
+      "Amazon SageMaker JumpStart",
+      "Amazon Q",
+      "foundation model access",
+      "guardrails",
+      "agents"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-3-task-3.1-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Applications of Foundation Models",
+    "task_statement_id": "3.1",
+    "prompt": "Explain: Describe design considerations for applications that use foundation models.",
+    "expected_answer_points": [
+      "RAG",
+      "embeddings",
+      "vector databases",
+      "model selection",
+      "cost/performance tradeoffs",
+      "latency"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-3-task-3.2-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Applications of Foundation Models",
+    "task_statement_id": "3.2",
+    "prompt": "Explain: Choose effective prompt engineering techniques.",
+    "expected_answer_points": [
+      "zero-shot",
+      "few-shot",
+      "chain-of-thought awareness",
+      "prompt templates",
+      "context windows",
+      "negative prompting"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-3-task-3.3-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Applications of Foundation Models",
+    "task_statement_id": "3.3",
+    "prompt": "Explain: Describe the training and fine-tuning process for foundation models.",
+    "expected_answer_points": [
+      "continued pre-training",
+      "fine-tuning",
+      "instruction tuning",
+      "RLHF concept",
+      "dataset quality",
+      "overfitting"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-3-task-3.4-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "3",
+    "domain_name": "Applications of Foundation Models",
+    "task_statement_id": "3.4",
+    "prompt": "Explain: Describe methods to evaluate foundation model performance.",
+    "expected_answer_points": [
+      "offline evaluation",
+      "human evaluation",
+      "benchmarks",
+      "business KPIs",
+      "toxicity",
+      "bias"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-4-task-4.1-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "4",
+    "domain_name": "Guidelines for Responsible AI",
+    "task_statement_id": "4.1",
+    "prompt": "Explain: Explain the development of AI systems that are responsible.",
+    "expected_answer_points": [
+      "fairness",
+      "privacy",
+      "safety",
+      "security",
+      "robustness",
+      "transparency"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-4-task-4.2-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "4",
+    "domain_name": "Guidelines for Responsible AI",
+    "task_statement_id": "4.2",
+    "prompt": "Explain: Recognize the importance of transparent and explainable models.",
+    "expected_answer_points": [
+      "explainability",
+      "interpretability",
+      "model cards",
+      "data provenance",
+      "auditability",
+      "stakeholder communication"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-5-task-5.1-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "5",
+    "domain_name": "Security, Compliance, and Governance for AI Solutions",
+    "task_statement_id": "5.1",
+    "prompt": "Explain: Explain methods to secure AI systems.",
+    "expected_answer_points": [
+      "IAM",
+      "KMS",
+      "Secrets Manager",
+      "VPC endpoints",
+      "encryption",
+      "least privilege"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-domain-5-task-5.2-concept-check",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "5",
+    "domain_name": "Security, Compliance, and Governance for AI Solutions",
+    "task_statement_id": "5.2",
+    "prompt": "Explain: Recognize governance and compliance regulations for AI systems.",
+    "expected_answer_points": [
+      "AWS Artifact",
+      "Audit Manager",
+      "CloudTrail",
+      "Config",
+      "compliance evidence",
+      "governance controls"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original learning card spec derived from official task statement; do not convert into exam-dump style wording."
+  },
+  {
+    "id": "aif-c01-ai-ml-dl-compare",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Differentiate AI, ML, deep learning, and generative AI with examples.",
+    "expected_answer_points": [
+      "AI is broad field",
+      "ML learns patterns from data",
+      "deep learning uses neural networks",
+      "generative AI creates novel content using foundation models"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "aif-c01-rag-components",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Identify the components and purpose of retrieval augmented generation.",
+    "expected_answer_points": [
+      "knowledge source",
+      "chunking/embedding",
+      "vector database",
+      "retriever",
+      "prompt with context",
+      "foundation model"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "aif-c01-prompt-techniques",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Choose zero-shot, few-shot, template, and context-grounded prompting for scenarios.",
+    "expected_answer_points": [
+      "zero-shot no examples",
+      "few-shot includes examples",
+      "templates improve consistency",
+      "grounding reduces hallucination"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "aif-c01-responsible-ai-risk",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Given a genAI use case, name responsible AI risks and mitigation controls.",
+    "expected_answer_points": [
+      "bias/fairness",
+      "privacy",
+      "toxicity",
+      "transparency",
+      "human review",
+      "monitoring"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "aif-c01-bedrock-vs-sagemaker",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": null,
+    "domain_name": "cross-domain",
+    "task_statement_id": null,
+    "prompt": "Choose between Amazon Bedrock managed FM access and SageMaker model development for high-level scenarios.",
+    "expected_answer_points": [
+      "Bedrock for managed FM APIs/agents/guardrails",
+      "SageMaker for broader ML lifecycle and custom model development"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original scenario/concept card; source-linked but not copied from an exam item."
+  },
+  {
+    "id": "aif-c01-ai-governance-controls",
+    "cert": "aif-c01",
+    "type": "learning_card_spec",
+    "domain_id": "5",
+    "domain_name": "Security, Compliance, and Governance for AI Solutions",
+    "task_statement_id": "5.2",
+    "prompt": "Map CloudTrail, AWS Config, AWS Artifact, and AWS Audit Manager to AI governance/compliance evidence use cases.",
+    "expected_answer_points": [
+      "CloudTrail records API activity",
+      "AWS Config tracks resource configuration/compliance state",
+      "AWS Artifact provides compliance reports/agreements",
+      "AWS Audit Manager helps collect and organize audit evidence",
+      "These support governance but do not replace legal/regulatory review"
+    ],
+    "source_links": [
+      "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+    ],
+    "status": "seed_original",
+    "notes": "Original governance card derived from official AIF-C01 Domain 5 service/task coverage."
+  }
+]

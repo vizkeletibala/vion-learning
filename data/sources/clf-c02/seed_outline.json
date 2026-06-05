@@ -1,0 +1,291 @@
+{
+  "cert": "clf-c02",
+  "last_verified_date": "2026-06-03",
+  "modules": [
+    {
+      "module_id": "clf-c02-domain-1",
+      "title": "Cloud Concepts",
+      "weight_percent": 24,
+      "tasks": [
+        {
+          "task_statement_id": "1.1",
+          "title": "Define the benefits of the AWS Cloud.",
+          "seed_topics": [
+            "value proposition of AWS Cloud",
+            "economies of scale",
+            "benefits of global infrastructure",
+            "high availability",
+            "elasticity",
+            "agility"
+          ]
+        },
+        {
+          "task_statement_id": "1.2",
+          "title": "Identify design principles of the AWS Cloud.",
+          "seed_topics": [
+            "AWS Well-Architected Framework",
+            "operational excellence",
+            "security",
+            "reliability",
+            "performance efficiency",
+            "cost optimization",
+            "sustainability"
+          ]
+        },
+        {
+          "task_statement_id": "1.3",
+          "title": "Understand the benefits of and strategies for migration to the AWS Cloud.",
+          "seed_topics": [
+            "cloud adoption strategies",
+            "AWS Cloud Adoption Framework",
+            "migration strategies",
+            "AWS Snowball",
+            "database replication"
+          ]
+        },
+        {
+          "task_statement_id": "1.4",
+          "title": "Understand concepts of cloud economics.",
+          "seed_topics": [
+            "fixed vs variable costs",
+            "on-premises cost drivers",
+            "BYOL vs included licenses",
+            "rightsizing",
+            "automation",
+            "managed services"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "clf-c02-domain-2",
+      "title": "Security and Compliance",
+      "weight_percent": 30,
+      "tasks": [
+        {
+          "task_statement_id": "2.1",
+          "title": "Understand the AWS shared responsibility model.",
+          "seed_topics": [
+            "customer responsibilities",
+            "AWS responsibilities",
+            "shared controls",
+            "service-dependent responsibility shifts for EC2, Lambda, RDS"
+          ]
+        },
+        {
+          "task_statement_id": "2.2",
+          "title": "Understand AWS Cloud security, governance, and compliance concepts.",
+          "seed_topics": [
+            "encryption",
+            "least privilege",
+            "root account protection",
+            "AWS compliance programs",
+            "AWS Artifact",
+            "where compliance requirements vary by service"
+          ]
+        },
+        {
+          "task_statement_id": "2.3",
+          "title": "Identify AWS access management capabilities.",
+          "seed_topics": [
+            "IAM users groups roles policies",
+            "MFA",
+            "principle of least privilege",
+            "AWS Organizations",
+            "SCPs",
+            "AWS IAM Identity Center"
+          ]
+        },
+        {
+          "task_statement_id": "2.4",
+          "title": "Identify components and resources for security.",
+          "seed_topics": [
+            "security groups",
+            "network ACLs",
+            "AWS WAF",
+            "AWS Shield",
+            "AWS Trusted Advisor",
+            "Amazon GuardDuty",
+            "AWS Security Hub",
+            "AWS Knowledge Center"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "clf-c02-domain-3",
+      "title": "Cloud Technology and Services",
+      "weight_percent": 34,
+      "tasks": [
+        {
+          "task_statement_id": "3.1",
+          "title": "Define methods of deploying and operating in the AWS Cloud.",
+          "seed_topics": [
+            "AWS Management Console",
+            "AWS CLI",
+            "SDKs",
+            "infrastructure as code",
+            "CloudFormation",
+            "Elastic Beanstalk",
+            "managed services",
+            "hybrid connectivity"
+          ]
+        },
+        {
+          "task_statement_id": "3.2",
+          "title": "Define the AWS global infrastructure.",
+          "seed_topics": [
+            "Regions",
+            "Availability Zones",
+            "edge locations",
+            "regional vs global services",
+            "high availability",
+            "disaster recovery"
+          ]
+        },
+        {
+          "task_statement_id": "3.3",
+          "title": "Identify AWS compute services.",
+          "seed_topics": [
+            "EC2",
+            "Auto Scaling",
+            "Elastic Load Balancing",
+            "Lambda",
+            "ECS",
+            "EKS",
+            "Fargate",
+            "Lightsail",
+            "Batch",
+            "Elastic Beanstalk"
+          ]
+        },
+        {
+          "task_statement_id": "3.4",
+          "title": "Identify AWS database services.",
+          "seed_topics": [
+            "RDS",
+            "Aurora",
+            "DynamoDB",
+            "ElastiCache",
+            "MemoryDB",
+            "Neptune",
+            "migration databases"
+          ]
+        },
+        {
+          "task_statement_id": "3.5",
+          "title": "Identify AWS network services.",
+          "seed_topics": [
+            "VPC",
+            "subnets",
+            "route tables",
+            "security groups",
+            "NACLs",
+            "Route 53",
+            "CloudFront",
+            "Direct Connect",
+            "VPN",
+            "API Gateway"
+          ]
+        },
+        {
+          "task_statement_id": "3.6",
+          "title": "Identify AWS storage services.",
+          "seed_topics": [
+            "S3",
+            "S3 Glacier",
+            "EBS",
+            "EFS",
+            "FSx",
+            "Storage Gateway",
+            "Snow Family"
+          ]
+        },
+        {
+          "task_statement_id": "3.7",
+          "title": "Identify AWS AI/ML services and analytics services.",
+          "seed_topics": [
+            "SageMaker",
+            "Comprehend",
+            "Kendra",
+            "Lex",
+            "Polly",
+            "Rekognition",
+            "Textract",
+            "Transcribe",
+            "Translate",
+            "Athena",
+            "Glue",
+            "Kinesis",
+            "QuickSight",
+            "Redshift"
+          ]
+        },
+        {
+          "task_statement_id": "3.8",
+          "title": "Identify services from other in-scope AWS service categories.",
+          "seed_topics": [
+            "EventBridge",
+            "SNS",
+            "SQS",
+            "Step Functions",
+            "CloudWatch",
+            "CloudTrail",
+            "Config",
+            "Systems Manager",
+            "Organizations",
+            "Trusted Advisor",
+            "Well-Architected Tool"
+          ]
+        }
+      ]
+    },
+    {
+      "module_id": "clf-c02-domain-4",
+      "title": "Billing, Pricing, and Support",
+      "weight_percent": 12,
+      "tasks": [
+        {
+          "task_statement_id": "4.1",
+          "title": "Compare AWS pricing models.",
+          "seed_topics": [
+            "On-Demand",
+            "Reserved Instances",
+            "Savings Plans",
+            "Spot Instances",
+            "Dedicated Hosts/Instances",
+            "free tier"
+          ]
+        },
+        {
+          "task_statement_id": "4.2",
+          "title": "Understand resources for billing, budget, and cost management.",
+          "seed_topics": [
+            "Pricing Calculator",
+            "Billing Dashboard",
+            "Cost Explorer",
+            "AWS Budgets",
+            "Cost and Usage Report",
+            "Organizations consolidated billing",
+            "Marketplace"
+          ]
+        },
+        {
+          "task_statement_id": "4.3",
+          "title": "Identify AWS technical resources and AWS Support options.",
+          "seed_topics": [
+            "AWS Support plans",
+            "Trusted Advisor",
+            "Knowledge Center",
+            "re:Post",
+            "documentation",
+            "whitepapers",
+            "training",
+            "Professional Services",
+            "Partner Network"
+          ]
+        }
+      ]
+    }
+  ]
+}

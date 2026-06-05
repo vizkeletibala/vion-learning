@@ -1,0 +1,2446 @@
+{
+  "certification": "AWS Certified Cloud Practitioner",
+  "exam_code": "CLF-C02",
+  "corpus_name": "Beginner AWS Resource Explanation Corpus",
+  "created_date": "2026-06-03",
+  "purpose": "Deep educational mental models for beginner CLF-C02 learners; not exam dumps or trivia.",
+  "schema_version": "1.0",
+  "coverage_summary": {
+    "entry_count": 91,
+    "families": [
+      "AI/ML basics",
+      "Billing/cost",
+      "Compute",
+      "Databases/analytics",
+      "Global infrastructure",
+      "IAM/security",
+      "Integration/app",
+      "Management/observability",
+      "Migration",
+      "Networking/CDN",
+      "Storage"
+    ],
+    "priority_meaning": {
+      "P0": "core CLF-C02 mental model",
+      "P1": "important supporting service/concept",
+      "P2": "recognition-level context"
+    }
+  },
+  "entries": [
+    {
+      "id": "clf-c02-resource-aws-regions",
+      "cert": "clf-c02",
+      "family": "Global infrastructure",
+      "name": "AWS Regions",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A Region is a separate city/metro area where AWS operates cloud facilities.",
+      "plain_english_explanation": "A Region is a physical geographic area such as us-east-1 or eu-west-1. You choose a Region to keep workloads near users, meet data residency needs, or isolate disaster-recovery copies. Most resources are regional unless a service is explicitly global.",
+      "real_world_use_case": "Host EU customer data in an EU Region to reduce latency and support residency expectations.",
+      "exam_clue_phrases": [
+        "geographic area",
+        "data residency",
+        "regional service"
+      ],
+      "common_misconceptions": [
+        "A Region is not one building; it contains multiple AZs. Not all services exist in every Region."
+      ],
+      "adjacent_services_comparison": "Region is broad location; AZ is isolated location inside it; edge location is for edge delivery/routing.",
+      "official_docs_url": "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-availability-zones-azs",
+      "cert": "clf-c02",
+      "family": "Global infrastructure",
+      "name": "Availability Zones (AZs)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "AZs are separate buildings/neighborhoods inside one city, connected by fast private roads.",
+      "plain_english_explanation": "An Availability Zone is one or more physically separate data centers inside a Region, with independent power/networking and low-latency links to other AZs. Multi-AZ designs survive data-center-level failures.",
+      "real_world_use_case": "Run app servers across two AZs behind a load balancer.",
+      "exam_clue_phrases": [
+        "high availability",
+        "fault isolation",
+        "multi-AZ"
+      ],
+      "common_misconceptions": [
+        "Two servers in one AZ are not multi-AZ. AZ names can map differently between accounts."
+      ],
+      "adjacent_services_comparison": "AZ gives resilience inside a Region; multi-Region is broader DR and more complex.",
+      "official_docs_url": "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-edge-locations",
+      "cert": "clf-c02",
+      "family": "Global infrastructure",
+      "name": "Edge locations",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Edge locations are neighborhood pickup lockers close to users.",
+      "plain_english_explanation": "Edge locations are AWS global edge sites used by CloudFront, Route 53, and related services to serve cached content or route traffic close to users.",
+      "real_world_use_case": "Cache static assets close to global website visitors.",
+      "exam_clue_phrases": [
+        "low latency",
+        "CloudFront",
+        "cache near users"
+      ],
+      "common_misconceptions": [
+        "Edge locations are not Regions and usually do not host full application stacks."
+      ],
+      "adjacent_services_comparison": "Regions/AZs host workloads; edge locations cache/route traffic.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-local-zones",
+      "cert": "clf-c02",
+      "family": "Global infrastructure",
+      "name": "AWS Local Zones",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A Local Zone is a small AWS extension inside a metro area.",
+      "plain_english_explanation": "Local Zones place select compute, storage, and networking capabilities near large population centers when single-digit millisecond latency to that metro matters.",
+      "real_world_use_case": "Low-latency gaming, media rendering, or interactive applications in a specific city.",
+      "exam_clue_phrases": [
+        "metro area",
+        "single-digit millisecond latency",
+        "extension of Region"
+      ],
+      "common_misconceptions": [
+        "Local Zones do not offer every AWS service and are not a replacement for normal Regions."
+      ],
+      "adjacent_services_comparison": "Local Zones are metro edge; Outposts is in your facility; Wavelength is carrier 5G edge.",
+      "official_docs_url": "https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-wavelength",
+      "cert": "clf-c02",
+      "family": "Global infrastructure",
+      "name": "AWS Wavelength",
+      "priority": "P2",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Wavelength is a small cloud workbench inside a mobile carrier network.",
+      "plain_english_explanation": "Wavelength embeds AWS compute/storage at 5G carrier edges for ultra-low-latency mobile applications that should avoid a round trip to a Region.",
+      "real_world_use_case": "AR/VR, connected vehicles, and live mobile video analytics.",
+      "exam_clue_phrases": [
+        "5G",
+        "telecom edge",
+        "ultra-low latency"
+      ],
+      "common_misconceptions": [
+        "Most web apps use Regions plus CloudFront instead of Wavelength."
+      ],
+      "adjacent_services_comparison": "Wavelength is carrier edge; Local Zones are metro edge; CloudFront is CDN edge.",
+      "official_docs_url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-iam-users",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "IAM users",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "An IAM user is a named employee badge inside one AWS account.",
+      "plain_english_explanation": "IAM users are long-term identities in an AWS account. They can sign in or use access keys, but least privilege and MFA are essential, and roles/federation are preferred for many modern patterns.",
+      "real_world_use_case": "Create a break-glass admin user protected by MFA and rarely used.",
+      "exam_clue_phrases": [
+        "identity",
+        "long-term credentials",
+        "least privilege"
+      ],
+      "common_misconceptions": [
+        "Do not use the root user for daily work. Access keys are secrets."
+      ],
+      "adjacent_services_comparison": "Users are identities; groups organize users; roles are assumed temporarily; policies define permissions.",
+      "official_docs_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-iam-groups",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "IAM groups",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A group is a permissions mailing list for users.",
+      "plain_english_explanation": "IAM groups collect IAM users so permissions can be attached once for a team instead of repeatedly to individuals.",
+      "real_world_use_case": "Give a ReadOnly group view-only access for auditors.",
+      "exam_clue_phrases": [
+        "team access",
+        "attach policy to multiple users"
+      ],
+      "common_misconceptions": [
+        "Groups cannot contain roles or nested groups and are not identities applications assume."
+      ],
+      "adjacent_services_comparison": "Groups organize users; roles are temporary identities; policies are permission documents.",
+      "official_docs_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-iam-roles",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "IAM roles",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A role is a temporary costume used to do a job.",
+      "plain_english_explanation": "IAM roles provide temporary credentials to AWS services, applications, federated users, or other accounts. They avoid hardcoded long-term keys.",
+      "real_world_use_case": "Give an EC2 instance a role that can read one S3 bucket.",
+      "exam_clue_phrases": [
+        "assume role",
+        "temporary credentials",
+        "service access",
+        "cross-account"
+      ],
+      "common_misconceptions": [
+        "A role is not permanently assigned to one person; it is assumed when needed."
+      ],
+      "adjacent_services_comparison": "Role = temporary assumed permissions; user = long-term identity; policy = permission rules.",
+      "official_docs_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-iam-policies",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "IAM policies",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A policy is a rule sheet saying who can do which actions on which resources.",
+      "plain_english_explanation": "IAM policies are JSON permission documents with allow/deny statements, resources, actions, and optional conditions. Least privilege means granting only what is needed.",
+      "real_world_use_case": "Allow a Lambda function to write to one DynamoDB table and nothing else.",
+      "exam_clue_phrases": [
+        "JSON",
+        "allow/deny",
+        "least privilege",
+        "actions/resources"
+      ],
+      "common_misconceptions": [
+        "Explicit deny overrides allows. A policy alone is not a login identity."
+      ],
+      "adjacent_services_comparison": "Policies define permissions; IAM identities receive policies; SCPs set org-level maximums.",
+      "official_docs_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-multi-factor-authentication-mfa",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "Multi-factor authentication (MFA)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "MFA is a second lock after the password key.",
+      "plain_english_explanation": "MFA requires an additional proof such as an authenticator app or hardware key. Cloud Practitioner emphasis: protect root and privileged identities.",
+      "real_world_use_case": "Enable MFA for root and administrators.",
+      "exam_clue_phrases": [
+        "second factor",
+        "root account protection",
+        "secure sign-in"
+      ],
+      "common_misconceptions": [
+        "MFA does not replace least privilege; it only strengthens authentication."
+      ],
+      "adjacent_services_comparison": "MFA verifies login; IAM policies control authorization after login.",
+      "official_docs_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-key-management-service-kms",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS Key Management Service (KMS)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "KMS is a secure key cabinet used by AWS services.",
+      "plain_english_explanation": "KMS creates and controls cryptographic keys for encrypting data. Many AWS services integrate with it for managed encryption and auditable key use.",
+      "real_world_use_case": "Encrypt EBS volumes, S3 objects, and RDS databases with customer managed keys.",
+      "exam_clue_phrases": [
+        "encryption keys",
+        "customer managed key",
+        "key rotation"
+      ],
+      "common_misconceptions": [
+        "KMS stores/manages keys, not application passwords or API tokens."
+      ],
+      "adjacent_services_comparison": "KMS manages keys; Secrets Manager stores secret values; ACM manages TLS certificates.",
+      "official_docs_url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-secrets-manager",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS Secrets Manager",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Secrets Manager is a password vault with optional rotation.",
+      "plain_english_explanation": "Secrets Manager stores, retrieves, and can rotate secrets such as database passwords and API keys so applications do not hardcode them.",
+      "real_world_use_case": "Store and rotate an RDS application password.",
+      "exam_clue_phrases": [
+        "store secrets",
+        "rotate credentials",
+        "database password"
+      ],
+      "common_misconceptions": [
+        "It is not the same as KMS; it stores secret values and uses encryption underneath."
+      ],
+      "adjacent_services_comparison": "Secrets Manager stores secrets; Parameter Store handles config/simple secrets; KMS handles keys.",
+      "official_docs_url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-certificate-manager-acm",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS Certificate Manager (ACM)",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "ACM is a certificate office for website ID cards.",
+      "plain_english_explanation": "ACM provisions, manages, and renews TLS/SSL certificates for AWS-integrated services such as ELB, CloudFront, and API Gateway.",
+      "real_world_use_case": "Add HTTPS to an Application Load Balancer without manual renewal.",
+      "exam_clue_phrases": [
+        "TLS certificate",
+        "HTTPS",
+        "certificate renewal"
+      ],
+      "common_misconceptions": [
+        "ACM does not replace DNS or CDN services; it supplies certificates they use."
+      ],
+      "adjacent_services_comparison": "ACM manages certificates; KMS manages encryption keys; IAM controls access.",
+      "official_docs_url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-shield",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS Shield",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Shield is a DDoS guard at the edge.",
+      "plain_english_explanation": "AWS Shield protects against distributed denial-of-service attacks. Shield Standard is automatic; Shield Advanced adds stronger protections and response support.",
+      "real_world_use_case": "Protect a public web app on CloudFront or Route 53 from DDoS.",
+      "exam_clue_phrases": [
+        "DDoS",
+        "Shield Standard",
+        "Shield Advanced"
+      ],
+      "common_misconceptions": [
+        "Shield is not a web request filter for SQL injection; use WAF for that."
+      ],
+      "adjacent_services_comparison": "Shield handles DDoS; WAF filters web requests; GuardDuty detects suspicious activity.",
+      "official_docs_url": "https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-waf",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS WAF",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "WAF is a bouncer checking HTTP requests before the app.",
+      "plain_english_explanation": "AWS WAF controls HTTP/S requests to CloudFront, ALB, API Gateway, and other integrations using rules and managed rule groups.",
+      "real_world_use_case": "Block known malicious request patterns before they reach a website.",
+      "exam_clue_phrases": [
+        "web application firewall",
+        "HTTP filtering",
+        "SQL injection",
+        "XSS"
+      ],
+      "common_misconceptions": [
+        "WAF is not for every network protocol; it works at web layer."
+      ],
+      "adjacent_services_comparison": "WAF filters web requests; Shield absorbs DDoS; security groups control resource traffic.",
+      "official_docs_url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-guardduty",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "Amazon GuardDuty",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "GuardDuty is a security camera watching logs for suspicious behavior.",
+      "plain_english_explanation": "GuardDuty analyzes signals such as CloudTrail, VPC flow logs, DNS logs, and other sources to detect threats and produce findings.",
+      "real_world_use_case": "Detect unusual API calls or compromised credential behavior.",
+      "exam_clue_phrases": [
+        "threat detection",
+        "findings",
+        "suspicious activity"
+      ],
+      "common_misconceptions": [
+        "GuardDuty detects; it does not patch vulnerabilities or become a full SIEM alone."
+      ],
+      "adjacent_services_comparison": "GuardDuty detects threats; Inspector finds vulnerabilities; Security Hub aggregates findings.",
+      "official_docs_url": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-inspector",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "Amazon Inspector",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Inspector is a vulnerability scanner for workloads.",
+      "plain_english_explanation": "Inspector scans supported EC2 instances, ECR container images, and Lambda functions for software vulnerabilities and exposure.",
+      "real_world_use_case": "Find known CVEs in container images before deployment.",
+      "exam_clue_phrases": [
+        "vulnerability management",
+        "CVE scanning",
+        "EC2/ECR/Lambda"
+      ],
+      "common_misconceptions": [
+        "Inspector is not GuardDuty: vulnerabilities differ from suspicious activity."
+      ],
+      "adjacent_services_comparison": "Inspector scans vulnerabilities; GuardDuty detects threats; Systems Manager helps patch.",
+      "official_docs_url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-cloudtrail",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS CloudTrail",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "CloudTrail is the audit trail showing who did what.",
+      "plain_english_explanation": "CloudTrail records AWS API calls and account activity for audit, governance, compliance, and security investigations.",
+      "real_world_use_case": "Investigate who changed a security group or deleted a bucket policy.",
+      "exam_clue_phrases": [
+        "API activity",
+        "audit",
+        "who did what",
+        "governance"
+      ],
+      "common_misconceptions": [
+        "CloudTrail is not CloudWatch metrics/log monitoring."
+      ],
+      "adjacent_services_comparison": "CloudTrail audits actions; Config tracks resource state; CloudWatch monitors telemetry.",
+      "official_docs_url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-security-hub",
+      "cert": "clf-c02",
+      "family": "IAM/security",
+      "name": "AWS Security Hub",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Security Hub is a central security findings scoreboard.",
+      "plain_english_explanation": "Security Hub aggregates and normalizes security findings from AWS services and partner tools and checks against security standards.",
+      "real_world_use_case": "Centralize GuardDuty, Inspector, and Config findings across accounts.",
+      "exam_clue_phrases": [
+        "central findings",
+        "security posture",
+        "standards checks"
+      ],
+      "common_misconceptions": [
+        "It does not replace the underlying scanners; it collects and prioritizes them."
+      ],
+      "adjacent_services_comparison": "Security Hub aggregates; GuardDuty detects; Inspector scans; Config evaluates.",
+      "official_docs_url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-ec2",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Amazon EC2",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "EC2 is renting virtual computers on demand.",
+      "plain_english_explanation": "EC2 provides resizable virtual servers called instances. You choose instance type, OS image, networking, storage, and scaling pattern, with more control and responsibility than serverless services.",
+      "real_world_use_case": "Run a custom web server or legacy application needing OS-level control.",
+      "exam_clue_phrases": [
+        "virtual server",
+        "instance",
+        "compute capacity",
+        "control over OS"
+      ],
+      "common_misconceptions": [
+        "EC2 is not automatically serverless; you manage OS/app/security choices."
+      ],
+      "adjacent_services_comparison": "EC2 gives control; Lambda runs functions; ECS/EKS run containers; Beanstalk deploys apps.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-machine-images-amis",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Amazon Machine Images (AMIs)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "An AMI is a stamped recipe for launching servers.",
+      "plain_english_explanation": "An AMI contains the operating system and software configuration needed to launch EC2 instances consistently.",
+      "real_world_use_case": "Create a hardened Linux image with monitoring agents preinstalled.",
+      "exam_clue_phrases": [
+        "EC2 template",
+        "machine image",
+        "launch instance"
+      ],
+      "common_misconceptions": [
+        "An AMI is not the running server; it is used to create one and is regional."
+      ],
+      "adjacent_services_comparison": "AMI is server template; EBS snapshot is block-storage backup; instance type is hardware shape.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-ec2-instance-families",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "EC2 instance families",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Instance families are vehicle classes for different jobs.",
+      "plain_english_explanation": "EC2 instance families are optimized for general purpose, compute, memory, storage, accelerated/GPU, and other workloads. Choosing the right family improves performance and cost.",
+      "real_world_use_case": "Use compute optimized for CPU-heavy jobs and memory optimized for in-memory databases.",
+      "exam_clue_phrases": [
+        "instance type",
+        "compute optimized",
+        "memory optimized",
+        "rightsizing"
+      ],
+      "common_misconceptions": [
+        "Bigger is not always better; match workload bottleneck."
+      ],
+      "adjacent_services_comparison": "Instance family chooses shape; Auto Scaling changes quantity; Savings Plans/RIs affect price.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-auto-scaling",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Auto Scaling",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Auto Scaling is a thermostat for capacity.",
+      "plain_english_explanation": "Auto Scaling adjusts capacity to maintain availability and match demand. EC2 Auto Scaling groups launch/terminate instances using desired, min, max, and scaling policies.",
+      "real_world_use_case": "Add servers during traffic spikes and remove them overnight.",
+      "exam_clue_phrases": [
+        "elasticity",
+        "scale out",
+        "scale in",
+        "desired capacity"
+      ],
+      "common_misconceptions": [
+        "Auto Scaling is not a load balancer; it changes capacity."
+      ],
+      "adjacent_services_comparison": "Auto Scaling changes number of resources; ELB distributes traffic; CloudWatch can trigger scaling.",
+      "official_docs_url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-elastic-load-balancing-elb",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Elastic Load Balancing (ELB)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A load balancer is a receptionist sending visitors to healthy desks.",
+      "plain_english_explanation": "ELB distributes traffic across targets such as EC2 instances, containers, and IPs, improving availability and routing around unhealthy targets.",
+      "real_world_use_case": "Put a load balancer in front of web servers in multiple AZs.",
+      "exam_clue_phrases": [
+        "distribute traffic",
+        "healthy targets",
+        "high availability"
+      ],
+      "common_misconceptions": [
+        "A load balancer does not create more servers; pair it with Auto Scaling."
+      ],
+      "adjacent_services_comparison": "ALB routes HTTP; NLB handles high-performance TCP/UDP; CloudFront delivers at edge.",
+      "official_docs_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-application-load-balancer-alb",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Application Load Balancer (ALB)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "ALB is a smart web receptionist that reads URL paths and host names.",
+      "plain_english_explanation": "ALB handles HTTP/HTTPS layer-7 routing, including host/path rules and target groups, often for web apps and microservices.",
+      "real_world_use_case": "Route /api to API containers and /images to another target group.",
+      "exam_clue_phrases": [
+        "HTTP",
+        "HTTPS",
+        "layer 7",
+        "path routing"
+      ],
+      "common_misconceptions": [
+        "ALB is not the best answer for raw TCP/UDP performance; use NLB."
+      ],
+      "adjacent_services_comparison": "ALB = application layer HTTP; NLB = network layer TCP/UDP.",
+      "official_docs_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-network-load-balancer-nlb",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Network Load Balancer (NLB)",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "NLB directs traffic at road-intersection level without reading web pages.",
+      "plain_english_explanation": "NLB distributes TCP, UDP, and TLS traffic at high performance and low latency, with static IP and source-IP preservation patterns.",
+      "real_world_use_case": "Expose a high-throughput TCP service.",
+      "exam_clue_phrases": [
+        "TCP",
+        "UDP",
+        "layer 4",
+        "high performance"
+      ],
+      "common_misconceptions": [
+        "NLB does not do rich HTTP path routing like ALB."
+      ],
+      "adjacent_services_comparison": "NLB = transport layer; ALB = HTTP app layer; CloudFront = CDN edge.",
+      "official_docs_url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-lambda",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "AWS Lambda",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Lambda hires a worker only when a task arrives.",
+      "plain_english_explanation": "Lambda runs code without provisioning servers. It is event-driven and billed by requests/execution time while AWS manages the underlying servers.",
+      "real_world_use_case": "Process an uploaded S3 image or serve an API Gateway request.",
+      "exam_clue_phrases": [
+        "serverless function",
+        "event-driven",
+        "pay per request"
+      ],
+      "common_misconceptions": [
+        "Serverless still requires owning code, IAM, configuration, and cost controls."
+      ],
+      "adjacent_services_comparison": "Lambda runs functions; ECS/EKS run containers; EC2 runs servers.",
+      "official_docs_url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-ecs-and-aws-fargate",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Amazon ECS and AWS Fargate",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "ECS schedules containers; Fargate lets AWS manage the container servers.",
+      "plain_english_explanation": "ECS runs containerized applications as tasks/services. Fargate is serverless compute for containers so you avoid managing EC2 worker nodes.",
+      "real_world_use_case": "Run a containerized API without Kubernetes or server administration.",
+      "exam_clue_phrases": [
+        "containers",
+        "ECS",
+        "Fargate",
+        "serverless containers"
+      ],
+      "common_misconceptions": [
+        "Fargate is a compute option, not a separate orchestrator."
+      ],
+      "adjacent_services_comparison": "ECS is AWS-native containers; EKS is Kubernetes; Fargate removes server management.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-eks",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "Amazon EKS",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "EKS is AWS managing the Kubernetes control plane.",
+      "plain_english_explanation": "EKS runs Kubernetes on AWS for teams needing Kubernetes APIs and ecosystem while AWS manages control plane availability.",
+      "real_world_use_case": "Run portable Kubernetes microservices on AWS.",
+      "exam_clue_phrases": [
+        "Kubernetes",
+        "managed control plane",
+        "containers"
+      ],
+      "common_misconceptions": [
+        "EKS is usually more complex than ECS for beginners."
+      ],
+      "adjacent_services_comparison": "EKS = managed Kubernetes; ECS = AWS-native orchestrator; Fargate = serverless compute option.",
+      "official_docs_url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-elastic-beanstalk",
+      "cert": "clf-c02",
+      "family": "Compute",
+      "name": "AWS Elastic Beanstalk",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Beanstalk plants the infrastructure around uploaded app code.",
+      "plain_english_explanation": "Elastic Beanstalk deploys and manages web apps using underlying AWS resources like EC2, Auto Scaling, and load balancers while preserving access to those resources.",
+      "real_world_use_case": "Deploy a simple Java, Node.js, Python, or .NET web app quickly.",
+      "exam_clue_phrases": [
+        "managed platform",
+        "deploy application",
+        "uses EC2/ELB"
+      ],
+      "common_misconceptions": [
+        "Beanstalk is not the same as Lambda serverless functions; it often creates EC2 resources."
+      ],
+      "adjacent_services_comparison": "Beanstalk abstracts app deployment; CloudFormation provisions infrastructure; Lambda runs functions.",
+      "official_docs_url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-s3",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "Amazon S3",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "S3 is an almost limitless object-storage warehouse.",
+      "plain_english_explanation": "S3 stores objects in buckets and is highly durable. It is used for backups, static sites, logs, data lakes, media, and application assets.",
+      "real_world_use_case": "Store website images, analytics files, backups, and logs.",
+      "exam_clue_phrases": [
+        "object storage",
+        "bucket",
+        "durability",
+        "static website"
+      ],
+      "common_misconceptions": [
+        "S3 is not a block disk for EC2 boot volumes; use EBS."
+      ],
+      "adjacent_services_comparison": "S3 = object storage; EBS = block volume; EFS = shared file system.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-s3-storage-classes",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "S3 storage classes",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Storage classes are shelf types for hot, cool, or archived boxes.",
+      "plain_english_explanation": "S3 storage classes trade access frequency, retrieval time, availability/resilience model, and cost. Standard is for active data; IA and Glacier classes reduce cost for colder data.",
+      "real_world_use_case": "Move old logs to cheaper archival classes.",
+      "exam_clue_phrases": [
+        "frequent vs infrequent",
+        "archival",
+        "retrieval time"
+      ],
+      "common_misconceptions": [
+        "The cheapest class can cost more if retrieved often or needed instantly."
+      ],
+      "adjacent_services_comparison": "Lifecycle moves objects; Intelligent-Tiering changes tiers by access; Glacier classes archive.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-s3-lifecycle-policies",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "S3 lifecycle policies",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Lifecycle is an automatic filing clerk moving or expiring objects by rule.",
+      "plain_english_explanation": "S3 lifecycle configuration transitions objects between classes or expires them based on age/prefix/tags for cost and retention management.",
+      "real_world_use_case": "Move logs after 30 days and delete after 7 years.",
+      "exam_clue_phrases": [
+        "automated transition",
+        "expire objects",
+        "cost optimization"
+      ],
+      "common_misconceptions": [
+        "Lifecycle follows configured rules; it does not infer business value magically."
+      ],
+      "adjacent_services_comparison": "Lifecycle applies rules; Intelligent-Tiering monitors access; Backup coordinates backups.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-ebs",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "Amazon EBS",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "EBS is a virtual hard drive attached to an EC2 computer.",
+      "plain_english_explanation": "EBS provides block storage volumes for EC2, suitable for operating systems, databases, and low-latency disk needs.",
+      "real_world_use_case": "Attach a gp3 volume to an EC2 database server.",
+      "exam_clue_phrases": [
+        "block storage",
+        "EC2 volume",
+        "snapshot",
+        "low latency"
+      ],
+      "common_misconceptions": [
+        "EBS is AZ-scoped and not shared global object storage."
+      ],
+      "adjacent_services_comparison": "EBS = EC2 disk; EFS = shared file system; S3 = object store.",
+      "official_docs_url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-efs",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "Amazon EFS",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "EFS is a shared network folder for multiple Linux servers.",
+      "plain_english_explanation": "EFS is a scalable managed NFS file system that multiple EC2 instances can mount concurrently across AZs.",
+      "real_world_use_case": "Share uploaded user files across web servers.",
+      "exam_clue_phrases": [
+        "shared file system",
+        "NFS",
+        "multiple instances",
+        "Linux"
+      ],
+      "common_misconceptions": [
+        "EFS is not a Windows file server; FSx handles Windows file shares."
+      ],
+      "adjacent_services_comparison": "EFS = Linux NFS; FSx = specialized file systems; EBS = single-instance block.",
+      "official_docs_url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-fsx",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "Amazon FSx",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "FSx is AWS running specialized file servers for you.",
+      "plain_english_explanation": "FSx provides managed file systems including Windows File Server, Lustre, NetApp ONTAP, and OpenZFS for protocol/performance-specific workloads.",
+      "real_world_use_case": "Migrate Windows shared drives or run HPC with Lustre.",
+      "exam_clue_phrases": [
+        "managed file system",
+        "Windows",
+        "Lustre",
+        "HPC"
+      ],
+      "common_misconceptions": [
+        "FSx is not always the simplest shared-storage answer; EFS is simpler for Linux NFS."
+      ],
+      "adjacent_services_comparison": "FSx = specialized managed file systems; EFS = elastic Linux NFS; S3 = object storage.",
+      "official_docs_url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-s3-glacier-storage-classes",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "S3 Glacier storage classes",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Glacier is a deep vault: cheap to keep, slower to retrieve.",
+      "plain_english_explanation": "S3 Glacier storage classes are for long-term archive data that is rarely accessed; retrieval time and fees depend on class and option.",
+      "real_world_use_case": "Archive compliance records or long-term backups.",
+      "exam_clue_phrases": [
+        "archive",
+        "long-term retention",
+        "retrieval time",
+        "low storage cost"
+      ],
+      "common_misconceptions": [
+        "Glacier is poor for frequently accessed application files."
+      ],
+      "adjacent_services_comparison": "S3 Standard for active data; IA for less frequent; Glacier for archive.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-storage-gateway",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "AWS Storage Gateway",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Storage Gateway translates on-premises storage habits to AWS storage.",
+      "plain_english_explanation": "Storage Gateway connects on-premises environments to cloud storage through file, volume, or tape gateway patterns for hybrid storage.",
+      "real_world_use_case": "Replace physical tapes with virtual tapes stored in AWS.",
+      "exam_clue_phrases": [
+        "hybrid storage",
+        "on-premises",
+        "file/volume/tape gateway"
+      ],
+      "common_misconceptions": [
+        "It is not a general VPN; it bridges storage use cases."
+      ],
+      "adjacent_services_comparison": "Storage Gateway connects storage; Direct Connect/VPN connect networks; DataSync moves data.",
+      "official_docs_url": "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-backup",
+      "cert": "clf-c02",
+      "family": "Storage",
+      "name": "AWS Backup",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "AWS Backup is a central scheduler and policy book for backups.",
+      "plain_english_explanation": "AWS Backup centrally manages backup plans, retention, and recovery points across supported AWS services.",
+      "real_world_use_case": "Apply daily backups to EBS, RDS, and EFS resources.",
+      "exam_clue_phrases": [
+        "centralized backup",
+        "backup plan",
+        "retention"
+      ],
+      "common_misconceptions": [
+        "It orchestrates backups; it does not replace understanding restore behavior per service."
+      ],
+      "adjacent_services_comparison": "Backup manages policies; EBS snapshots are one mechanism; S3 versioning/lifecycle protect objects.",
+      "official_docs_url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-vpc",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Amazon VPC",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A VPC is your private AWS neighborhood with streets, gates, and addresses.",
+      "plain_english_explanation": "VPC lets you define an isolated virtual network with IP ranges, subnets, route tables, gateways, and security controls.",
+      "real_world_use_case": "Put web servers in public subnets and databases in private subnets.",
+      "exam_clue_phrases": [
+        "virtual network",
+        "CIDR",
+        "subnets",
+        "routing"
+      ],
+      "common_misconceptions": [
+        "A VPC is regional and does not automatically make resources public/private."
+      ],
+      "adjacent_services_comparison": "VPC is container; subnet is slice; route table controls paths; SG/NACL filter.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-subnets",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Subnets",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A subnet is a street/block inside the VPC neighborhood.",
+      "plain_english_explanation": "A subnet is an IP range in one AZ. Public/private behavior comes from routing, especially whether there is a route to an internet gateway.",
+      "real_world_use_case": "Place load balancers in public subnets and app servers in private subnets.",
+      "exam_clue_phrases": [
+        "public subnet",
+        "private subnet",
+        "AZ",
+        "IP range"
+      ],
+      "common_misconceptions": [
+        "Public/private is about routes, not just the name."
+      ],
+      "adjacent_services_comparison": "Subnet segments IPs; route table controls destination; NACL filters at subnet boundary.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-route-tables",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Route tables",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Route tables are road signs for network packets.",
+      "plain_english_explanation": "Route tables contain rules that direct traffic from subnets/gateways to local VPC, internet gateway, NAT gateway, transit gateway, VPN, and other targets.",
+      "real_world_use_case": "Route public subnet internet traffic to IGW and private subnet outbound traffic to NAT.",
+      "exam_clue_phrases": [
+        "routing",
+        "0.0.0.0/0",
+        "IGW",
+        "NAT gateway"
+      ],
+      "common_misconceptions": [
+        "Security groups do not route traffic; they filter allowed traffic."
+      ],
+      "adjacent_services_comparison": "Route tables choose paths; SG/NACL filter; gateways connect networks.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-internet-gateway-igw",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Internet Gateway (IGW)",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "An IGW is the front gate connecting a VPC to the public internet.",
+      "plain_english_explanation": "An internet gateway enables communication between public VPC resources and the internet when routes, public addressing, and security rules allow it.",
+      "real_world_use_case": "Allow a public Application Load Balancer to receive internet traffic.",
+      "exam_clue_phrases": [
+        "internet access",
+        "public subnet",
+        "route to IGW"
+      ],
+      "common_misconceptions": [
+        "Attaching an IGW alone does not expose every resource."
+      ],
+      "adjacent_services_comparison": "IGW enables direct internet path; NAT Gateway enables outbound-only path from private subnets.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-nat-gateway",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "NAT Gateway",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "A NAT gateway is an outbound-only lobby for private servers.",
+      "plain_english_explanation": "NAT Gateway lets resources in private subnets initiate outbound IPv4 internet connections while preventing unsolicited inbound internet connections.",
+      "real_world_use_case": "Private EC2 instances download patches without public inbound access.",
+      "exam_clue_phrases": [
+        "private outbound internet",
+        "no inbound",
+        "managed NAT"
+      ],
+      "common_misconceptions": [
+        "NAT is not a firewall and does not make private resources public."
+      ],
+      "adjacent_services_comparison": "NAT Gateway = outbound from private; IGW = direct internet; VPC endpoint = private AWS service access.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-security-groups-vs-nacls",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Security groups vs NACLs",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Security groups are room door locks; NACLs are street checkpoints.",
+      "plain_english_explanation": "Security groups are stateful resource-level firewalls; network ACLs are stateless subnet-level ordered allow/deny rules.",
+      "real_world_use_case": "Allow HTTPS to web instances with SGs and use NACLs as broad guardrails.",
+      "exam_clue_phrases": [
+        "stateful SG",
+        "stateless NACL",
+        "instance vs subnet firewall"
+      ],
+      "common_misconceptions": [
+        "NACLs require inbound and outbound rules because they are stateless; SGs allow return traffic."
+      ],
+      "adjacent_services_comparison": "SG = resource-level stateful allow rules; NACL = subnet-level stateless allow/deny.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-route-53",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Amazon Route 53",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Route 53 is AWS DNS: the internet phonebook plus routing rules.",
+      "plain_english_explanation": "Route 53 maps domain names to targets and supports routing policies, health checks, and domain registration.",
+      "real_world_use_case": "Point example.com to CloudFront or fail over between endpoints.",
+      "exam_clue_phrases": [
+        "DNS",
+        "domain registration",
+        "routing policy",
+        "health check"
+      ],
+      "common_misconceptions": [
+        "Route 53 does not serve content; it tells clients where to go."
+      ],
+      "adjacent_services_comparison": "Route 53 = DNS/routing; CloudFront = CDN; ELB = traffic distribution to targets.",
+      "official_docs_url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-cloudfront",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "Amazon CloudFront",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "CloudFront is a global cache that puts content near users.",
+      "plain_english_explanation": "CloudFront is a CDN that caches and delivers content through edge locations and integrates with S3, ALB, API Gateway, and WAF.",
+      "real_world_use_case": "Serve static assets globally with lower latency.",
+      "exam_clue_phrases": [
+        "CDN",
+        "edge caching",
+        "global delivery",
+        "origin"
+      ],
+      "common_misconceptions": [
+        "CloudFront is not the origin storage itself; it fetches from origins."
+      ],
+      "adjacent_services_comparison": "CloudFront delivers/caches; S3 stores objects; Route 53 resolves names.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-direct-connect",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "AWS Direct Connect",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Direct Connect is a private leased road from your data center to AWS.",
+      "plain_english_explanation": "Direct Connect provides dedicated network connectivity from on-premises locations to AWS with more consistent performance than internet paths.",
+      "real_world_use_case": "Connect a data center to AWS for steady hybrid workloads.",
+      "exam_clue_phrases": [
+        "dedicated private connection",
+        "hybrid",
+        "consistent bandwidth"
+      ],
+      "common_misconceptions": [
+        "Direct Connect is not encrypted by default like VPN; add encryption if required."
+      ],
+      "adjacent_services_comparison": "Direct Connect = dedicated connection; Site-to-Site VPN = encrypted tunnel over internet.",
+      "official_docs_url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-vpn",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "AWS VPN",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "VPN is an encrypted tunnel through the public internet.",
+      "plain_english_explanation": "AWS VPN includes Site-to-Site VPN for network-to-VPC connections and Client VPN for user remote access.",
+      "real_world_use_case": "Connect an office network to a VPC quickly.",
+      "exam_clue_phrases": [
+        "encrypted tunnel",
+        "site-to-site",
+        "hybrid",
+        "remote access"
+      ],
+      "common_misconceptions": [
+        "VPN performance depends on internet path; Direct Connect may be more predictable."
+      ],
+      "adjacent_services_comparison": "VPN = encrypted internet tunnel; Direct Connect = dedicated link; Transit Gateway = hub.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-transit-gateway",
+      "cert": "clf-c02",
+      "family": "Networking/CDN",
+      "name": "AWS Transit Gateway",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Transit Gateway is a central bus station for many VPCs and networks.",
+      "plain_english_explanation": "Transit Gateway connects VPCs and on-premises networks with a hub-and-spoke model, simplifying large topologies.",
+      "real_world_use_case": "Connect dozens of VPCs and hybrid links through one hub.",
+      "exam_clue_phrases": [
+        "network hub",
+        "many VPCs",
+        "hub-and-spoke"
+      ],
+      "common_misconceptions": [
+        "Detailed route-domain design is beyond CLF, but high-level purpose matters."
+      ],
+      "adjacent_services_comparison": "Transit Gateway connects many networks; peering is pairwise; Direct Connect/VPN connect on-premises.",
+      "official_docs_url": "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-rds",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon RDS",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "RDS is AWS doing database server chores for familiar relational databases.",
+      "plain_english_explanation": "RDS is a managed relational database service for engines such as MySQL, PostgreSQL, MariaDB, Oracle, SQL Server, and Db2. AWS handles provisioning, backup, patching options, and availability features.",
+      "real_world_use_case": "Run a transactional e-commerce database without self-managing database servers.",
+      "exam_clue_phrases": [
+        "managed relational database",
+        "SQL",
+        "Multi-AZ",
+        "backups"
+      ],
+      "common_misconceptions": [
+        "AWS manages infrastructure chores but not your schema, data model, or query quality."
+      ],
+      "adjacent_services_comparison": "RDS = managed relational engines; Aurora = AWS-optimized relational; DynamoDB = NoSQL.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-aurora",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon Aurora",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Aurora is an AWS-built high-performance relational engine compatible with MySQL/PostgreSQL.",
+      "plain_english_explanation": "Aurora is a managed cloud-optimized relational database with distributed storage and MySQL/PostgreSQL compatibility editions.",
+      "real_world_use_case": "Modernize a MySQL/PostgreSQL workload needing higher availability/performance.",
+      "exam_clue_phrases": [
+        "Aurora",
+        "MySQL compatible",
+        "PostgreSQL compatible",
+        "cloud optimized"
+      ],
+      "common_misconceptions": [
+        "Aurora is related to RDS experience but not identical to standard community MySQL on RDS."
+      ],
+      "adjacent_services_comparison": "Aurora = AWS-optimized relational; RDS = managed common engines; DynamoDB = NoSQL.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-dynamodb",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon DynamoDB",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "DynamoDB is a managed key-value/document table built for huge scale.",
+      "plain_english_explanation": "DynamoDB is a fully managed NoSQL database with fast performance at scale for key-based access patterns.",
+      "real_world_use_case": "Store sessions, shopping carts, IoT state, or leaderboards.",
+      "exam_clue_phrases": [
+        "NoSQL",
+        "key-value",
+        "serverless database",
+        "single-digit millisecond"
+      ],
+      "common_misconceptions": [
+        "It is not a drop-in replacement for relational joins and ad hoc SQL."
+      ],
+      "adjacent_services_comparison": "DynamoDB = NoSQL; RDS/Aurora = relational SQL; ElastiCache = in-memory cache.",
+      "official_docs_url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-elasticache",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon ElastiCache",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "ElastiCache is a high-speed memory shelf for data needed again soon.",
+      "plain_english_explanation": "ElastiCache is managed in-memory caching compatible with Redis/Valkey and Memcached patterns, reducing latency and database load.",
+      "real_world_use_case": "Cache product catalog reads or session data.",
+      "exam_clue_phrases": [
+        "in-memory cache",
+        "Redis",
+        "Memcached",
+        "low latency"
+      ],
+      "common_misconceptions": [
+        "A cache is usually not the durable system of record."
+      ],
+      "adjacent_services_comparison": "ElastiCache = cache; RDS/DynamoDB = databases; MemoryDB = durable Redis-compatible database.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-redshift",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon Redshift",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Redshift is a data warehouse for scanning lots of structured records.",
+      "plain_english_explanation": "Redshift is a managed analytics warehouse optimized for complex queries over large datasets, not small transaction updates.",
+      "real_world_use_case": "Analyze years of sales data for business dashboards.",
+      "exam_clue_phrases": [
+        "data warehouse",
+        "analytics",
+        "large-scale SQL",
+        "OLAP"
+      ],
+      "common_misconceptions": [
+        "Not ideal for high-frequency transaction processing."
+      ],
+      "adjacent_services_comparison": "Redshift = warehouse; Athena = query S3; RDS = transactional relational DB.",
+      "official_docs_url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-athena",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon Athena",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Athena lets you ask SQL questions directly against files in S3.",
+      "plain_english_explanation": "Athena is a serverless interactive query service for analyzing S3 data with SQL. You pay per query/data scanned and manage no servers.",
+      "real_world_use_case": "Query application logs stored in S3.",
+      "exam_clue_phrases": [
+        "serverless query",
+        "SQL on S3",
+        "pay per query"
+      ],
+      "common_misconceptions": [
+        "Athena does not store data; S3 stores it."
+      ],
+      "adjacent_services_comparison": "Athena queries S3; Redshift is a warehouse; Glue catalogs/transforms data.",
+      "official_docs_url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/athena/latest/ug/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-glue",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "AWS Glue",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Glue is a data prep workshop plus catalog.",
+      "plain_english_explanation": "Glue is serverless data integration for ETL, data cataloging, and preparing analytics data. Glue Data Catalog metadata is used by Athena and others.",
+      "real_world_use_case": "Catalog S3 data and transform CSV logs to Parquet.",
+      "exam_clue_phrases": [
+        "ETL",
+        "data catalog",
+        "serverless data integration"
+      ],
+      "common_misconceptions": [
+        "Glue is not the dashboarding tool."
+      ],
+      "adjacent_services_comparison": "Glue catalogs/transforms; Athena queries; QuickSight visualizes.",
+      "official_docs_url": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-opensearch-service",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon OpenSearch Service",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "OpenSearch is a fast searchable index for logs and text.",
+      "plain_english_explanation": "OpenSearch Service manages OpenSearch for search, log analytics, and observability-style indexing/querying.",
+      "real_world_use_case": "Search application logs or power website search.",
+      "exam_clue_phrases": [
+        "search",
+        "log analytics",
+        "indexing"
+      ],
+      "common_misconceptions": [
+        "Not a relational transaction database replacement."
+      ],
+      "adjacent_services_comparison": "OpenSearch = search/log index; CloudWatch Logs = log collection; Athena = SQL over S3.",
+      "official_docs_url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-quicksight",
+      "cert": "clf-c02",
+      "family": "Databases/analytics",
+      "name": "Amazon QuickSight",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "QuickSight is a dashboard and BI studio.",
+      "plain_english_explanation": "QuickSight creates dashboards, visualizations, and embedded analytics from sources such as Athena, Redshift, RDS, and S3.",
+      "real_world_use_case": "Build executive cost or sales dashboards.",
+      "exam_clue_phrases": [
+        "business intelligence",
+        "dashboard",
+        "visualization",
+        "SPICE"
+      ],
+      "common_misconceptions": [
+        "It does not store/prepare all source data by itself."
+      ],
+      "adjacent_services_comparison": "QuickSight visualizes; Redshift/Athena query; Glue prepares/catalogs.",
+      "official_docs_url": "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-sqs",
+      "cert": "clf-c02",
+      "family": "Integration/app",
+      "name": "Amazon SQS",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "SQS is a waiting line for work messages.",
+      "plain_english_explanation": "SQS is a managed message queue that decouples components and buffers work when producers and consumers run at different speeds.",
+      "real_world_use_case": "Queue order-processing jobs during traffic spikes.",
+      "exam_clue_phrases": [
+        "queue",
+        "decouple",
+        "message buffering",
+        "polling"
+      ],
+      "common_misconceptions": [
+        "SQS is not pub/sub fanout by itself; SNS commonly handles fanout."
+      ],
+      "adjacent_services_comparison": "SQS = queue; SNS = topic broadcast; EventBridge = event router.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-sns",
+      "cert": "clf-c02",
+      "family": "Integration/app",
+      "name": "Amazon SNS",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "SNS is a megaphone broadcasting to subscribers.",
+      "plain_english_explanation": "SNS is a managed pub/sub service where publishers send to topics and subscribers such as email, SMS, HTTP, Lambda, or SQS receive messages.",
+      "real_world_use_case": "Send one order event to email alerts, Lambda, and a queue.",
+      "exam_clue_phrases": [
+        "pub/sub",
+        "topic",
+        "fanout",
+        "notification"
+      ],
+      "common_misconceptions": [
+        "SNS is not primarily a work queue for one worker group; use SQS."
+      ],
+      "adjacent_services_comparison": "SNS broadcasts; SQS queues; EventBridge routes structured events.",
+      "official_docs_url": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/sns/latest/dg/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-eventbridge",
+      "cert": "clf-c02",
+      "family": "Integration/app",
+      "name": "Amazon EventBridge",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "EventBridge is an event router with rules.",
+      "plain_english_explanation": "EventBridge is a serverless event bus connecting AWS services, SaaS partners, and custom applications using event patterns and targets.",
+      "real_world_use_case": "Route order-created events to workflows and notification targets.",
+      "exam_clue_phrases": [
+        "event bus",
+        "event-driven",
+        "rules",
+        "SaaS events"
+      ],
+      "common_misconceptions": [
+        "It is broader than a simple queue or notification topic."
+      ],
+      "adjacent_services_comparison": "EventBridge routes events; SNS broadcasts; SQS buffers work; Step Functions orchestrates.",
+      "official_docs_url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-step-functions",
+      "cert": "clf-c02",
+      "family": "Integration/app",
+      "name": "AWS Step Functions",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Step Functions is a flowchart runner for workflows.",
+      "plain_english_explanation": "Step Functions coordinates multi-step workflows with state machines, retries, branching, parallelism, and visual execution history.",
+      "real_world_use_case": "Coordinate order validation, payment, inventory, and notification.",
+      "exam_clue_phrases": [
+        "workflow orchestration",
+        "state machine",
+        "retry",
+        "branching"
+      ],
+      "common_misconceptions": [
+        "It coordinates compute but is not the compute itself."
+      ],
+      "adjacent_services_comparison": "Step Functions orchestrates; Lambda/ECS perform tasks; EventBridge routes events.",
+      "official_docs_url": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-api-gateway",
+      "cert": "clf-c02",
+      "family": "Integration/app",
+      "name": "Amazon API Gateway",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "API Gateway is a managed front door for APIs.",
+      "plain_english_explanation": "API Gateway creates, publishes, secures, monitors, and manages APIs, often in front of Lambda or HTTP backends.",
+      "real_world_use_case": "Expose a serverless REST API backed by Lambda.",
+      "exam_clue_phrases": [
+        "managed API",
+        "REST",
+        "HTTP",
+        "WebSocket",
+        "throttling"
+      ],
+      "common_misconceptions": [
+        "Business logic usually lives behind it, not inside it."
+      ],
+      "adjacent_services_comparison": "API Gateway fronts APIs; ALB balances web traffic; CloudFront caches at edge.",
+      "official_docs_url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-cloudwatch",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "Amazon CloudWatch",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "CloudWatch is the dashboard, alarm system, and log notebook.",
+      "plain_english_explanation": "CloudWatch collects metrics, logs, events, and alarms for AWS resources and applications to monitor health and trigger actions.",
+      "real_world_use_case": "Alarm on high EC2 CPU and inspect Lambda logs.",
+      "exam_clue_phrases": [
+        "metrics",
+        "logs",
+        "alarms",
+        "monitoring"
+      ],
+      "common_misconceptions": [
+        "CloudWatch is not the audit record of API calls; CloudTrail is."
+      ],
+      "adjacent_services_comparison": "CloudWatch monitors telemetry; CloudTrail audits API calls; Config tracks configuration.",
+      "official_docs_url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-cloudformation",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS CloudFormation",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "CloudFormation is a blueprint that builds resources repeatably.",
+      "plain_english_explanation": "CloudFormation provisions infrastructure as code using templates and stacks, enabling repeatable create/update/delete operations.",
+      "real_world_use_case": "Deploy a VPC, subnets, security groups, and EC2 from a template.",
+      "exam_clue_phrases": [
+        "infrastructure as code",
+        "template",
+        "stack"
+      ],
+      "common_misconceptions": [
+        "It is not just an app deployer; it is general IaC."
+      ],
+      "adjacent_services_comparison": "CloudFormation defines infrastructure; Beanstalk deploys apps; CDK synthesizes CloudFormation.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-systems-manager",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Systems Manager",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Systems Manager is a remote operations toolbox.",
+      "plain_english_explanation": "Systems Manager helps view/control resources, run commands, patch servers, automate operations, and store parameters.",
+      "real_world_use_case": "Patch EC2 fleets or run a command across instances.",
+      "exam_clue_phrases": [
+        "operations management",
+        "Run Command",
+        "Patch Manager",
+        "Parameter Store"
+      ],
+      "common_misconceptions": [
+        "It is a suite of capabilities, not one single dashboard."
+      ],
+      "adjacent_services_comparison": "Systems Manager operates resources; CloudWatch monitors; Config evaluates state.",
+      "official_docs_url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-config",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Config",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Config is a configuration recorder and rule checker.",
+      "plain_english_explanation": "AWS Config records resource configuration changes and evaluates them against compliance rules.",
+      "real_world_use_case": "Detect public S3 buckets or risky security groups.",
+      "exam_clue_phrases": [
+        "resource inventory",
+        "configuration history",
+        "compliance rules"
+      ],
+      "common_misconceptions": [
+        "Config is not CloudTrail; it focuses on resource state, not every API event."
+      ],
+      "adjacent_services_comparison": "Config tracks state/compliance; CloudTrail audits actions; Security Hub aggregates findings.",
+      "official_docs_url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-organizations",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Organizations",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Organizations is a company org chart for multiple AWS accounts.",
+      "plain_english_explanation": "Organizations centrally manages multiple AWS accounts with consolidated billing, OUs, and service control policies.",
+      "real_world_use_case": "Separate dev, test, prod, and security accounts under one payer.",
+      "exam_clue_phrases": [
+        "multiple accounts",
+        "consolidated billing",
+        "OUs",
+        "SCPs"
+      ],
+      "common_misconceptions": [
+        "SCPs set maximum permissions but do not grant access by themselves."
+      ],
+      "adjacent_services_comparison": "Organizations manages accounts/billing/guardrails; IAM grants within accounts; Control Tower sets baselines.",
+      "official_docs_url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-control-tower",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Control Tower",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Control Tower is a governed multi-account landing-zone setup.",
+      "plain_english_explanation": "Control Tower sets up and governs AWS multi-account environments using best-practice blueprints, guardrails, and account factory.",
+      "real_world_use_case": "Launch new accounts with baseline logging and security controls.",
+      "exam_clue_phrases": [
+        "landing zone",
+        "multi-account governance",
+        "guardrails"
+      ],
+      "common_misconceptions": [
+        "It uses Organizations underneath and does not replace account/OUs/SCP understanding."
+      ],
+      "adjacent_services_comparison": "Control Tower creates governed baseline; Organizations manages accounts; Config/Security Hub monitor.",
+      "official_docs_url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-trusted-advisor",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Trusted Advisor",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Trusted Advisor is a checklist consultant scanning for improvement opportunities.",
+      "plain_english_explanation": "Trusted Advisor gives recommendations for cost optimization, performance, security, fault tolerance, service quotas, and operational excellence, with check access varying by support plan.",
+      "real_world_use_case": "Find idle resources, exposed ports, or quota warnings.",
+      "exam_clue_phrases": [
+        "recommendations",
+        "cost optimization",
+        "security checks",
+        "support plan"
+      ],
+      "common_misconceptions": [
+        "It recommends; it does not automatically fix everything. Full checks vary by support plan."
+      ],
+      "adjacent_services_comparison": "Trusted Advisor recommends; Cost Explorer analyzes spend; Security Hub aggregates security findings.",
+      "official_docs_url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-health-dashboard",
+      "cert": "clf-c02",
+      "family": "Management/observability",
+      "name": "AWS Health Dashboard",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Health Dashboard shows AWS events that may affect you.",
+      "plain_english_explanation": "AWS Health provides service event visibility and account/resource-specific notifications for planned changes or incidents.",
+      "real_world_use_case": "See whether a service issue affects resources in your account.",
+      "exam_clue_phrases": [
+        "service health",
+        "account-specific events",
+        "planned changes"
+      ],
+      "common_misconceptions": [
+        "Public status is broad; AWS Health can be personalized."
+      ],
+      "adjacent_services_comparison": "Health shows AWS/service events; CloudWatch shows workload metrics; CloudTrail shows actions.",
+      "official_docs_url": "https://docs.aws.amazon.com/health/latest/ug/what-is-aws-health.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/health/latest/ug/what-is-aws-health.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-pricing-models",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS pricing models",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Pricing is choosing pay-as-you-go rides, committed passes, or spare-seat discounts.",
+      "plain_english_explanation": "AWS pricing includes On-Demand flexibility, Reserved Instances/Savings Plans commitments, Spot spare capacity, Free Tier, and volume/usage-based pricing patterns.",
+      "real_world_use_case": "Use On-Demand for experiments, Savings Plans for steady compute, Spot for batch jobs.",
+      "exam_clue_phrases": [
+        "On-Demand",
+        "Reserved Instances",
+        "Savings Plans",
+        "Spot"
+      ],
+      "common_misconceptions": [
+        "The biggest discount is not always best; commitments require predictable usage and Spot can interrupt."
+      ],
+      "adjacent_services_comparison": "Pricing model decides how you pay; Cost Explorer analyzes spend; Budgets alerts.",
+      "official_docs_url": "https://aws.amazon.com/pricing/",
+      "source_urls": [
+        "https://aws.amazon.com/pricing/",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-savings-plans",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Savings Plans",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Savings Plans are a commitment coupon for steady dollars-per-hour usage.",
+      "plain_english_explanation": "Savings Plans provide lower prices in exchange for a one- or three-year usage commitment, especially for compute usage.",
+      "real_world_use_case": "Commit to baseline production compute spend.",
+      "exam_clue_phrases": [
+        "commitment discount",
+        "one or three years",
+        "steady usage"
+      ],
+      "common_misconceptions": [
+        "Savings Plans do not reserve capacity by themselves."
+      ],
+      "adjacent_services_comparison": "Savings Plans = flexible compute discount; RIs = reservation/discount model; On-Demand = no commitment.",
+      "official_docs_url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-reserved-instances",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "Reserved Instances",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Reserved Instances are booking a server class in advance for a discount.",
+      "plain_english_explanation": "Reserved Instances discount eligible instance usage in exchange for term commitment, and some options can provide capacity reservation benefits.",
+      "real_world_use_case": "Reduce cost for a database server that runs continuously.",
+      "exam_clue_phrases": [
+        "reservation",
+        "one or three years",
+        "steady workload"
+      ],
+      "common_misconceptions": [
+        "RIs are less flexible than many Savings Plans and poor for unpredictable workloads."
+      ],
+      "adjacent_services_comparison": "RIs = specific reservations/discounts; Savings Plans = flexible spend commitments; Spot = interruptible spare capacity.",
+      "official_docs_url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-cost-explorer",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Cost Explorer",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Cost Explorer is a spending graph and filter tool.",
+      "plain_english_explanation": "Cost Explorer visualizes, filters, and analyzes AWS costs and usage over time to find trends and cost drivers.",
+      "real_world_use_case": "Find which service or account caused a bill increase.",
+      "exam_clue_phrases": [
+        "analyze costs",
+        "visualize spend",
+        "filter",
+        "trends"
+      ],
+      "common_misconceptions": [
+        "It is not primarily an alerting tool; Budgets alerts."
+      ],
+      "adjacent_services_comparison": "Cost Explorer analyzes; Budgets alerts; CUR provides raw detailed data.",
+      "official_docs_url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-budgets",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Budgets",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Budgets is a spending smoke alarm.",
+      "plain_english_explanation": "AWS Budgets sets custom cost, usage, reservation, and Savings Plans thresholds and sends alerts on actual or forecasted values.",
+      "real_world_use_case": "Alert when dev account spend is forecast to exceed $500.",
+      "exam_clue_phrases": [
+        "budget alert",
+        "forecast",
+        "threshold",
+        "notification"
+      ],
+      "common_misconceptions": [
+        "Budgets alerts; it does not automatically prevent every spend unless paired with controls/actions."
+      ],
+      "adjacent_services_comparison": "Budgets alerts; Cost Explorer investigates; Organizations/SCPs enforce guardrails.",
+      "official_docs_url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-cost-and-usage-report-cur",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Cost and Usage Report (CUR)",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "CUR is the detailed itemized AWS receipt.",
+      "plain_english_explanation": "CUR provides detailed billing and usage line items, commonly delivered to S3 for analysis with Athena, Redshift, or QuickSight.",
+      "real_world_use_case": "Build chargeback/showback by account, tag, service, and usage type.",
+      "exam_clue_phrases": [
+        "detailed billing",
+        "line items",
+        "S3 delivery",
+        "chargeback"
+      ],
+      "common_misconceptions": [
+        "CUR is raw and more detailed than Cost Explorer; it requires analysis tooling."
+      ],
+      "adjacent_services_comparison": "CUR = raw detailed data; Cost Explorer = interactive UI; Budgets = alerts.",
+      "official_docs_url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-consolidated-billing",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "Consolidated billing",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Consolidated billing is one family bill for many AWS accounts.",
+      "plain_english_explanation": "With AWS Organizations, consolidated billing combines charges from member accounts under one management/payer account and may share eligible volume discounts.",
+      "real_world_use_case": "Pay for dev, prod, and security accounts through one organization.",
+      "exam_clue_phrases": [
+        "single bill",
+        "multiple accounts",
+        "Organizations",
+        "volume discounts"
+      ],
+      "common_misconceptions": [
+        "It does not merge security boundaries; accounts remain separate."
+      ],
+      "adjacent_services_comparison": "Consolidated billing aggregates payment; SCPs set guardrails; Cost Explorer analyzes linked-account spend.",
+      "official_docs_url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-support-plans",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Support plans",
+      "priority": "P0",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Support plans are service-desk tiers with different response times and guidance.",
+      "plain_english_explanation": "AWS Support plans range from Basic to Developer, Business, Enterprise On-Ramp, and Enterprise, with increasing support response levels and entitlements.",
+      "real_world_use_case": "Choose Business Support for production workloads needing 24/7 technical support access.",
+      "exam_clue_phrases": [
+        "Basic",
+        "Developer",
+        "Business",
+        "Enterprise",
+        "response times"
+      ],
+      "common_misconceptions": [
+        "Basic includes account/billing support and docs, not the same technical support response levels."
+      ],
+      "adjacent_services_comparison": "Support plan = support entitlement; Trusted Advisor = recommendations; Health = service events.",
+      "official_docs_url": "https://aws.amazon.com/premiumsupport/plans/",
+      "source_urls": [
+        "https://aws.amazon.com/premiumsupport/plans/",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-marketplace",
+      "cert": "clf-c02",
+      "family": "Billing/cost",
+      "name": "AWS Marketplace",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Marketplace is an app store for third-party software billed through AWS.",
+      "plain_english_explanation": "AWS Marketplace is a catalog for finding, buying, deploying, and managing third-party software, data, and services, often integrated with AWS billing.",
+      "real_world_use_case": "Subscribe to a security appliance AMI or SaaS monitoring tool.",
+      "exam_clue_phrases": [
+        "third-party software",
+        "digital catalog",
+        "AMI",
+        "SaaS"
+      ],
+      "common_misconceptions": [
+        "Marketplace products are not all AWS-built services; review vendor/pricing/licensing."
+      ],
+      "adjacent_services_comparison": "Marketplace = third-party offerings; Service Catalog = approved internal catalogs; AWS services = native services.",
+      "official_docs_url": "https://docs.aws.amazon.com/marketplace/latest/buyerguide/what-is-marketplace.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/marketplace/latest/buyerguide/what-is-marketplace.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-database-migration-service-dms",
+      "cert": "clf-c02",
+      "family": "Migration",
+      "name": "AWS Database Migration Service (DMS)",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "DMS is a moving truck for databases with ongoing replication.",
+      "plain_english_explanation": "DMS helps migrate databases to AWS or between databases with minimal downtime for supported sources and targets; heterogeneous migrations may need schema conversion.",
+      "real_world_use_case": "Move on-premises MySQL or Oracle to RDS/Aurora.",
+      "exam_clue_phrases": [
+        "database migration",
+        "minimal downtime",
+        "replication"
+      ],
+      "common_misconceptions": [
+        "DMS moves data; schema conversion can require SCT for different engines."
+      ],
+      "adjacent_services_comparison": "DMS migrates databases; Application Migration Service migrates servers; Snowball moves bulk offline data.",
+      "official_docs_url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-snowball-snow-family",
+      "cert": "clf-c02",
+      "family": "Migration",
+      "name": "AWS Snowball / Snow Family",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Snowball is a rugged shipping container for data.",
+      "plain_english_explanation": "Snow Family devices move large data sets into/out of AWS and support edge/disconnected compute where network transfer is impractical.",
+      "real_world_use_case": "Transfer hundreds of terabytes to S3 without saturating internet links.",
+      "exam_clue_phrases": [
+        "physical device",
+        "large data transfer",
+        "offline migration"
+      ],
+      "common_misconceptions": [
+        "Not for small routine transfers where normal upload is practical."
+      ],
+      "adjacent_services_comparison": "Snowball = physical transfer; DataSync = online movement; Storage Gateway = hybrid storage.",
+      "official_docs_url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-migration-hub",
+      "cert": "clf-c02",
+      "family": "Migration",
+      "name": "AWS Migration Hub",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Migration Hub is the project dashboard for migrations.",
+      "plain_english_explanation": "Migration Hub provides central visibility into application migration progress across AWS and partner migration tools.",
+      "real_world_use_case": "Track migration waves for dozens of applications.",
+      "exam_clue_phrases": [
+        "central migration tracking",
+        "progress",
+        "applications"
+      ],
+      "common_misconceptions": [
+        "It tracks and organizes; it is not the data mover for every workload."
+      ],
+      "adjacent_services_comparison": "Migration Hub tracks; DMS migrates databases; Application Migration Service rehosts servers.",
+      "official_docs_url": "https://docs.aws.amazon.com/migrationhub/latest/ug/whatishub.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/migrationhub/latest/ug/whatishub.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-aws-application-migration-service",
+      "cert": "clf-c02",
+      "family": "Migration",
+      "name": "AWS Application Migration Service",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Application Migration Service is a lift-and-shift copier for servers.",
+      "plain_english_explanation": "AWS Application Migration Service continuously replicates source servers and launches them as EC2 instances for rehost migrations.",
+      "real_world_use_case": "Lift and shift on-premises application servers to EC2.",
+      "exam_clue_phrases": [
+        "rehost",
+        "lift and shift",
+        "server migration",
+        "replication"
+      ],
+      "common_misconceptions": [
+        "It is not database-specific; DMS handles database migrations."
+      ],
+      "adjacent_services_comparison": "Application Migration Service migrates servers; DMS migrates databases; Migration Hub tracks.",
+      "official_docs_url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-bedrock",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon Bedrock",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Bedrock is a managed doorway to foundation models.",
+      "plain_english_explanation": "Bedrock is a fully managed service for building generative AI applications with foundation models from AWS and third-party providers.",
+      "real_world_use_case": "Build a chatbot or content generation workflow without managing model servers.",
+      "exam_clue_phrases": [
+        "generative AI",
+        "foundation models",
+        "managed service"
+      ],
+      "common_misconceptions": [
+        "Bedrock is not the broad platform for training every custom ML model; SageMaker is broader for ML lifecycle."
+      ],
+      "adjacent_services_comparison": "Bedrock = foundation models/genAI apps; SageMaker = ML build/train/deploy; AI services = prebuilt APIs.",
+      "official_docs_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-sagemaker",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon SageMaker",
+      "priority": "P1",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "SageMaker is a workshop for building, training, and deploying ML models.",
+      "plain_english_explanation": "SageMaker is a managed ML platform for data prep, training, tuning, deployment, and MLOps. CLF learners mainly need high-level recognition.",
+      "real_world_use_case": "Train and deploy a custom fraud detection model.",
+      "exam_clue_phrases": [
+        "machine learning platform",
+        "build train deploy",
+        "notebooks",
+        "endpoints"
+      ],
+      "common_misconceptions": [
+        "CLF-C02 does not require hands-on model engineering depth."
+      ],
+      "adjacent_services_comparison": "SageMaker builds custom ML; Bedrock uses foundation models; Rekognition/Textract/Comprehend are prebuilt APIs.",
+      "official_docs_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-comprehend",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon Comprehend",
+      "priority": "P2",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Comprehend is a text-understanding API.",
+      "plain_english_explanation": "Comprehend uses NLP to find sentiment, key phrases, entities, topics, and language in text.",
+      "real_world_use_case": "Analyze customer reviews for sentiment and common issues.",
+      "exam_clue_phrases": [
+        "NLP",
+        "sentiment",
+        "entities",
+        "key phrases"
+      ],
+      "common_misconceptions": [
+        "It is not a general database search engine."
+      ],
+      "adjacent_services_comparison": "Comprehend = text NLP; Textract = document text/forms; Transcribe = speech to text.",
+      "official_docs_url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-rekognition",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon Rekognition",
+      "priority": "P2",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Rekognition is a computer-vision API for images and video.",
+      "plain_english_explanation": "Rekognition analyzes images/video for labels, objects, faces, text, moderation categories, and visual information.",
+      "real_world_use_case": "Detect unsafe image uploads or tag media libraries.",
+      "exam_clue_phrases": [
+        "image analysis",
+        "video",
+        "computer vision",
+        "content moderation"
+      ],
+      "common_misconceptions": [
+        "It does not store your whole media catalog by itself."
+      ],
+      "adjacent_services_comparison": "Rekognition = image/video; Textract = document extraction; Comprehend = text meaning.",
+      "official_docs_url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-transcribe",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon Transcribe",
+      "priority": "P2",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Transcribe turns speech into written text.",
+      "plain_english_explanation": "Transcribe is automatic speech recognition for converting audio into text for calls, subtitles, and search.",
+      "real_world_use_case": "Create searchable transcripts of support calls.",
+      "exam_clue_phrases": [
+        "speech to text",
+        "audio transcription",
+        "subtitles"
+      ],
+      "common_misconceptions": [
+        "It is not text-to-speech; Polly does that."
+      ],
+      "adjacent_services_comparison": "Transcribe = speech to text; Polly = text to speech; Comprehend = understand text.",
+      "official_docs_url": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    },
+    {
+      "id": "clf-c02-resource-amazon-textract",
+      "cert": "clf-c02",
+      "family": "AI/ML basics",
+      "name": "Amazon Textract",
+      "priority": "P2",
+      "learner_level": "beginner",
+      "teaching_goal": "Build a practical mental model first, then connect it to CLF-C02 clue language.",
+      "simple_analogy": "Textract reads documents and forms, not just plain OCR text.",
+      "plain_english_explanation": "Textract extracts text, handwriting, forms, and tables from scanned documents and images for document automation.",
+      "real_world_use_case": "Extract fields from invoices or scanned applications.",
+      "exam_clue_phrases": [
+        "OCR",
+        "forms",
+        "tables",
+        "document extraction"
+      ],
+      "common_misconceptions": [
+        "It is not general image recognition; it focuses on document structure."
+      ],
+      "adjacent_services_comparison": "Textract = document extraction; Rekognition = image/video; Comprehend = NLP.",
+      "official_docs_url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html",
+      "source_urls": [
+        "https://docs.aws.amazon.com/textract/latest/dg/what-is.html",
+        "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+      ]
+    }
+  ]
+}
