@@ -9,9 +9,11 @@ Only the landing page (`/`) shows both certifications. Every track experience is
 - Landing page with track choice, readiness, next task, streak, milestone, weak domain count, and last source verification date.
 - Track overview pages with official exam facts, domain weights, service/topic tags, weak areas, milestones, and mode entry points.
 - Learning cards with prompt, short answer, detailed explanation, track/domain/service metadata, difficulty, source links, tags, know/review controls, and basic spaced repetition state.
+- CLF-C02 concept records with scenario, exam angle, misconceptions, decision rules, service/concept mappings, and official source citations.
 - CLF-C02 service/resource explanation corpus with beginner analogies, plain-English explanations, use cases, exam clue phrases, misconceptions, adjacent-service comparisons, source citations, verification dates, and weak-area mappings.
 - Quiz engine modes: quick 10, domain 15-25, full 65 timed, weakness drill, and mixed review.
-- Answer review with correct explanation, selected-option explanation, distractor explanations, domain/topic/card/source mapping, readiness update, next actions, and progress history.
+- Quick 10 quiz assembly that deliberately varies domain coverage, question type, difficulty, and answer position where the available pool allows it.
+- Answer review with correct explanation, selected-option explanation, per-option distractor teaching, domain/topic/card/concept/source mapping, readiness update, next actions, and progress history.
 - 7/14/30 day study plans per track.
 - AWS Console guide structure with goal, prereqs, time, cost warning, path/steps, observe, exam relevance, cleanup, and related quiz IDs.
 - Source ingestion/refresh metadata from `data/sources/*`, stale-warning limitations, and video resource metadata placeholders.
@@ -19,7 +21,7 @@ Only the landing page (`/`) shows both certifications. Every track experience is
 
 ## Original practice only
 
-The seed practice questions are generated from original learning-card specs and official task statements. Do not import or copy real exam questions. Current limitations are shown in each track source report; YouTube publish dates/transcripts and authenticated Skill Builder internals still need richer refresh.
+The seed practice and curated CLF-C02 questions are original learning content derived from official AWS task statements and documentation. Do not import or copy real exam questions, brain dumps, or unauthorized proprietary course material. Current limitations are shown in each track source report; YouTube publish dates/transcripts and authenticated Skill Builder internals still need richer refresh.
 
 ## Commands
 
@@ -168,14 +170,31 @@ The app adapts these into a track-scoped runtime model in `src/lib/learningModel
 
 ## CLF-C02 content maintenance
 
-Deep CLF-C02 AWS service/resource explanations live in `data/sources/clf-c02/resource_explanation_corpus.json` and render to the API through `src/lib/learningModel.js` as `serviceResources`, generated study cards, and generated quiz questions. The AIF-C01 track does not read this corpus; keep AI Practitioner content under `data/sources/aif-c01/*` only.
+Deep CLF-C02 AWS service/resource explanations live in `data/sources/clf-c02/resource_explanation_corpus.json`. Richer milestone-1 study content also lives in:
 
-When refreshing official sources or adding CLF-C02 services:
+- `data/sources/clf-c02/concept_records.json`
+- `data/sources/clf-c02/question_bank.json`
 
-1. Refresh official AWS references first: the CLF-C02 exam guide, AWS Certification page, and service documentation URLs cited in each corpus entry.
-2. Update each changed corpus entry with original teaching content only: `simple_analogy`, `plain_english_explanation`, `real_world_use_case`, `exam_clue_phrases`, `common_misconceptions`, `adjacent_services_comparison`, and `source_urls`. Do not paste real exam questions or brain dumps.
-3. Preserve `cert: "clf-c02"` and keep source citations specific to official AWS pages whenever possible.
-4. If a new family is added, update `RESOURCE_DOMAIN_MAP` in `src/lib/learningModel.js` so generated cards map to the right CLF-C02 domain/topic and weak-area drill.
-5. Re-run `npm test`, `npm run lint`, and `npm run build`. For API validation, run the app and check `/health`, `/api/tracks/clf-c02`, `/api/tracks/clf-c02/resources`, and `/api/tracks/aif-c01/resources` to confirm track separation.
+`src/lib/learningModel.js` adapts these static JSON files into track-scoped concept cards, curated scenario questions, generated reinforcement cards/questions, and answer-review mappings. The AIF-C01 track does not read these CLF-C02 files; keep AI Practitioner content under `data/sources/aif-c01/*` only.
 
-Current CLF-C02 deep-content baseline after this implementation: 91 service/resource explanation records generate 91 additional CLF-C02 study cards and questions, on top of the original 23 CLF-C02 seed cards. AIF-C01 remains at its own separate seed content and exposes zero CLF-C02 resource explanations.
+When refreshing official sources or adding CLF-C02 content:
+
+1. Refresh official AWS references first: the CLF-C02 exam guide, AWS Certification page, and the specific service documentation URLs cited in each entry.
+2. For `concept_records.json`, add original teaching content only: scenario, exam angle, misconceptions, decision rules, services, concepts, difficulty, and source URLs. Keep the writing explanatory rather than dump-like.
+3. For `question_bank.json`, every question must remain original and include:
+   - one clearly correct answer
+   - plausible distractors
+   - explanation for the correct choice
+   - explanation for each distractor
+   - domain/service/concept/difficulty metadata
+   - official/public source URLs
+4. Do not paste real exam questions, brain dumps, or proprietary course text. If wording starts sounding suspiciously like leaked prep material, delete it and write the concept from first principles instead.
+5. Preserve `track_id: "clf-c02"` in CLF content files and keep AIF-C01 content in its own tree.
+6. Re-run `npm test`, `npm run lint`, and `npm run build`. For API validation, run the app and check `/health`, `/api/tracks/clf-c02`, `/api/tracks/clf-c02/resources`, and `/api/tracks/aif-c01/resources` to confirm track separation and richer quiz metadata.
+
+Quality checks worth keeping an eye on:
+
+- Quick 10 should mix question types and difficulty when the pool allows it.
+- Correct answers should not cluster in one position across repeated runs.
+- Distractors should be meaningfully different, not generic duplicates with new shoes.
+- Every review screen should teach why the wrong answers are wrong, not merely announce that they are.

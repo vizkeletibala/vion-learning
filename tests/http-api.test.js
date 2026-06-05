@@ -34,6 +34,8 @@ test('API exposes landing and track scoped payloads without mixed content', asyn
     assert.equal(clf.track.id, 'clf-c02');
     assert.equal(clf.cards.every((card) => card.track_id === 'clf-c02'), true);
     assert.equal(clf.questions.every((question) => question.track_id === 'clf-c02'), true);
+    assert.equal(clf.conceptRecords.length >= 10, true);
+    assert.equal(clf.serviceResources.length >= 50, true);
     assert.ok(clf.consoleGuides[0].cost_warning);
     assert.ok(clf.sourceReport.stale_warning !== undefined);
 
@@ -42,7 +44,7 @@ test('API exposes landing and track scoped payloads without mixed content', asyn
   });
 });
 
-test('API creates quizzes and evaluates answers with review explanations', async () => {
+test('API creates quizzes and evaluates answers with detailed review explanations', async () => {
   await withServer(async (base) => {
     const quizRes = await fetch(`${base}/api/tracks/clf-c02/quizzes`, {
       method: 'POST',
@@ -52,6 +54,7 @@ test('API creates quizzes and evaluates answers with review explanations', async
     assert.equal(quizRes.status, 200);
     const quiz = await quizRes.json();
     assert.equal(quiz.question_count, 10);
+    assert.equal(new Set(quiz.questions.map((question) => question.question_type)).size >= 3, true);
     const first = quiz.questions[0];
 
     const evalRes = await fetch(`${base}/api/tracks/clf-c02/answers`, {
@@ -64,6 +67,8 @@ test('API creates quizzes and evaluates answers with review explanations', async
     assert.equal(review.mapping.track_id, 'clf-c02');
     assert.ok(review.selected_explanation);
     assert.ok(review.distractor_explanations.length >= 3);
+    assert.equal(review.option_reviews.length, 4);
+    assert.ok(review.review_summary.exam_angle);
   });
 });
 

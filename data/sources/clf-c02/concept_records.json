@@ -1,0 +1,272 @@
+[
+  {
+    "id": "clf-iam-identities",
+    "track_id": "clf-c02",
+    "domain": { "id": "2", "name": "Security and Compliance", "task_statement_id": "2.3" },
+    "services": ["AWS IAM", "AWS Organizations", "AWS IAM Identity Center"],
+    "concepts": ["IAM users", "IAM groups", "IAM roles", "IAM policies", "least privilege", "SCPs"],
+    "difficulty": "intermediate",
+    "scenario": "A company has employees who sign in every day, workloads that run on AWS, and multiple accounts with guardrails from a central team.",
+    "exam_angle": "Decide when identities belong to users, roles, policies, Identity Center permission sets, or Organizations SCPs.",
+    "common_misconceptions": [
+      "SCPs grant permissions to identities.",
+      "Applications running on EC2 should usually use long-term IAM user access keys.",
+      "Groups and roles are interchangeable."
+    ],
+    "decision_rules": [
+      "Humans who sign in directly typically use federation or Identity Center rather than shared root or service credentials.",
+      "AWS workloads usually assume roles rather than store long-term IAM user keys.",
+      "SCPs define the outer permission boundary for accounts; they do not by themselves grant access."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    ],
+    "summary": "IAM questions are decision questions in disguise: who is the actor, what is the scope, and which guardrail applies before any allow policy matters.",
+    "detailed_explanation": "Use IAM users sparingly for individual identities that truly need long-term credentials, use groups to collect user permissions, and use roles when AWS services, applications, or federated users need temporary credentials. In multi-account setups, SCPs from AWS Organizations restrict the maximum available permissions for member accounts, while IAM policies inside an account grant or deny access within that boundary. Identity Center is the cleaner answer when the exam describes workforce access across accounts."
+  },
+  {
+    "id": "clf-shared-responsibility",
+    "track_id": "clf-c02",
+    "domain": { "id": "2", "name": "Security and Compliance", "task_statement_id": "2.1" },
+    "services": ["Amazon EC2", "AWS Lambda", "Amazon RDS", "Amazon S3"],
+    "concepts": ["security of the cloud", "security in the cloud", "managed service boundaries", "patching", "data protection"],
+    "difficulty": "intermediate",
+    "scenario": "A learner must decide whether AWS or the customer is responsible for patching, network controls, guest OS settings, encryption configuration, and data classification.",
+    "exam_angle": "Compare responsibility boundaries across infrastructure-heavy and managed services.",
+    "common_misconceptions": [
+      "If a service is managed, AWS handles all security decisions for the workload.",
+      "Shared responsibility means every control is always 50/50.",
+      "AWS classifies and protects customer data content automatically for every workload."
+    ],
+    "decision_rules": [
+      "AWS is responsible for security of the cloud: facilities, hardware, and foundational managed-service operation.",
+      "Customers remain responsible for their data, identity configuration, and resource configuration.",
+      "As a service becomes more managed, more infrastructure tasks move to AWS, but customer data and access controls remain with the customer."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    ],
+    "summary": "The exam likes to disguise shared responsibility as a patching or control question. Find the layer being discussed and the answer stops pretending to be mystical.",
+    "detailed_explanation": "For EC2, the customer manages the guest OS, application stack, and many network settings, while AWS manages the physical infrastructure underneath. For managed services such as RDS or Lambda, AWS handles more of the underlying platform operations, but the customer still owns data, identity permissions, and secure configuration choices. CLF-C02 questions often reward identifying the exact layer where responsibility changes."
+  },
+  {
+    "id": "clf-s3-storage-security",
+    "track_id": "clf-c02",
+    "domain": { "id": "3", "name": "Cloud Technology and Services", "task_statement_id": "3.6" },
+    "services": ["Amazon S3", "S3 Glacier Instant Retrieval", "S3 Glacier Flexible Retrieval", "S3 Intelligent-Tiering"],
+    "concepts": ["object storage", "storage classes", "durability", "lifecycle policies", "bucket policies", "block public access"],
+    "difficulty": "intermediate",
+    "scenario": "A team stores logs, backups, and frequently accessed assets with different retrieval and retention requirements.",
+    "exam_angle": "Choose the right S3 capability based on access pattern, cost, and exposure risk.",
+    "common_misconceptions": [
+      "S3 storage classes are mostly the same except for price labels.",
+      "Versioning and lifecycle rules are security controls by themselves.",
+      "A bucket policy alone is enough if public access blocks are disabled accidentally."
+    ],
+    "decision_rules": [
+      "Pick storage classes based on access frequency and retrieval expectations, not only raw cost per GB.",
+      "Use S3 Block Public Access to prevent accidental public exposure when the scenario is private data.",
+      "Lifecycle policies automate movement and expiration; they do not replace identity or network controls."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "summary": "S3 questions become better once you separate storage class economics from security posture. The exam expects both.",
+    "detailed_explanation": "Amazon S3 provides durable object storage, but the best answer depends on the access pattern. Intelligent-Tiering helps when access is unpredictable, Glacier classes fit archival retrieval trade-offs, and Standard works for frequent access. Security questions usually turn on bucket policy scope, IAM access, encryption, and Block Public Access rather than on versioning alone."
+  },
+  {
+    "id": "clf-ec2-pricing-basics",
+    "track_id": "clf-c02",
+    "domain": { "id": "4", "name": "Billing, Pricing, and Support", "task_statement_id": "4.1" },
+    "services": ["Amazon EC2", "EC2 Auto Scaling"],
+    "concepts": ["On-Demand", "Reserved Instances", "Savings Plans", "Spot Instances", "burstable instances"],
+    "difficulty": "intermediate",
+    "scenario": "A workload mixes steady baseline demand, interruptible batch jobs, and unpredictable testing spikes.",
+    "exam_angle": "Choose an EC2 pricing model that matches commitment, interruption tolerance, and flexibility.",
+    "common_misconceptions": [
+      "Spot is always the cheapest correct answer regardless of interruption risk.",
+      "Reserved Instances and Savings Plans are interchangeable in every scenario.",
+      "A smaller instance is always cheaper even if the workload needs repeated resizing or poor fit."
+    ],
+    "decision_rules": [
+      "Use On-Demand for short-lived, uncertain, or spiky demand without commitment.",
+      "Use Spot only when interruption is acceptable.",
+      "Use commitment-based pricing for predictable steady usage."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://aws.amazon.com/ec2/pricing/",
+      "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html"
+    ],
+    "summary": "Pricing questions are really about workload behavior. The instance family is a costume; the usage pattern is the plot.",
+    "detailed_explanation": "EC2 pricing answers depend on flexibility and interruption tolerance. On-Demand works when usage is uncertain. Savings Plans and Reserved pricing fit steady demand where commitment is acceptable. Spot suits fault-tolerant or batch work that can restart. CLF-C02 often tests whether the learner can resist picking the lowest sticker price when the scenario requires continuity."
+  },
+  {
+    "id": "clf-rds-ha-read-scaling",
+    "track_id": "clf-c02",
+    "domain": { "id": "3", "name": "Cloud Technology and Services", "task_statement_id": "3.4" },
+    "services": ["Amazon RDS", "Amazon Aurora"],
+    "concepts": ["Multi-AZ", "Read Replica", "high availability", "read scaling", "failover"],
+    "difficulty": "intermediate",
+    "scenario": "A production database needs either failover protection, read throughput scaling, or both.",
+    "exam_angle": "Distinguish between HA and read-scaling features without romanticizing them into the same thing.",
+    "common_misconceptions": [
+      "A Read Replica is the same as a Multi-AZ standby.",
+      "Multi-AZ primarily improves read performance.",
+      "Any extra database copy is automatically synchronous and used for failover."
+    ],
+    "decision_rules": [
+      "Choose Multi-AZ for high availability and failover protection.",
+      "Choose Read Replicas for read scaling and reporting workloads.",
+      "If the scenario mentions both availability and heavy reads, the best answer may combine multiple features."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    ],
+    "summary": "RDS exam traps are fond of asking for read scaling and then tempting you with Multi-AZ because it sounds more serious.",
+    "detailed_explanation": "Multi-AZ deployments are built for availability and failover, typically with synchronous replication to a standby. Read Replicas are used to offload read traffic and are a better fit for reporting or read-heavy applications. The correct answer depends on whether the business problem is resilience, read performance, or both."
+  },
+  {
+    "id": "clf-observability-governance",
+    "track_id": "clf-c02",
+    "domain": { "id": "3", "name": "Cloud Technology and Services", "task_statement_id": "3.1" },
+    "services": ["Amazon CloudWatch", "AWS CloudTrail", "AWS Config"],
+    "concepts": ["metrics", "logs", "API activity", "configuration history", "compliance auditing"],
+    "difficulty": "intermediate",
+    "scenario": "An operator needs to know whether a question is about performance telemetry, account activity history, or resource configuration compliance.",
+    "exam_angle": "Pick CloudWatch, CloudTrail, or AWS Config based on the type of evidence the scenario asks for.",
+    "common_misconceptions": [
+      "CloudTrail is for CPU and memory monitoring.",
+      "CloudWatch stores the full compliance history of configuration changes by default.",
+      "AWS Config is the best first answer whenever the question mentions logs."
+    ],
+    "decision_rules": [
+      "Use CloudWatch for metrics, alarms, and operational monitoring.",
+      "Use CloudTrail for API activity and account event history.",
+      "Use AWS Config for configuration state, resource inventory, and compliance evaluation."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html",
+      "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html",
+      "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    ],
+    "summary": "When AWS monitoring tools appear together, the exam is testing evidence type. Metrics, API history, and config state are not the same witness wearing different jackets.",
+    "detailed_explanation": "CloudWatch is for operational observability such as metrics, dashboards, and alarms. CloudTrail records API activity for governance and investigation. AWS Config tracks resource configuration over time and evaluates compliance against rules. The best answer comes from what the operator is trying to prove."
+  },
+  {
+    "id": "clf-vpc-network-controls",
+    "track_id": "clf-c02",
+    "domain": { "id": "3", "name": "Cloud Technology and Services", "task_statement_id": "3.5" },
+    "services": ["Amazon VPC", "Security Groups", "Network ACLs"],
+    "concepts": ["subnets", "stateful security groups", "stateless NACLs", "public vs private subnet basics"],
+    "difficulty": "intermediate",
+    "scenario": "A team needs basic network isolation, inbound control, and subnet-level filtering in a VPC.",
+    "exam_angle": "Differentiate VPC constructs without turning every packet filter into the same answer.",
+    "common_misconceptions": [
+      "Security groups and NACLs work the same way.",
+      "A private subnet is private just because of its name.",
+      "NACLs are attached directly to instances."
+    ],
+    "decision_rules": [
+      "Security groups are stateful and attached to ENIs/instances.",
+      "NACLs are stateless and apply at the subnet boundary.",
+      "Subnet reachability depends on routing and gateways, not just the subnet label."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html",
+      "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"
+    ],
+    "summary": "Networking basics in CLF-C02 are about scope and behavior: where does the rule apply, and is return traffic remembered automatically?",
+    "detailed_explanation": "Amazon VPC gives logical network isolation. Security groups filter traffic at the resource interface level and are stateful, meaning return traffic is automatically allowed when an inbound rule permits the session. Network ACLs operate at the subnet boundary and are stateless, so matching return rules matter. Questions often hide this distinction behind words like instance-level or subnet-level."
+  },
+  {
+    "id": "clf-organizations-scp",
+    "track_id": "clf-c02",
+    "domain": { "id": "2", "name": "Security and Compliance", "task_statement_id": "2.3" },
+    "services": ["AWS Organizations", "Service Control Policies"],
+    "concepts": ["multi-account governance", "OU guardrails", "maximum available permissions"],
+    "difficulty": "advanced",
+    "scenario": "A central platform team wants to prevent member accounts from using certain services even if local admins try to allow them.",
+    "exam_angle": "Recognize when account-level guardrails matter more than per-user permissions.",
+    "common_misconceptions": [
+      "SCPs replace IAM inside accounts.",
+      "Attaching an SCP automatically grants the approved services.",
+      "An SCP only affects the management account."
+    ],
+    "decision_rules": [
+      "SCPs restrict what principals in member accounts can do, even if IAM would otherwise allow it.",
+      "IAM permissions are still required inside the member account.",
+      "Organizations is the right answer when the question is clearly cross-account governance."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    ],
+    "summary": "If the scenario says many accounts and central guardrails, stop trying to solve it with a prettier IAM policy. The board is larger than one account.",
+    "detailed_explanation": "AWS Organizations provides centralized multi-account governance. Service Control Policies define the maximum permissions available to identities in member accounts, so they are appropriate when the business requirement is to prevent entire accounts or OUs from using certain services. IAM policies still determine what is granted inside each account, but SCPs place the ceiling."
+  },
+  {
+    "id": "clf-cost-tools-support",
+    "track_id": "clf-c02",
+    "domain": { "id": "4", "name": "Billing, Pricing, and Support", "task_statement_id": "4.2" },
+    "services": ["AWS Budgets", "Cost Explorer", "AWS Support Plans", "Trusted Advisor"],
+    "concepts": ["cost visibility", "forecasting", "alerts", "support response scope"],
+    "difficulty": "intermediate",
+    "scenario": "A finance owner wants trend analysis, budget alerts, and the right support plan for production workloads.",
+    "exam_angle": "Choose the tool or support plan that matches the operational need instead of the scariest product name.",
+    "common_misconceptions": [
+      "Cost Explorer is the best answer for threshold alerting.",
+      "Developer Support is enough for critical production guidance in all cases.",
+      "Trusted Advisor is only a billing report."
+    ],
+    "decision_rules": [
+      "Use AWS Budgets for threshold alerts and budget tracking.",
+      "Use Cost Explorer for spending analysis and trends.",
+      "Support plan answers should match production criticality and response expectations."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html",
+      "https://aws.amazon.com/premiumsupport/plans/"
+    ],
+    "summary": "Billing questions are often a tool-selection test wearing a finance tie.",
+    "detailed_explanation": "AWS Budgets is the right answer when the scenario calls for proactive threshold alerts. Cost Explorer is better for historical analysis, trend review, and forecast exploration. Support plan questions turn on business criticality: production systems needing faster response or architectural guidance usually point higher than Basic or Developer support. Trusted Advisor spans cost, performance, fault tolerance, service limits, and security checks depending on the support plan."
+  },
+  {
+    "id": "clf-well-architected",
+    "track_id": "clf-c02",
+    "domain": { "id": "1", "name": "Cloud Concepts", "task_statement_id": "1.2" },
+    "services": ["AWS Well-Architected Framework"],
+    "concepts": ["operational excellence", "security", "reliability", "performance efficiency", "cost optimization", "sustainability"],
+    "difficulty": "foundation",
+    "scenario": "A learner must identify which architectural principle or pillar best matches a described improvement goal.",
+    "exam_angle": "Map architectural priorities to the correct pillar instead of treating the framework as a vague slogan.",
+    "common_misconceptions": [
+      "The Well-Architected Framework is mainly a billing-only checklist.",
+      "Reliability and performance efficiency are interchangeable.",
+      "Security is just IAM and not a broader design pillar."
+    ],
+    "decision_rules": [
+      "Reliability focuses on recovery, fault tolerance, and resilience.",
+      "Cost optimization focuses on avoiding unnecessary spend and matching capacity to need.",
+      "Performance efficiency focuses on using resources appropriately as requirements change."
+    ],
+    "source_urls": [
+      "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+      "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"
+    ],
+    "summary": "The framework is useful precisely because it is specific. When a question names a design goal, one pillar usually fits best.",
+    "detailed_explanation": "The AWS Well-Architected Framework organizes cloud design thinking into named pillars. CLF-C02 expects learners to recognize what each pillar optimizes: reliability for resilience and recovery, performance efficiency for matching technology to workload needs, cost optimization for avoiding unnecessary spend, operational excellence for running and improving systems, security for protecting systems and data, and sustainability for minimizing environmental impact through efficient design."
+  }
+]

@@ -44,4 +44,9 @@ test('quiz review flow exposes next-question and final-results controls with sco
   assert.match(mainSource, /Score:/, 'Results should include a score summary');
   assert.match(mainSource, /Readiness impact:/, 'Results should include readiness/progress impact');
   assert.match(mainSource, /Restart quick 10|Retry quiz/, 'Results should include a restart or retry affordance');
+  assert.match(mainSource, /Why the correct answer works:/, 'Review should explain why the right answer is correct');
+  assert.match(mainSource, /Why your choice landed where it did:/, 'Review should explain the selected answer outcome');
+  assert.match(mainSource, /option_reviews\.map/, 'Review should render per-option explanations for distractors and the correct answer');
+  assert.match(mainSource, /Common trap:/, 'Review should surface a visible misconception/trap note');
+  assert.match(mainSource, /Decision rule:/, 'Review should surface a visible decision rule');
 });
