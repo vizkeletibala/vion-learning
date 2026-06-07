@@ -1,0 +1,15 @@
+{
+  "baseURL": "https://vion-kanban-ec2.tail276347.ts.net:8443/",
+  "screenshots": [
+    "/work/dogfood-output/t_99d2a08d/screenshots-rerun-tailnet-normal/failure.png"
+  ],
+  "checks": [],
+  "console": [
+    {
+      "type": "requestfailed",
+      "text": "GET https://vion-kanban-ec2.tail276347.ts.net:8443/ net::ERR_NAME_NOT_RESOLVED"
+    }
+  ],
+  "status": "FAIL",
+  "error": "page.goto: net::ERR_NAME_NOT_RESOLVED at https://vion-kanban-ec2.tail276347.ts.net:8443/\nCall log:\n  - navigating to \"https://vion-kanban-ec2.tail276347.ts.net:8443/\", waiting until \"networkidle\"\n\n    at /work/dogfood-output/t_99d2a08d/browser-retest-tailnet.mjs:37:14"
+}

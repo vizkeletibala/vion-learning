@@ -1,0 +1,954 @@
+{
+  "generatedAt": "2026-06-05T19:28:02.048Z",
+  "checks": [
+    {
+      "name": "landing exposes exactly CLF-C02 and AIF-C01 choices",
+      "ok": true,
+      "tracks": [
+        "clf-c02",
+        "aif-c01"
+      ]
+    },
+    {
+      "name": "clf-c02 has separate study plans 7/14/30",
+      "ok": true,
+      "lengths": {
+        "7": 7,
+        "14": 14,
+        "30": 30
+      }
+    },
+    {
+      "name": "clf-c02 has cards, questions, source report, progress, readiness",
+      "ok": true,
+      "cards": 124,
+      "questions": 147,
+      "sources": 18,
+      "readiness": 18
+    },
+    {
+      "name": "clf-c02 cards/questions are track-scoped",
+      "ok": true,
+      "offTrackCards": [],
+      "offTrackQuestions": []
+    },
+    {
+      "name": "clf-c02 source records include verification dates/status",
+      "ok": true,
+      "sample": [
+        {
+          "id": "clf-c02:aws-exam-guide:clf-c02",
+          "track_id": "clf-c02",
+          "title": "AWS Certified Cloud Practitioner (CLF-C02) Exam Guide",
+          "source_type": "aws_exam_guide",
+          "url": "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+          "publisher": "AWS",
+          "aws_service": [],
+          "domains": [
+            {
+              "domain_id": "1",
+              "domain_name": "Cloud Concepts",
+              "task_statement_ids": [
+                "1.1",
+                "1.2",
+                "1.3",
+                "1.4"
+              ],
+              "weight_percent": 24
+            },
+            {
+              "domain_id": "2",
+              "domain_name": "Security and Compliance",
+              "task_statement_ids": [
+                "2.1",
+                "2.2",
+                "2.3",
+                "2.4"
+              ],
+              "weight_percent": 30
+            },
+            {
+              "domain_id": "3",
+              "domain_name": "Cloud Technology and Services",
+              "task_statement_ids": [
+                "3.1",
+                "3.2",
+                "3.3",
+                "3.4"
+              ],
+              "weight_percent": 34
+            },
+            {
+              "domain_id": "4",
+              "domain_name": "Billing, Pricing, and Support",
+              "task_statement_ids": [
+                "4.1",
+                "4.2",
+                "4.3"
+              ],
+              "weight_percent": 12
+            }
+          ],
+          "concepts": [
+            "exam domains",
+            "exam duration",
+            "passing score",
+            "question formats"
+          ],
+          "summary": "Official exam blueprint for CLF-C02 domains, weights, task statements, candidate profile, scoring, and delivery facts.",
+          "extracted_facts": [
+            {
+              "fact": "The CLF-C02 exam guide defines four weighted domains: Cloud Concepts, Security and Compliance, Cloud Technology and Services, and Billing, Pricing, and Support.",
+              "fact_type": "exam_fact",
+              "source_locator": "Exam guide domains",
+              "confidence": "high"
+            },
+            {
+              "fact": "The Cloud Practitioner exam is 90 minutes with 65 questions and a passing score of 700 on a 100-1000 scale.",
+              "fact_type": "exam_fact",
+              "source_locator": "Exam guide exam overview",
+              "confidence": "high"
+            }
+          ],
+          "exam_relevance": {
+            "exam_code": "CLF-C02",
+            "relevance_level": "core",
+            "why_it_matters": "Primary source for exam scope, domain weights, and exam metadata.",
+            "question_use": [
+              "learning_card",
+              "concept_card",
+              "quiz_fact"
+            ],
+            "separation_note": "CLF-C02-only mapping for Cloud Practitioner domains; do not reuse for AIF-C01 without a separate AI Practitioner record."
+          },
+          "last_checked_at": "2026-06-05T13:34:13.567Z",
+          "retrieved_at": "2026-06-05T13:34:13.567Z",
+          "content_hash": "sha256:ba81d8c415f93f348989fd1967dac1032b172d78aea60c19a266c997dcfc1e88",
+          "license_or_usage_note": "AWS public documentation; summarize, cite, and link rather than copying source text wholesale.",
+          "citation_text": "AWS, AWS Certified Cloud Practitioner (CLF-C02) Exam Guide, https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+          "freshness_status": "fresh",
+          "notes": [
+            "PDF fetched and hashed as binary; text extraction intentionally skipped to avoid ingestion dependencies."
+          ],
+          "stale_after_days": 45
+        },
+        {
+          "id": "clf-c02:aws-certification-page:certified-cloud-practitioner",
+          "track_id": "clf-c02",
+          "title": "AWS Certified Cloud Practitioner",
+          "source_type": "aws_certification_page",
+          "url": "https://aws.amazon.com/certification/certified-cloud-practitioner/",
+          "publisher": "AWS",
+          "aws_service": [],
+          "domains": [
+            {
+              "domain_id": "1",
+              "domain_name": "Cloud Concepts",
+              "task_statement_ids": [
+                "1.1"
+              ],
+              "weight_percent": 24
+            },
+            {
+              "domain_id": "4",
+              "domain_name": "Billing, Pricing, and Support",
+              "task_statement_ids": [
+                "4.3"
+              ],
+              "weight_percent": 12
+            }
+          ],
+          "concepts": [
+            "certification overview",
+            "candidate profile",
+            "exam registration"
+          ],
+          "summary": "AWS certification landing page for Cloud Practitioner audience, exam overview, preparation resources, and registration path.",
+          "extracted_facts": [
+            {
+              "fact": "AWS Certified Cloud Practitioner validates foundational AWS Cloud, services, and terminology knowledge.",
+              "fact_type": "exam_fact",
+              "source_locator": "Certification overview",
+              "confidence": "high"
+            }
+          ],
+          "exam_relevance": {
+            "exam_code": "CLF-C02",
+            "relevance_level": "core",
+            "why_it_matters": "Supports candidate expectations, exam purpose, and prep navigation.",
+            "question_use": [
+              "learning_card",
+              "study_plan"
+            ],
+            "separation_note": "CLF-C02 certification context only."
+          },
+          "last_checked_at": "2026-06-05T13:34:13.567Z",
+          "retrieved_at": "2026-06-05T13:34:13.567Z",
+          "content_hash": "sha256:aa2c6c4261b0b4491110a20ae4d4e05a5b7cd5df591eb1379e2ccbfae2abfdf4",
+          "license_or_usage_note": "AWS public web page; summarize, cite, and link.",
+          "citation_text": "AWS, AWS Certified Cloud Practitioner, https://aws.amazon.com/certification/certified-cloud-practitioner/",
+          "freshness_status": "fresh",
+          "notes": [],
+          "stale_after_days": 45
+        }
+      ]
+    },
+    {
+      "name": "clf-c02 video resources are supplementary/metadata-only",
+      "ok": true,
+      "videos": [
+        {
+          "id": "clf-c02-video-exam-prep",
+          "track_id": "clf-c02",
+          "title": "CLF-C02 official exam prep video/course",
+          "provider": "AWS Skill Builder / YouTube candidate",
+          "url": "https://skillbuilder.aws/",
+          "duration_minutes": null,
+          "published_at": null,
+          "last_verified_date": "2026-06-03",
+          "metadata_status": "needs_authenticated_refresh"
+        },
+        {
+          "id": "clf-c02-video-review",
+          "track_id": "clf-c02",
+          "title": "CLF-C02 domain review resource",
+          "provider": "AWS",
+          "url": "https://aws.amazon.com/training/digital/",
+          "duration_minutes": null,
+          "published_at": null,
+          "last_verified_date": "2026-06-03",
+          "metadata_status": "seed_metadata_only"
+        }
+      ]
+    },
+    {
+      "name": "clf-c02 quick quiz structure",
+      "ok": true,
+      "question_count": 10,
+      "structure": "quick practice with balanced domain, difficulty, and question-type selection where possible",
+      "timed_minutes": null,
+      "firstQuestion": "clf-c02-domain-3-task-3.4-concept-check-q22"
+    },
+    {
+      "name": "clf-c02 quick answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "clf-c02",
+        "domain_id": "3",
+        "topic_id": "3.4",
+        "card_id": "clf-c02-domain-3-task-3.4-concept-check",
+        "concept_id": null,
+        "question_id": "clf-c02-domain-3-task-3.4-concept-check-q22",
+        "question_type": "knowledge_check",
+        "difficulty": "review",
+        "services": [
+          "AWS RDS"
+        ],
+        "concepts": [
+          "RDS",
+          "Aurora",
+          "DynamoDB",
+          "ElastiCache",
+          "MemoryDB",
+          "Neptune"
+        ],
+        "source_links": [
+          "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": [
+          "clf-c02:aws-exam-guide:clf-c02"
+        ]
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "clf-c02 domain quiz structure",
+      "ok": true,
+      "question_count": 15,
+      "structure": "domain practice with balanced domain, difficulty, and question-type selection where possible",
+      "timed_minutes": null,
+      "firstQuestion": "clf-c02-resource-availability-zones-azs-study-card-q35"
+    },
+    {
+      "name": "clf-c02 domain answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "clf-c02",
+        "domain_id": "1",
+        "topic_id": "1.1",
+        "card_id": "clf-c02-resource-availability-zones-azs-study-card",
+        "concept_id": null,
+        "question_id": "clf-c02-resource-availability-zones-azs-study-card-q35",
+        "question_type": "knowledge_check",
+        "difficulty": "foundation",
+        "services": [
+          "Availability Zones (AZs)",
+          "Global infrastructure"
+        ],
+        "concepts": [
+          "Availability Zones (AZs)",
+          "Global infrastructure",
+          "high availability",
+          "fault isolation",
+          "multi-AZ"
+        ],
+        "source_links": [
+          "https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html",
+          "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": [
+          "clf-c02:aws-exam-guide:clf-c02"
+        ]
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "clf-c02 full quiz structure",
+      "ok": true,
+      "question_count": 65,
+      "structure": "65-question timed simulation based on original source-linked practice items",
+      "timed_minutes": 90,
+      "firstQuestion": "clf-c02-domain-1-task-1.3-concept-check-q13"
+    },
+    {
+      "name": "clf-c02 full answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "clf-c02",
+        "domain_id": "1",
+        "topic_id": "1.3",
+        "card_id": "clf-c02-domain-1-task-1.3-concept-check",
+        "concept_id": null,
+        "question_id": "clf-c02-domain-1-task-1.3-concept-check-q13",
+        "question_type": "knowledge_check",
+        "difficulty": "review",
+        "services": [
+          "AWS"
+        ],
+        "concepts": [
+          "cloud adoption strategies",
+          "AWS Cloud Adoption Framework",
+          "migration strategies",
+          "AWS Snowball",
+          "database replication"
+        ],
+        "source_links": [
+          "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": [
+          "clf-c02:aws-exam-guide:clf-c02"
+        ]
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "aif-c01 has separate study plans 7/14/30",
+      "ok": true,
+      "lengths": {
+        "7": 7,
+        "14": 14,
+        "30": 30
+      }
+    },
+    {
+      "name": "aif-c01 has cards, questions, source report, progress, readiness",
+      "ok": true,
+      "cards": 20,
+      "questions": 20,
+      "sources": 3,
+      "readiness": 18
+    },
+    {
+      "name": "aif-c01 cards/questions are track-scoped",
+      "ok": true,
+      "offTrackCards": [],
+      "offTrackQuestions": []
+    },
+    {
+      "name": "aif-c01 source records include verification dates/status",
+      "ok": true,
+      "sample": [
+        {
+          "id": "aif-c01-source-1",
+          "track_id": "aif-c01",
+          "title": "AIF-C01 exam guide",
+          "url": "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf",
+          "type": "official",
+          "citation_text": "Local seed metadata, AIF-C01 exam guide, https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf",
+          "last_checked_at": "2026-06-03T00:00:00.000Z",
+          "freshness_status": "fresh",
+          "last_verified_date": "2026-06-03",
+          "refresh_status": "verified",
+          "stale_warning": false
+        },
+        {
+          "id": "aif-c01-source-2",
+          "track_id": "aif-c01",
+          "title": "AWS Certified AI Practitioner AWS certification page",
+          "url": "https://aws.amazon.com/certification/",
+          "type": "official_page",
+          "citation_text": "Local seed metadata, AWS Certified AI Practitioner AWS certification page, https://aws.amazon.com/certification/",
+          "last_checked_at": "2026-06-03T00:00:00.000Z",
+          "freshness_status": "fresh",
+          "last_verified_date": "2026-06-03",
+          "refresh_status": "verified",
+          "stale_warning": false
+        }
+      ]
+    },
+    {
+      "name": "aif-c01 video resources are supplementary/metadata-only",
+      "ok": true,
+      "videos": [
+        {
+          "id": "aif-c01-video-exam-prep",
+          "track_id": "aif-c01",
+          "title": "AIF-C01 official exam prep video/course",
+          "provider": "AWS Skill Builder / YouTube candidate",
+          "url": "https://skillbuilder.aws/",
+          "duration_minutes": null,
+          "published_at": null,
+          "last_verified_date": "2026-06-03",
+          "metadata_status": "needs_authenticated_refresh"
+        },
+        {
+          "id": "aif-c01-video-review",
+          "track_id": "aif-c01",
+          "title": "AIF-C01 domain review resource",
+          "provider": "AWS",
+          "url": "https://aws.amazon.com/training/digital/",
+          "duration_minutes": null,
+          "published_at": null,
+          "last_verified_date": "2026-06-03",
+          "metadata_status": "seed_metadata_only"
+        }
+      ]
+    },
+    {
+      "name": "aif-c01 quick quiz structure",
+      "ok": true,
+      "question_count": 10,
+      "structure": "quick practice with balanced domain, difficulty, and question-type selection where possible",
+      "timed_minutes": null,
+      "firstQuestion": "aif-c01-ai-governance-controls-q20"
+    },
+    {
+      "name": "aif-c01 quick answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "aif-c01",
+        "domain_id": "5",
+        "topic_id": "5.2",
+        "card_id": "aif-c01-ai-governance-controls",
+        "concept_id": null,
+        "question_id": "aif-c01-ai-governance-controls-q20",
+        "question_type": "knowledge_check",
+        "difficulty": "intermediate",
+        "services": [
+          "AWS RDS",
+          "AWS CloudTrail",
+          "AWS",
+          "AWS Config"
+        ],
+        "concepts": [
+          "CloudTrail records API activity",
+          "AWS Config tracks resource configuration/compliance state",
+          "AWS Artifact provides compliance reports/agreements",
+          "AWS Audit Manager helps collect and organize audit evidence",
+          "These support governance but do not replace legal/regulatory review"
+        ],
+        "source_links": [
+          "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": []
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "aif-c01 domain quiz structure",
+      "ok": true,
+      "question_count": 15,
+      "structure": "domain practice with balanced domain, difficulty, and question-type selection where possible",
+      "timed_minutes": null,
+      "firstQuestion": "aif-c01-domain-1-task-1.1-concept-check-q1"
+    },
+    {
+      "name": "aif-c01 domain answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "aif-c01",
+        "domain_id": "1",
+        "topic_id": "1.1",
+        "card_id": "aif-c01-domain-1-task-1.1-concept-check",
+        "concept_id": null,
+        "question_id": "aif-c01-domain-1-task-1.1-concept-check-q1",
+        "question_type": "knowledge_check",
+        "difficulty": "foundation",
+        "services": [
+          "AWS foundational services"
+        ],
+        "concepts": [
+          "AI",
+          "ML",
+          "deep learning",
+          "neural networks",
+          "computer vision",
+          "NLP"
+        ],
+        "source_links": [
+          "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": []
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "aif-c01 full quiz structure",
+      "ok": true,
+      "question_count": 65,
+      "structure": "65-question timed simulation based on original source-linked practice items",
+      "timed_minutes": 90,
+      "firstQuestion": "aif-c01-ai-governance-controls-q20"
+    },
+    {
+      "name": "aif-c01 full answer evaluation has explanations, distractor analysis, mapping, weak-area/progress signal",
+      "ok": true,
+      "reviewKeys": [
+        "correct",
+        "selected_option_id",
+        "correct_option_id",
+        "correct_explanation",
+        "selected_explanation",
+        "distractor_explanations",
+        "option_reviews",
+        "mapping",
+        "readiness_score",
+        "next_actions",
+        "progress_event",
+        "review_summary"
+      ],
+      "mapping": {
+        "track_id": "aif-c01",
+        "domain_id": "5",
+        "topic_id": "5.2",
+        "card_id": "aif-c01-ai-governance-controls",
+        "concept_id": null,
+        "question_id": "aif-c01-ai-governance-controls-q20",
+        "question_type": "knowledge_check",
+        "difficulty": "intermediate",
+        "services": [
+          "AWS RDS",
+          "AWS CloudTrail",
+          "AWS",
+          "AWS Config"
+        ],
+        "concepts": [
+          "CloudTrail records API activity",
+          "AWS Config tracks resource configuration/compliance state",
+          "AWS Artifact provides compliance reports/agreements",
+          "AWS Audit Manager helps collect and organize audit evidence",
+          "These support governance but do not replace legal/regulatory review"
+        ],
+        "source_links": [
+          "https://d1.awsstatic.com/training-and-certification/docs-ai-practitioner/AWS-Certified-AI-Practitioner_Exam-Guide.pdf"
+        ],
+        "source_ids": []
+      },
+      "next_actions": [
+        "Read the linked concept explanation",
+        "Compare the selected distractor with the correct service or principle",
+        "Retake a weakness drill"
+      ]
+    },
+    {
+      "name": "CLF-C02 has useful deep seed corpus and AIF-C01 remains separate",
+      "ok": true,
+      "clfCards": 124,
+      "clfQuestions": 147,
+      "clfResources": 91,
+      "aifCards": 20,
+      "aifQuestions": 20,
+      "aifResources": 0
+    },
+    {
+      "name": "no obvious brain-dump/unauthorized-material claims in app corpus",
+      "ok": false,
+      "matched": [
+        "dump"
+      ]
+    },
+    {
+      "name": "CLF-C02 resource weak-area family mappings align to exam task statements",
+      "ok": false,
+      "mismatchCount": 53,
+      "examples": [
+        {
+          "name": "AWS Regions",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Availability Zones (AZs)",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Edge locations",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "AWS Local Zones",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "AWS Wavelength",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Amazon S3",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 storage classes",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 lifecycle policies",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon EBS",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon EFS",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon FSx",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 Glacier storage classes",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        }
+      ]
+    },
+    {
+      "name": "generated resource reinforcement questions use meaningful distractor labels",
+      "ok": false,
+      "examples": [
+        {
+          "id": "clf-c02-domain-1-task-1.1-concept-check-q11",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Define the benefits of the AWS Cloud.",
+          "optionLabels": [
+            "value proposition of AWS Cloud; economies of scale; benefits of global infrastructure",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with value proposition of AWS Cloud.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.1."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.2-concept-check-q12",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Identify design principles of the AWS Cloud.",
+          "optionLabels": [
+            "AWS Well-Architected Framework; operational excellence; security",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with AWS Well-Architected Framework.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.2."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.3-concept-check-q13",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Understand the benefits of and strategies for migration to the AWS Cloud.",
+          "optionLabels": [
+            "cloud adoption strategies; AWS Cloud Adoption Framework; migration strategies",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with cloud adoption strategies.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.3."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.4-concept-check-q14",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Understand concepts of cloud economics.",
+          "optionLabels": [
+            "fixed vs variable costs; on-premises cost drivers; BYOL vs included licenses",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with fixed vs variable costs.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.4."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-2-task-2.1-concept-check-q15",
+          "prompt": "For CLF-C02 Security and Compliance, which answer best addresses: Understand the AWS shared responsibility model.",
+          "optionLabels": [
+            "customer responsibilities; AWS responsibilities; shared controls",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Security and Compliance.",
+            "Treat a nearby AWS concept as interchangeable with customer responsibilities.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 2.1."
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "high",
+      "category": "content_safety",
+      "title": "Suspicious unauthorized-material wording appears in corpus",
+      "matched": [
+        "dump"
+      ]
+    },
+    {
+      "severity": "high",
+      "category": "content_taxonomy",
+      "title": "CLF-C02 resource weak-area mappings still point several families at the wrong task statement",
+      "examples": [
+        {
+          "name": "AWS Regions",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Availability Zones (AZs)",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Edge locations",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "AWS Local Zones",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "AWS Wavelength",
+          "family": "Global infrastructure",
+          "expected": "3.2",
+          "actual": "1.1"
+        },
+        {
+          "name": "Amazon S3",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 storage classes",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 lifecycle policies",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon EBS",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon EFS",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "Amazon FSx",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        },
+        {
+          "name": "S3 Glacier storage classes",
+          "family": "Storage",
+          "expected": "3.6",
+          "actual": "3.3"
+        }
+      ],
+      "impact": "Weak-area labels and generated card/question mappings can teach Storage/Networking/Database/AI/global-infrastructure concepts under unrelated task statements."
+    },
+    {
+      "severity": "medium",
+      "category": "question_quality",
+      "title": "Some generated reinforcement questions still contain generic distractor labels",
+      "examples": [
+        {
+          "id": "clf-c02-domain-1-task-1.1-concept-check-q11",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Define the benefits of the AWS Cloud.",
+          "optionLabels": [
+            "value proposition of AWS Cloud; economies of scale; benefits of global infrastructure",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with value proposition of AWS Cloud.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.1."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.2-concept-check-q12",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Identify design principles of the AWS Cloud.",
+          "optionLabels": [
+            "AWS Well-Architected Framework; operational excellence; security",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with AWS Well-Architected Framework.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.2."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.3-concept-check-q13",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Understand the benefits of and strategies for migration to the AWS Cloud.",
+          "optionLabels": [
+            "cloud adoption strategies; AWS Cloud Adoption Framework; migration strategies",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with cloud adoption strategies.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.3."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-1-task-1.4-concept-check-q14",
+          "prompt": "For CLF-C02 Cloud Concepts, which answer best addresses: Understand concepts of cloud economics.",
+          "optionLabels": [
+            "fixed vs variable costs; on-premises cost drivers; BYOL vs included licenses",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Cloud Concepts.",
+            "Treat a nearby AWS concept as interchangeable with fixed vs variable costs.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 1.4."
+          ]
+        },
+        {
+          "id": "clf-c02-domain-2-task-2.1-concept-check-q15",
+          "prompt": "For CLF-C02 Security and Compliance, which answer best addresses: Understand the AWS shared responsibility model.",
+          "optionLabels": [
+            "customer responsibilities; AWS responsibilities; shared controls",
+            "Choose the broadest AWS marketing phrase instead of the service decision hidden in Security and Compliance.",
+            "Treat a nearby AWS concept as interchangeable with customer responsibilities.",
+            "Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for 2.1."
+          ]
+        }
+      ],
+      "impact": "Safe/original, but lower-fidelity for exam readiness than curated scenario questions."
+    }
+  ]
+}

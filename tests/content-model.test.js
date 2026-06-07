@@ -176,3 +176,68 @@ test('CLF-C02 still loads deep AWS resource explanations without leaking them in
   assert.ok(s3.source_citations.length >= 2);
   assert.ok(s3.last_verified);
 });
+
+test('CLF-C02 resource families map to the correct exam task statements', () => {
+  const model = loadLearningModel();
+  const clf = getTrack(model, 'clf-c02');
+  const expectedByFamily = new Map([
+    ['AI/ML basics', { domain_id: '3', topic_id: '3.7' }],
+    ['Billing/cost', { domain_id: '4', topic_id: '4.1' }],
+    ['Compute', { domain_id: '3', topic_id: '3.3' }],
+    ['Databases/analytics', { domain_id: '3', topic_id: '3.4' }],
+    ['Global infrastructure', { domain_id: '3', topic_id: '3.2' }],
+    ['IAM/security', { domain_id: '2', topic_id: '2.3' }],
+    ['Integration/app', { domain_id: '3', topic_id: '3.8' }],
+    ['Management/observability', { domain_id: '3', topic_id: '3.8' }],
+    ['Migration', { domain_id: '1', topic_id: '1.3' }],
+    ['Networking/CDN', { domain_id: '3', topic_id: '3.5' }],
+    ['Storage', { domain_id: '3', topic_id: '3.6' }],
+  ]);
+
+  for (const resource of clf.serviceResources) {
+    const expected = expectedByFamily.get(resource.family);
+    assert.ok(expected, `unexpected CLF-C02 resource family ${resource.family} for ${resource.name}`);
+    assert.deepEqual(
+      resource.weak_area_mappings.map(({ domain_id, topic_id }) => ({ domain_id, topic_id })),
+      [expected],
+      `${resource.name} (${resource.family}) should map to CLF-C02 task statement ${expected.topic_id}`
+    );
+  }
+
+  for (const card of clf.cards.filter((candidate) => candidate.origin === 'resource_explanation_corpus')) {
+    const expected = expectedByFamily.get(card.services[1]);
+    assert.deepEqual(
+      { domain_id: card.domain_id, topic_id: card.topic_id, task_statement_id: card.task_statement_id },
+      { ...expected, task_statement_id: expected.topic_id },
+      `${card.id} should inherit the resource family task statement mapping`
+    );
+  }
+});
+
+test('generated reinforcement question distractors use learner-meaningful labels instead of generic meta instructions', () => {
+  const model = loadLearningModel();
+  const genericFragments = [
+    'Choose the broadest AWS marketing phrase',
+    'Treat a nearby AWS concept as interchangeable',
+    'Ignore the task statement mapping',
+  ];
+
+  for (const track of Object.values(model.tracks)) {
+    const generatedQuestions = track.questions.filter((question) => !track.questionBank.some((curated) => curated.id === question.id));
+    assert.ok(generatedQuestions.length > 0, `${track.id} should include generated reinforcement questions`);
+
+    for (const question of generatedQuestions) {
+      const distractors = question.options.filter((option) => option.id !== question.correct_option_id);
+      assert.equal(distractors.length, 3, `${question.id} should have exactly three distractors`);
+      assert.equal(new Set(distractors.map((option) => option.label)).size, 3, `${question.id} should not duplicate distractor labels`);
+      for (const distractor of distractors) {
+        assert.equal(
+          genericFragments.some((fragment) => distractor.label.includes(fragment)),
+          false,
+          `${question.id} has generic distractor label: ${distractor.label}`
+        );
+        assert.equal(distractor.label.length > 20, true, `${question.id} distractor should be descriptive`);
+      }
+    }
+  }
+});

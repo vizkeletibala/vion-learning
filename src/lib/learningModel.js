@@ -66,22 +66,33 @@ function option(id, label, explanation) {
   return { id, label, explanation };
 }
 
+function buildDistractorLabels(trackId, card, points, correct, taskId) {
+  const primary = points[0] || card.services?.[0] || card.domain_name;
+  const secondary = points[1] || card.services?.[1] || `another ${card.domain_name} concept`;
+  const tertiary = points[2] || card.services?.[2] || `a different ${card.domain_name} task`;
+  const candidates = [
+    ...(card.misconceptions || card.common_misconceptions || []),
+    `A single product feature such as ${secondary} without explaining ${primary}.`,
+    `${tertiary} by itself, missing how ${primary} answers ${trackId.toUpperCase()} task ${taskId}.`,
+    `${card.domain_name} terminology from another task area instead of the specific ${taskId} clue.`,
+    `An adjacent AWS service choice that sounds related to ${primary} but does not satisfy the scenario.`,
+  ];
+  return unique(candidates)
+    .filter((label) => label && label !== correct)
+    .slice(0, 3);
+}
+
 function buildQuestionFromCard(trackId, card, index) {
   const points = unique(card.expected_answer_points || card.concepts || []);
   const taskId = card.topic_id || card.task_statement_id || 'unmapped';
   const sourceIds = unique(card.source_ids || []);
   const correct = card.short_answer || points.slice(0, 2).join('; ') || card.domain_name;
-  const misconceptions = unique(card.misconceptions || card.common_misconceptions || []).slice(0, 2);
-  const wrongs = [
-    misconceptions[0] || `Choose the broadest AWS marketing phrase instead of the service decision hidden in ${card.domain_name}.`,
-    misconceptions[1] || `Treat a nearby AWS concept as interchangeable with ${points[0] || card.domain_name}.`,
-    `Ignore the task statement mapping and answer with a definition that does not resolve the scenario clue for ${taskId}.`,
-  ];
+  const wrongs = buildDistractorLabels(trackId, card, points, correct, taskId);
   const options = [
     option('opt-1', correct, `${correct} fits because it lines up with ${trackId.toUpperCase()} task statement ${taskId} and the teaching points on this card.`),
-    option('opt-2', wrongs[0], 'This distractor reflects a common misconception rather than the best exam decision.'),
-    option('opt-3', wrongs[1], 'This distractor sounds adjacent, but it does not answer the actual AWS decision being tested.'),
-    option('opt-4', wrongs[2], 'This distractor ignores the mapped task statement and therefore misses the intended exam angle.'),
+    option('opt-2', wrongs[0], 'This distractor reflects a plausible misconception rather than the best exam decision.'),
+    option('opt-3', wrongs[1], 'This distractor names an adjacent concept, but it does not answer the actual AWS decision being tested.'),
+    option('opt-4', wrongs[2], 'This distractor follows a different task angle and therefore misses the intended exam clue.'),
   ];
   return {
     id: `${card.id}-q${index + 1}`,
@@ -174,17 +185,17 @@ function buildConceptCards(trackId, concepts, verifiedDate, sourceIndex) {
 }
 
 const RESOURCE_DOMAIN_MAP = {
-  'AI/ML basics': { domain_id: '3', topic_id: '3.4', domain_name: 'Cloud Technology and Services' },
+  'AI/ML basics': { domain_id: '3', topic_id: '3.7', domain_name: 'Cloud Technology and Services' },
   'Billing/cost': { domain_id: '4', topic_id: '4.1', domain_name: 'Billing, Pricing, and Support' },
   Compute: { domain_id: '3', topic_id: '3.3', domain_name: 'Cloud Technology and Services' },
-  'Databases/analytics': { domain_id: '3', topic_id: '3.3', domain_name: 'Cloud Technology and Services' },
-  'Global infrastructure': { domain_id: '1', topic_id: '1.1', domain_name: 'Cloud Concepts' },
+  'Databases/analytics': { domain_id: '3', topic_id: '3.4', domain_name: 'Cloud Technology and Services' },
+  'Global infrastructure': { domain_id: '3', topic_id: '3.2', domain_name: 'Cloud Technology and Services' },
   'IAM/security': { domain_id: '2', topic_id: '2.3', domain_name: 'Security and Compliance' },
-  'Integration/app': { domain_id: '3', topic_id: '3.3', domain_name: 'Cloud Technology and Services' },
-  'Management/observability': { domain_id: '3', topic_id: '3.2', domain_name: 'Cloud Technology and Services' },
+  'Integration/app': { domain_id: '3', topic_id: '3.8', domain_name: 'Cloud Technology and Services' },
+  'Management/observability': { domain_id: '3', topic_id: '3.8', domain_name: 'Cloud Technology and Services' },
   Migration: { domain_id: '1', topic_id: '1.3', domain_name: 'Cloud Concepts' },
-  'Networking/CDN': { domain_id: '3', topic_id: '3.3', domain_name: 'Cloud Technology and Services' },
-  Storage: { domain_id: '3', topic_id: '3.3', domain_name: 'Cloud Technology and Services' },
+  'Networking/CDN': { domain_id: '3', topic_id: '3.5', domain_name: 'Cloud Technology and Services' },
+  Storage: { domain_id: '3', topic_id: '3.6', domain_name: 'Cloud Technology and Services' },
 };
 
 function resourceDomain(entry, domains) {
