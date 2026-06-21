@@ -1,8 +1,12 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { loadLearningModel, landingPayload, trackPayload, sourcesPayload, resourcesPayload, createQuiz, evaluateAnswer, markCard, exportSnapshot } from '../src/lib/learningModel.js';
+import Busboy from 'busboy';
+import { appendLesson, loadLearningModel, landingPayload, trackPayload, sourcesPayload, resourcesPayload, createQuiz, evaluateAnswer, markCard, exportSnapshot } from '../src/lib/learningModel.js';
+import { buildRagChunks, createOpenAiEmbeddingClient, createPgRagRetriever, embedRagChunks, evaluateRagRetrieval, ragDbConfig, searchRagChunks } from '../src/lib/ragPrototype.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -21,6 +25,131 @@ async function readBody(req) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
+function sha256(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
+
+function safeName(value) {
+  return String(value || 'upload').toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload';
+}
+
+function uploadsRoot() {
+  return path.join(ROOT, 'var', 'uploads');
+}
+
+function batchDirFor(batchId) {
+  return path.join(uploadsRoot(), safeName(batchId));
+}
+
+function manifestPathFor(batchDir) {
+  return path.join(batchDir, 'manifest.json');
+}
+
+function parseMultipartForm(req, { targetDir }) {
+  return new Promise((resolve, reject) => {
+    const fields = {};
+    const files = [];
+    const pendingWrites = [];
+    fs.mkdirSync(targetDir, { recursive: true });
+    const busboy = Busboy({ headers: req.headers });
+    busboy.on('field', (name, value) => {
+      fields[name] = value;
+    });
+    busboy.on('file', (name, file, info) => {
+      const filename = safeName(info.filename || `${name}.bin`);
+      const filePath = path.join(targetDir, filename);
+      const hash = crypto.createHash('sha256');
+      const writeStream = fs.createWriteStream(filePath);
+      let size = 0;
+      const writeDone = new Promise((writeResolve, writeReject) => {
+        writeStream.on('finish', () => {
+          files.push({
+            field_name: name,
+            filename,
+            path: filePath,
+            mime_type: info.mimeType || 'application/octet-stream',
+            size,
+            sha256: `sha256:${hash.digest('hex')}`,
+          });
+          writeResolve();
+        });
+        writeStream.on('error', writeReject);
+        file.on('error', writeReject);
+      });
+      pendingWrites.push(writeDone);
+      file.on('data', (chunk) => {
+        size += chunk.length;
+        hash.update(chunk);
+      });
+      file.pipe(writeStream);
+    });
+    busboy.on('error', reject);
+    busboy.on('finish', async () => {
+      try {
+        await Promise.all(pendingWrites);
+        resolve({ fields, files });
+      } catch (error) {
+        reject(error);
+      }
+    });
+    req.pipe(busboy);
+  });
+}
+
+function uploadManifestFrom({ batchId, trackId, fields, files }) {
+  return {
+    batch_id: batchId,
+    track_id: trackId || fields.trackId || fields.track_id || 'shared',
+    title: fields.title || '',
+    source_url: fields.sourceUrl || fields.source_url || '',
+    source_type: fields.sourceType || fields.source_type || 'uploaded_document',
+    notes: fields.notes || '',
+    uploaded_at: new Date().toISOString(),
+    verification: {
+      verified_at: null,
+      file_count: files.length,
+      warnings: [],
+    },
+    files: files.map((file) => ({
+      name: file.filename,
+      path: file.path,
+      mime_type: file.mime_type,
+      size: file.size,
+      sha256: file.sha256,
+      extracted_text: isTextLike(file.mime_type, file.filename) ? fs.readFileSync(file.path, 'utf8') : '',
+      extracted_with: isTextLike(file.mime_type, file.filename) ? 'utf8' : null,
+      source_url: fields.sourceUrl || fields.source_url || '',
+      title: fields.title || file.filename,
+      source_type: fields.sourceType || fields.source_type || 'uploaded_document',
+      citation_text: fields.citationText || fields.citation_text || '',
+    })),
+  };
+}
+
+function isTextLike(mimeType = '', filename = '') {
+  const lower = String(filename || '').toLowerCase();
+  return mimeType.startsWith('text/') || ['text/plain', 'text/markdown', 'application/json', 'text/csv'].includes(mimeType) || lower.endsWith('.txt') || lower.endsWith('.md') || lower.endsWith('.markdown') || lower.endsWith('.json') || lower.endsWith('.csv') || lower.endsWith('.yml') || lower.endsWith('.yaml');
+}
+
+function runNodeScript(scriptName, args, env = {}) {
+  const result = spawnSync('node', [path.join(ROOT, 'scripts', scriptName), ...args], {
+    encoding: 'utf8',
+    env: { ...process.env, ...env },
+  });
+  if (result.error) throw new Error(`${scriptName} failed to start: ${result.error.message}`);
+  if (result.status !== 0) throw new Error(`${scriptName} failed (${result.status}): ${result.stderr || result.stdout}`);
+  return result.stdout;
+}
+
+function writeJson(filePath, body) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, `${JSON.stringify(body, null, 2)}\n`);
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
 function serveStatic(req, res) {
   const dist = path.join(ROOT, 'dist');
   const url = new URL(req.url, 'http://localhost');
@@ -35,7 +164,148 @@ function serveStatic(req, res) {
   return true;
 }
 
-export function createServer({ log = true } = {}) {
+function ragApiEnabled(config) {
+  return Boolean(config?.enabled || process.env.VION_RAG_API_ENABLED === '1');
+}
+
+function configuredRagAdminToken(config) {
+  return config?.adminToken || process.env.VION_RAG_ADMIN_TOKEN || '';
+}
+
+function localRagAdminRequest(req) {
+  const forwardedHost = String(req.headers['x-forwarded-host'] || '').toLowerCase();
+  if (forwardedHost && !['localhost', '127.0.0.1', '::1'].some((value) => forwardedHost.includes(value))) return false;
+  const remoteAddress = String(req.socket?.remoteAddress || req.connection?.remoteAddress || '').toLowerCase();
+  return remoteAddress === '127.0.0.1' || remoteAddress === '::1' || remoteAddress === '::ffff:127.0.0.1';
+}
+
+function ragAdminRequestAuthorized(req, config) {
+  const token = configuredRagAdminToken(config);
+  if (!token) {
+    return localRagAdminRequest(req) ? { authorized: true } : { authorized: false, status: 403, error: 'rag_admin_forbidden_outside_localhost' };
+  }
+  const authorization = req.headers.authorization || '';
+  const bearer = authorization.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : '';
+  const provided = bearer || req.headers['x-vion-rag-admin-token'] || '';
+  return provided === token ? { authorized: true } : { authorized: false, status: 401, error: 'rag_admin_unauthorized' };
+}
+
+function ragChunksFor(trackId) {
+  return buildRagChunks(model, { trackId });
+}
+
+async function germanB2DbSearch(body, rag) {
+  const db = ragDbConfig();
+  const connectionString = process.env[db.connectionEnv] || process.env.VION_RAG_DATABASE_URL || process.env.DATABASE_URL;
+  const providedClient = rag.dbClient || null;
+  let client = providedClient;
+  let shouldClose = false;
+  if (!client) {
+    if (!connectionString) {
+      return {
+        track_id: 'german-b2-exam',
+        query: body.query,
+        results: [],
+        answer: {
+          allowed: false,
+          status: 'embedding_required',
+          reason: 'German B2 DB retrieval requires VION_RAG_DATABASE_URL or DATABASE_URL so uploaded-document embeddings can be checked.',
+          citations: [],
+        },
+      };
+    }
+    const { Client } = await import('pg');
+    client = new Client({ connectionString });
+    await client.connect();
+    shouldClose = true;
+  }
+  try {
+    const retriever = createPgRagRetriever(client);
+    let queryEmbedding = body.queryEmbedding || body.query_embedding || null;
+    if (!queryEmbedding && (rag.embeddingClient || process.env.OPENAI_API_KEY)) {
+      const embeddingClient = rag.embeddingClient || createOpenAiEmbeddingClient();
+      [queryEmbedding] = await embeddingClient.createEmbeddings({ query: body.query, model: 'text-embedding-3-small', input: [body.query || ''] });
+    }
+    return retriever.searchUploadedDocuments({
+      trackId: 'german-b2-exam',
+      query: body.query,
+      queryEmbedding,
+      sourceId: body.sourceId || body.source_id || null,
+      lessonId: body.lessonId || body.lesson_id || null,
+      limit: body.limit || 5,
+    });
+  } finally {
+    if (shouldClose) await client.end();
+  }
+}
+
+function normalizeDbLessonRecord(rawLesson) {
+  if (!rawLesson?.id || !rawLesson?.title || !rawLesson?.source_type) return null;
+  return {
+    ...rawLesson,
+    source_ids: Array.isArray(rawLesson.source_ids) ? rawLesson.source_ids : [],
+    content_version: Number(rawLesson.content_version || rawLesson.review_packet?.content_version || 1),
+    review_packet: rawLesson.review_packet ? {
+      mutable: true,
+      ...rawLesson.review_packet,
+      content_version: Number(rawLesson.review_packet?.content_version || rawLesson.content_version || 1),
+    } : null,
+    review_history: Array.isArray(rawLesson.review_history) ? rawLesson.review_history : [],
+  };
+}
+
+function createGermanB2LessonStore({ loadLessons = null } = {}) {
+  if (loadLessons) return { loadLessons };
+  const db = ragDbConfig();
+  const connectionString = process.env[db.connectionEnv] || process.env.VION_RAG_DATABASE_URL || process.env.DATABASE_URL;
+  if (!connectionString) return { loadLessons: async () => [] };
+  return {
+    async loadLessons(trackId) {
+      if (trackId !== 'german-b2-exam') return [];
+      const { Client } = await import('pg');
+      const client = new Client({ connectionString });
+      await client.connect();
+      try {
+        const result = await client.query(
+          `SELECT completed_at, metadata
+             FROM rag_ingest_jobs
+            WHERE track_id = $1
+              AND status = 'succeeded'
+              AND metadata ? 'german_b2_lesson'
+            ORDER BY completed_at ASC, started_at ASC`,
+          [trackId],
+        );
+        const latestById = new Map();
+        for (const row of result.rows || []) {
+          const lesson = normalizeDbLessonRecord(row.metadata?.german_b2_lesson);
+          if (!lesson) continue;
+          latestById.set(lesson.id, {
+            ...lesson,
+            created_at: lesson.created_at || row.completed_at || new Date().toISOString(),
+            updated_at: row.completed_at || lesson.updated_at || lesson.created_at || new Date().toISOString(),
+          });
+        }
+        return [...latestById.values()];
+      } finally {
+        await client.end();
+      }
+    },
+  };
+}
+
+async function trackPayloadWithDbLessons(baseModel, trackId, lessonStore) {
+  if (trackId !== 'german-b2-exam') return trackPayload(baseModel, trackId);
+  const lessons = await lessonStore.loadLessons(trackId);
+  if (!lessons.length) return trackPayload(baseModel, trackId);
+  const mergedModel = loadLearningModel();
+  for (const lesson of lessons) {
+    appendLesson(mergedModel, { trackId, lesson });
+  }
+  return trackPayload(mergedModel, trackId);
+}
+
+export function createServer({ log = true, rag = {}, germanB2LessonStore = null } = {}) {
+  const lessonStore = createGermanB2LessonStore(germanB2LessonStore || {});
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     try {
@@ -50,7 +320,7 @@ export function createServer({ log = true } = {}) {
       const trackMatch = url.pathname.match(/^\/api\/tracks\/([^/]+)(?:\/(.*))?$/);
       if (trackMatch) {
         const [, trackId, rest = ''] = trackMatch;
-        if (req.method === 'GET' && rest === '') return json(res, 200, trackPayload(model, trackId));
+        if (req.method === 'GET' && rest === '') return json(res, 200, await trackPayloadWithDbLessons(model, trackId, lessonStore));
         if (req.method === 'GET' && rest === 'sources') {
           const ids = url.searchParams.get('ids')?.split(',').map((value) => value.trim()).filter(Boolean) || [];
           return json(res, 200, sourcesPayload(model, trackId, { service: url.searchParams.get('service') || undefined, concept: url.searchParams.get('concept') || undefined, ids }));
@@ -78,6 +348,66 @@ export function createServer({ log = true } = {}) {
       if (req.method === 'POST' && url.pathname === '/api/admin/reset') {
         model = loadLearningModel();
         return json(res, 200, { status: 'reset', tracks: Object.keys(model.tracks) });
+      }
+      if (url.pathname.startsWith('/api/admin/rag/') || url.pathname.startsWith('/api/admin/uploads/')) {
+        const authorization = ragAdminRequestAuthorized(req, rag);
+        if (!authorization.authorized) return json(res, authorization.status, { error: authorization.error });
+      }
+      if (req.method === 'POST' && url.pathname === '/api/admin/uploads/verify') {
+        const batchId = safeName((new URL(req.url, 'http://localhost')).searchParams.get('batchId') || `upload-${Date.now()}`);
+        const batchDir = batchDirFor(batchId);
+        const rawDir = path.join(batchDir, 'raw');
+        const { fields, files } = await parseMultipartForm(req, { targetDir: rawDir });
+        const manifest = uploadManifestFrom({ batchId, trackId: fields.trackId || fields.track_id || null, fields, files });
+        manifest.verification = {
+          verified_at: new Date().toISOString(),
+          file_count: files.length,
+          warnings: files.filter((file) => !isTextLike(file.mime_type, file.filename)).map((file) => `${file.filename} may need OCR or transcript extraction`),
+        };
+        writeJson(manifestPathFor(batchDir), manifest);
+        return json(res, 200, { batch_dir: batchDir, manifest });
+      }
+      if (req.method === 'POST' && url.pathname === '/api/admin/uploads/ingest') {
+        const body = await readBody(req);
+        const batchId = safeName(body.batchId || body.batch_id || body.batch || 'latest');
+        const batchDir = batchDirFor(batchId);
+        const manifestFile = manifestPathFor(batchDir);
+        if (!fs.existsSync(manifestFile)) return json(res, 404, { error: `missing_upload_manifest:${manifestFile}` });
+        const manifest = readJson(manifestFile);
+        const trackId = body.trackId || body.track_id || manifest.track_id || 'shared';
+        const stageOutput = JSON.parse(runNodeScript('upload-ingestion.mjs', ['stage', '--batch-dir', batchDir, '--track', trackId]));
+        const populateArgs = ['--tracks', trackId, '--chunks-dir', path.join(batchDir, 'tracks')];
+        if (body.apply || body.liveEmbeddings || body.live_embeddings) populateArgs.push('--apply');
+        if (body.liveEmbeddings || body.live_embeddings) populateArgs.push('--live-embeddings');
+        const populateResult = JSON.parse(runNodeScript('rag-populate-db.mjs', populateArgs));
+        return json(res, 200, { batch_dir: batchDir, manifest, stage: stageOutput, populate: populateResult });
+      }
+      if (ragApiEnabled(rag) && url.pathname.startsWith('/api/admin/rag/')) {
+        const authorization = ragAdminRequestAuthorized(req, rag);
+        if (!authorization.authorized) return json(res, authorization.status, { error: authorization.error });
+      }
+      if (ragApiEnabled(rag) && req.method === 'GET' && url.pathname === '/api/admin/rag/ingest') {
+        const trackId = url.searchParams.get('trackId') || 'clf-c02';
+        const result = ragChunksFor(trackId);
+        return json(res, 200, { ...result, chunks: result.chunks.slice(0, Number(url.searchParams.get('limit') || 25)) });
+      }
+      if (ragApiEnabled(rag) && req.method === 'POST' && url.pathname === '/api/admin/rag/embed') {
+        const body = await readBody(req);
+        const chunks = body.chunks || ragChunksFor(body.trackId || 'clf-c02').chunks;
+        return json(res, 200, await embedRagChunks(chunks, { mode: body.mode || 'dry-run', forceRefresh: Boolean(body.forceRefresh || body.force_refresh) }));
+      }
+      if (ragApiEnabled(rag) && req.method === 'POST' && url.pathname === '/api/admin/rag/search') {
+        const body = await readBody(req);
+        if ((body.trackId || body.track_id) === 'german-b2-exam') {
+          return json(res, 200, await germanB2DbSearch({ ...body, trackId: 'german-b2-exam' }, rag));
+        }
+        const chunks = ragChunksFor(body.trackId || 'clf-c02').chunks;
+        return json(res, 200, searchRagChunks(chunks, { trackId: body.trackId || 'clf-c02', query: body.query, limit: body.limit || 5 }));
+      }
+      if (ragApiEnabled(rag) && req.method === 'POST' && url.pathname === '/api/admin/rag/eval') {
+        const body = await readBody(req);
+        const chunks = ragChunksFor(body.trackId || 'clf-c02').chunks;
+        return json(res, 200, evaluateRagRetrieval(chunks, { cases: body.cases || [] }));
       }
       if (req.method === 'GET' && url.pathname === '/api/admin/export') return json(res, 200, exportSnapshot(model));
       if (req.method === 'GET' && serveStatic(req, res)) return;

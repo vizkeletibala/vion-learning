@@ -1,0 +1,21 @@
+stages:
+  - install
+  - rag
+
+populate_rag_db:
+  stage: rag
+  image: node:22-bookworm
+  variables:
+    NODE_ENV: ci
+    npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  script:
+    - npm ci
+    - npm run rag:populate-db -- --apply --tracks clf-c02,aif-c01,shared
+  artifacts:
+    when: always
+    paths:
+      - var/rag/*.json
+  rules:
+    - if: '$VION_RAG_DATABASE_URL'
+      when: on_success
+    - when: never

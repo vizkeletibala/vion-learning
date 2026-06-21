@@ -13,15 +13,25 @@
     "ingest:sources": "node scripts/source-ingestion.mjs ingest",
     "sources:check": "node scripts/source-ingestion.mjs check",
     "sources:report": "node scripts/source-ingestion.mjs report",
+    "rag:ingest": "node scripts/rag.mjs ingest",
+    "rag:embed": "node scripts/rag.mjs embed",
+    "rag:search": "node scripts/rag.mjs search",
+    "rag:eval": "node scripts/rag.mjs eval",
+    "rag:migrate": "node scripts/rag.mjs migrate",
+    "rag:populate-db": "node scripts/rag-populate-db.mjs",
+    "uploads:verify": "node scripts/upload-ingestion.mjs verify",
+    "uploads:stage": "node scripts/upload-ingestion.mjs stage",
+    "uploads:ingest": "node scripts/upload-ingestion.mjs stage",
     "seed": "node scripts/seed.mjs",
     "reset": "node scripts/seed.mjs --reset",
     "export": "node scripts/export.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "busboy": "^1.6.0",
+    "pg": "^8.21.0",
     "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {}
+    "react-dom": "latest",
+    "vite": "latest"
+  }
 }

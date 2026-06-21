@@ -1,6 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadLearningModel, getTrack, createQuiz, evaluateAnswer, markCard } from '../src/lib/learningModel.js';
+import {
+  LESSON_LIFECYCLE_STATES,
+  appendLesson,
+  editLessonContent,
+  loadLearningModel,
+  getTrack,
+  trackPayload,
+  sourcesPayload,
+  createQuiz,
+  evaluateAnswer,
+  markCard,
+  reviewLessonContent,
+  transitionLesson,
+} from '../src/lib/learningModel.js';
 
 function correctOptionPosition(question) {
   return question.options.findIndex((option) => option.id === question.correct_option_id);
@@ -8,9 +21,9 @@ function correctOptionPosition(question) {
 
 test('learning model keeps CLF-C02 and AIF-C01 content strictly track scoped', () => {
   const model = loadLearningModel();
-  assert.deepEqual(Object.keys(model.tracks).sort(), ['aif-c01', 'clf-c02']);
+  assert.deepEqual(Object.keys(model.tracks).sort(), ['aif-c01', 'clf-c02', 'german-b2-exam']);
 
-  for (const trackId of Object.keys(model.tracks)) {
+  for (const trackId of ['clf-c02', 'aif-c01']) {
     const track = getTrack(model, trackId);
     assert.equal(track.id, trackId);
     assert.ok(track.cards.length > 0);
@@ -31,6 +44,261 @@ test('learning model keeps CLF-C02 and AIF-C01 content strictly track scoped', (
   assert.equal(model.tracks['aif-c01'].cards.some((card) => clfCardIds.has(card.id)), false);
   assert.equal(model.tracks['aif-c01'].questionBank.length, 0, 'AIF-C01 should not inherit the CLF-C02 curated question bank');
   assert.equal(model.tracks['aif-c01'].conceptRecords.length, 0, 'AIF-C01 should not inherit CLF-C02 concept records');
+});
+
+test('German B2 Exam is an isolated personalized tutor track with no fake future lessons', () => {
+  const model = loadLearningModel();
+  const german = getTrack(model, 'german-b2-exam');
+  const clf = getTrack(model, 'clf-c02');
+  const aif = getTrack(model, 'aif-c01');
+
+  assert.equal(german.id, 'german-b2-exam');
+  assert.equal(german.name, 'German B2 Exam');
+  assert.equal(german.purpose, 'personalized tutor from user notes');
+  assert.equal(german.goal, 'Prep for the B2 German exam over ~1 year');
+  assert.deepEqual(german.source_types, ['pdf', 'txt', 'markdown']);
+  assert.deepEqual(german.lesson_lifecycle_states, ['draft', 'review', 'published']);
+  assert.deepEqual(LESSON_LIFECYCLE_STATES, ['draft', 'review', 'published']);
+  assert.deepEqual(german.lessons.map((lesson) => lesson.id), ['german-b2-exam:lesson:embedded-lesson-1'], 'German B2 track should expose only source-backed embedded lesson 1 and no fake future catalog');
+  assert.deepEqual(german.outline.modules.map((module) => module.module_id), ['german-b2-exam:lesson:embedded-lesson-1'], 'German B2 outline should contain only the source-backed lesson 1 module');
+  assert.deepEqual(german.cards, []);
+  assert.deepEqual(german.questions, []);
+  assert.deepEqual(german.serviceResources, []);
+  assert.equal(german.sources.every((source) => source.track_id === 'german-b2-exam'), true);
+  assert.deepEqual(german.sources.map((source) => source.id).sort(), [
+    'german-b2-exam:embedded:lesson-1:lesson-1-corpus.md',
+    'german-b2-exam:embedded:lesson-1:lesson-1.md',
+  ]);
+  assert.equal(german.sources.every((source) => source.freshness_status === 'embedded_source'), true);
+
+  assert.equal(clf.cards.some((card) => card.track_id === 'german-b2-exam'), false);
+  assert.equal(aif.cards.some((card) => card.track_id === 'german-b2-exam'), false);
+  assert.equal(german.sources.some((source) => source.track_id === 'clf-c02' || source.track_id === 'aif-c01'), false);
+});
+
+test('German B2 lessons can be appended gradually but publish is gated by explicit review approval', () => {
+  const model = loadLearningModel();
+
+  const first = appendLesson(model, {
+    trackId: 'german-b2-exam',
+    lesson: {
+      id: 'lesson-1',
+      title: 'Konjunktiv II notes from class',
+      source_type: 'markdown',
+      source_ids: ['german-b2-exam:upload:konjunktiv-notes'],
+      review_packet: {
+        schema_version: 'german-b2-note-review/v1',
+        content_version: 1,
+        review_status: 'review',
+        content: [{ kind: 'grammar', text: 'Konjunktiv II: Ich würde mich bewerben.' }],
+      },
+    },
+  });
+  assert.equal(first.status, 'draft');
+  assert.equal(first.sequence, 2);
+
+  const reviewed = transitionLesson(model, {
+    trackId: 'german-b2-exam',
+    lessonId: 'lesson-1',
+    status: 'review',
+  });
+  assert.equal(reviewed.status, 'review');
+
+  assert.throws(
+    () => transitionLesson(model, {
+      trackId: 'german-b2-exam',
+      lessonId: 'lesson-1',
+      status: 'published',
+    }),
+    /must be approved before publish/
+  );
+
+  const approved = reviewLessonContent(model, {
+    trackId: 'german-b2-exam',
+    lessonId: 'lesson-1',
+    reviewer: 'teacher',
+    decision: 'approved',
+  });
+  assert.equal(approved.review_status, 'approved');
+
+  const published = transitionLesson(model, {
+    trackId: 'german-b2-exam',
+    lessonId: 'lesson-1',
+    status: 'published',
+  });
+  assert.equal(published.status, 'published');
+  assert.equal(published.published_version, 1);
+  assert.equal(published.provenance.source_ids.includes('german-b2-exam:upload:konjunktiv-notes'), true);
+
+  const second = appendLesson(model, {
+    trackId: 'german-b2-exam',
+    lesson: {
+      id: 'lesson-2',
+      title: 'Schreiben Redemittel upload',
+      source_type: 'pdf',
+      source_ids: ['german-b2-exam:upload:schreiben-redemittel'],
+      status: 'review',
+      review_packet: {
+        schema_version: 'german-b2-note-review/v1',
+        content_version: 1,
+        review_status: 'review',
+        content: [{ kind: 'writing', text: 'Sehr geehrte Damen und Herren ...' }],
+      },
+    },
+  });
+  assert.equal(second.status, 'review');
+  assert.equal(second.sequence, 3);
+
+  const german = getTrack(model, 'german-b2-exam');
+  assert.deepEqual(german.lessons.map((lesson) => lesson.id), ['german-b2-exam:lesson:embedded-lesson-1', 'lesson-1', 'lesson-2']);
+  assert.deepEqual(german.outline.modules.map((module) => module.module_id), ['german-b2-exam:lesson:embedded-lesson-1', 'lesson-1', 'lesson-2']);
+  assert.throws(
+    () => appendLesson(model, { trackId: 'german-b2-exam', lesson: { id: 'direct-publish', title: 'Direct publish', source_type: 'txt', status: 'published' } }),
+    /cannot be appended as published/
+  );
+  assert.throws(
+    () => appendLesson(model, { trackId: 'german-b2-exam', lesson: { id: 'zip-notes', title: 'Zip notes', source_type: 'zip' } }),
+    /unsupported source_type zip/
+  );
+  assert.throws(
+    () => appendLesson(model, { trackId: 'clf-c02', lesson: { id: 'aws-lesson', title: 'AWS lesson', source_type: 'txt' } }),
+    /does not accept personalized user-note lessons/
+  );
+});
+
+test('German B2 track payload exposes gradually appended lesson content for stable tabs', () => {
+  const model = loadLearningModel();
+  appendLesson(model, {
+    trackId: 'german-b2-exam',
+    lesson: {
+      id: 'lesson-1',
+      title: 'Konjunktiv II from uploaded notes',
+      source_type: 'markdown',
+      source_ids: ['german-b2-exam:upload:konjunktiv-notes'],
+      status: 'review',
+      review_packet: {
+        schema_version: 'german-b2-note-review/v1',
+        content_version: 1,
+        review_status: 'review',
+        content: [
+          { id: 'v1', kind: 'vocab', term: 'sich bewerben', hungarian: 'jelentkezni', text: 'sich bewerben | jelentkezni' },
+          { id: 'g1', kind: 'grammar', text: 'Bilden Sie zehn Sätze mit Konjunktiv II.' },
+          { id: 'r1', kind: 'reading', text: 'Newsletter: Warum Ehrenamt wichtig ist?' },
+          { id: 'w1', kind: 'writing', text: 'Long essay: Erörtern Sie Vor- und Nachteile.' },
+        ],
+      },
+    },
+  });
+  reviewLessonContent(model, { trackId: 'german-b2-exam', lessonId: 'lesson-1', reviewer: 'teacher', decision: 'approved' });
+  transitionLesson(model, { trackId: 'german-b2-exam', lessonId: 'lesson-1', status: 'published' });
+
+  const payload = trackPayload(model, 'german-b2-exam');
+
+  assert.deepEqual(payload.lessonTabs, ['vocab', 'grammar', 'reading', 'writing']);
+  assert.deepEqual(Object.keys(payload.lessons.find((lesson) => lesson.id === 'lesson-1').tabs), ['vocab', 'grammar', 'reading', 'writing']);
+  const appendedLesson = payload.lessons.find((lesson) => lesson.id === 'lesson-1');
+  assert.ok(appendedLesson, 'payload should include the appended lesson');
+  assert.equal(appendedLesson.tabs.vocab[0].term, 'sich bewerben');
+  assert.equal(appendedLesson.tabs.grammar[0].text, 'Bilden Sie zehn Sätze mit Konjunktiv II.');
+  assert.equal(payload.learningPath.length, 2, 'lesson payload should include embedded lesson 1 plus the appended lesson without inventing lesson 2');
+});
+
+test('German B2 track payload exposes embedded lesson 1 as source-backed expanded learning content', () => {
+  const payload = trackPayload(loadLearningModel(), 'german-b2-exam');
+
+  assert.deepEqual(payload.lessonTabs, ['vocab', 'grammar', 'reading', 'writing']);
+  assert.equal(payload.lessons.length, 1, 'embedded notes should produce exactly lesson 1 without fake future lessons');
+  assert.deepEqual(payload.learningPath.map((module) => module.module_id), ['german-b2-exam:lesson:embedded-lesson-1']);
+  const [lesson] = payload.lessons;
+  assert.equal(lesson.track_id, 'german-b2-exam');
+  assert.equal(lesson.sequence, 1);
+  assert.equal(lesson.provenance.track_id, 'german-b2-exam');
+  assert.equal(lesson.provenance.source_ids.every((sourceId) => sourceId.startsWith('german-b2-exam:embedded:lesson-1')), true);
+  assert.equal(lesson.tabs.vocab.length >= 12, true, 'lesson 1 vocabulary should be expanded from embedded notes');
+  assert.ok(lesson.tabs.vocab.find((item) => item.term === 'die Erfahrung' && item.hungarian === 'tapasztalat'));
+  assert.ok(lesson.tabs.vocab.find((item) => item.term === 'lernen' && item.verb_forms?.perfect === 'ich habe gelernt'));
+  assert.equal(lesson.tabs.vocab.some((item) => /Stelle|Bewerbungsgespräch/.test(item.term)), false, 'must not invent vocab outside lesson 1 sources');
+  const prompt = lesson.tabs.writing.find((item) => item.kind === 'writing' && item.prompt_type === 'short_essay');
+  assert.ok(prompt, 'short essay prompt should be explicit');
+  assert.equal(prompt.retrieval.track_id, 'german-b2-exam');
+  assert.equal(prompt.retrieval.depends_on_vocab.every((term) => ['gemeinsam', 'regelmäßig', 'erfolgreich', 'üben', 'lernen'].includes(term)), true);
+  const reading = lesson.tabs.reading.find((item) => item.exercise_type === 'source_backed_reading');
+  assert.ok(reading);
+  assert.match(reading.text, /^Gemeinsam lernt man oft besser/);
+  assert.deepEqual(reading.questions, [
+    'Wohin ist die Person gefahren?',
+    'Warum ist die Erfahrung wichtig?',
+    'Womit kann man viele Orte besuchen?',
+    'Was braucht man, um erfolgreich zu sein?',
+  ]);
+  assert.equal(reading.retrieval.article_source_status, 'no_researched_article_source_available');
+  assert.equal(lesson.retrieval.selection_flow, 'embedded_lesson_1_notes -> lesson_1_payload_tabs -> UI sections');
+  assert.equal(payload.sourceReport.sources.length, 2, 'sources page should expose embedded lesson provenance instead of only video metadata');
+  assert.deepEqual(payload.sourceReport.freshness, { embedded_source: 2 });
+  assert.equal(payload.sourceReport.sources.every((source) => source.track_id === 'german-b2-exam'), true);
+  assert.equal(payload.sourceReport.sources.some((source) => source.title === 'German B2 lesson 1 corpus' && source.source_file === 'data/sources/german-b2/lesson-1-corpus.md'), true);
+
+  const sourceLookup = sourcesPayload(loadLearningModel(), 'german-b2-exam');
+  assert.equal(sourceLookup.count, 2, 'track-scoped source endpoint should return German B2 embedded lesson sources');
+  assert.equal(sourceLookup.sources.every((source) => source.id.startsWith('german-b2-exam:embedded:lesson-1')), true);
+});
+
+test('editing German B2 lesson content creates a new mutable version that requires re-review', () => {
+  const model = loadLearningModel();
+  const created = appendLesson(model, {
+    trackId: 'german-b2-exam',
+    lesson: {
+      id: 'lesson-editable',
+      title: 'Editable Wortschatz notes',
+      source_type: 'markdown',
+      source_ids: ['german-b2-exam:upload:editable-notes'],
+      status: 'review',
+      review_packet: {
+        schema_version: 'german-b2-note-review/v1',
+        content_version: 1,
+        review_status: 'approved',
+        content: [{ id: 'vocab-1', kind: 'vocab', term: 'sich bewerben', hungarian: 'jelentkezni', source_id: 'german-b2-exam:upload:editable-notes' }],
+      },
+    },
+  });
+  transitionLesson(model, { trackId: 'german-b2-exam', lessonId: created.id, status: 'published' });
+
+  const edited = editLessonContent(model, {
+    trackId: 'german-b2-exam',
+    lessonId: created.id,
+    editor: 'teacher',
+    review_packet: {
+      schema_version: 'german-b2-note-review/v1',
+      content: [{ id: 'vocab-1', kind: 'vocab', term: 'sich bewerben', hungarian: 'pályázni', source_id: 'german-b2-exam:upload:editable-notes' }],
+      validation: { issues: [] },
+    },
+  });
+
+  assert.equal(edited.status, 'review');
+  assert.equal(edited.content_version, 2);
+  assert.equal(edited.review_packet.content_version, 2);
+  assert.equal(edited.review_packet.review_status, 'review');
+  assert.equal(edited.published_version, 1);
+  assert.equal(edited.review_history.length, 2);
+  assert.equal(edited.review_history[1].from_version, 1);
+  assert.equal(edited.review_history[1].to_version, 2);
+  assert.equal(edited.review_history[1].editor, 'teacher');
+  assert.equal(edited.review_history[1].action, 'edited');
+  assert.equal(edited.provenance.source_ids.includes('german-b2-exam:upload:editable-notes'), true);
+  assert.equal(getTrack(model, 'german-b2-exam').outline.modules.find((module) => module.module_id === created.id).status, 'review');
+  assert.throws(
+    () => transitionLesson(model, { trackId: 'german-b2-exam', lessonId: created.id, status: 'published' }),
+    /must be approved before publish/
+  );
+
+  reviewLessonContent(model, { trackId: 'german-b2-exam', lessonId: created.id, reviewer: 'teacher', decision: 'approved' });
+  const republished = transitionLesson(model, { trackId: 'german-b2-exam', lessonId: created.id, status: 'published' });
+  assert.equal(republished.published_version, 2);
+  assert.equal(republished.review_history.some((event) => event.action === 'published' && event.content_version === 2), true);
+  assert.throws(
+    () => editLessonContent(model, { trackId: 'clf-c02', lessonId: created.id, review_packet: {} }),
+    /does not accept personalized user-note lessons/
+  );
 });
 
 test('CLF-C02 exposes richer concept records and curated exam-style questions with mappings and explanations', () => {
@@ -222,7 +490,7 @@ test('generated reinforcement question distractors use learner-meaningful labels
     'Ignore the task statement mapping',
   ];
 
-  for (const track of Object.values(model.tracks)) {
+  for (const track of Object.values(model.tracks).filter((candidate) => candidate.questions.length > 0)) {
     const generatedQuestions = track.questions.filter((question) => !track.questionBank.some((curated) => curated.id === question.id));
     assert.ok(generatedQuestions.length > 0, `${track.id} should include generated reinforcement questions`);
 

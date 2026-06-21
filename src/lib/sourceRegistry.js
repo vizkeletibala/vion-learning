@@ -14,14 +14,39 @@ export const SCHEMA_VERSION = 'source-ingestion/v1';
 function sourceReportPath(root = ROOT) {
   return path.join(root, 'docs/reports/source-provenance.md');
 }
-export const TRACK_IDS = ['clf-c02', 'aif-c01'];
+export const TRACK_IDS = ['clf-c02', 'aif-c01', 'shared'];
+export const UPLOAD_TRACK_IDS = ['clf-c02', 'aif-c01', 'german-b2-exam', 'shared'];
+export const UPLOAD_TRACKS = [
+  { id: 'clf-c02', code: 'CLF-C02', name: 'AWS Certified Cloud Practitioner', mode: 'learning+uploads' },
+  { id: 'aif-c01', code: 'AIF-C01', name: 'AWS Certified AI Practitioner', mode: 'learning+uploads' },
+  { id: 'german-b2-exam', code: 'GERMAN B2', name: 'German B2 Exam', mode: 'personalized-tutor' },
+  { id: 'shared', code: 'SHARED', name: 'Shared intake lane', mode: 'uploads-only' },
+];
 
 const EXAM_CODES_BY_TRACK = {
   'clf-c02': 'CLF-C02',
   'aif-c01': 'AIF-C01',
+  shared: 'SHARED',
 };
 
-const FRESHNESS_STATUSES = new Set(['fresh', 'stale', 'needs_refresh', 'unverified', 'auth_gated']);
+const UPLOAD_TRACK_ALIASES = new Map(
+  [
+    ...UPLOAD_TRACKS.flatMap((track) => [
+      [track.id, track.id],
+      [track.name, track.id],
+    ]),
+    ['german-b2', 'german-b2-exam'],
+  ],
+);
+
+export function validateUploadTrackId(trackId) {
+  if (!trackId) return 'shared';
+  const resolvedTrackId = UPLOAD_TRACK_ALIASES.get(trackId) || trackId;
+  if (!UPLOAD_TRACK_IDS.includes(resolvedTrackId)) throw new Error(`Unsupported track_id: ${trackId}`);
+  return resolvedTrackId;
+}
+
+const FRESHNESS_STATUSES = new Set(['fresh', 'stale', 'needs_refresh', 'unverified', 'auth_gated', 'unavailable']);
 const SOURCE_TYPES = new Set([
   'aws_exam_guide',
   'aws_certification_page',
@@ -82,6 +107,78 @@ function stripHtml(html) {
         .replace(/<[^>]+>/g, ' '),
     ),
   );
+}
+
+
+function slugify(value) {
+  return normalizeText(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function estimateTokens(value) {
+  return normalizeText(value).split(/\s+/).filter(Boolean).length;
+}
+
+function stripInlineHtml(html) {
+  return normalizeText(decodeHtmlEntities(String(html || '').replace(/<[^>]+>/g, ' ')));
+}
+
+function extractHtmlSections(html, source) {
+  const cleaned = String(html || '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, ' ')
+    .replace(/<nav\b[^>]*>[\s\S]*?<\/nav>/gi, ' ')
+    .replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi, ' ');
+  const tokenPattern = /<(h[1-6]|p|li|td|th)[^>]*>([\s\S]*?)<\/\1>/gi;
+  const sections = [];
+  let active = null;
+  let headingPath = [];
+  const flush = () => {
+    if (!active) return;
+    const text = normalizeText(active.parts.join(' '));
+    if (!text || estimateTokens(text) < 3) {
+      active = null;
+      return;
+    }
+    const sectionSlug = slugify(active.section_path.join('-')) || `section-${sections.length + 1}`;
+    sections.push({
+      id: `${source.id}:section:${sectionSlug}`,
+      title: active.title,
+      section_path: active.section_path,
+      url: active.url || source.url,
+      citation_text: active.citation_text || source.citation_text,
+      text,
+      token_estimate: estimateTokens(text),
+      content_hash: hashNormalizedContent(text),
+    });
+    active = null;
+  };
+  for (const match of cleaned.matchAll(tokenPattern)) {
+    const tag = match[1].toLowerCase();
+    const text = stripInlineHtml(match[2]);
+    if (!text) continue;
+    if (/^h[1-6]$/.test(tag)) {
+      flush();
+      const level = Number(tag.slice(1));
+      headingPath = [...headingPath.slice(0, level - 1), text];
+      const anchor = slugify(text);
+      active = {
+        title: text,
+        section_path: [...headingPath],
+        parts: [],
+        url: anchor ? `${source.url}#${anchor}` : source.url,
+        citation_text: source.citation_text,
+      };
+      continue;
+    }
+    if (!active) {
+      active = { title: source.title, section_path: [source.title], parts: [], url: source.url, citation_text: source.citation_text };
+    }
+    active.parts.push(text);
+  }
+  flush();
+  return sections;
 }
 
 function extractTitle(html, fallbackUrl) {
@@ -212,7 +309,7 @@ function extractFetchedDocument(buffer, contentType, url) {
   if (mime.includes('text/html')) {
     const html = buffer.toString('utf8');
     const text = stripHtml(html);
-    return { extracted_title: extractTitle(html, url), normalized_content: text, content_kind: 'html' };
+    return { extracted_title: extractTitle(html, url), normalized_content: text, raw_html: html, content_kind: 'html' };
   }
   if (mime.includes('application/json') || mime.includes('text/plain') || mime.includes('application/xml') || mime.includes('text/xml')) {
     const text = normalizeText(buffer.toString('utf8'));
@@ -243,7 +340,8 @@ export function normalizeSourceRecord(entry, fetched, previousRecord = null, now
       last_checked_at: checkedAt,
       retrieved_at: previousRecord?.retrieved_at || base.retrieved_at || now,
       content_hash: preservedHash,
-      freshness_status: base.freshness_status === 'auth_gated' ? 'auth_gated' : 'needs_refresh',
+      freshness_status: base.freshness_status === 'auth_gated' ? 'auth_gated' : fetched.error === 'robots.txt disallows fetch for this path' ? 'unavailable' : 'needs_refresh',
+      sections: previousRecord?.sections || [],
       notes: [
         ...base.notes,
         ...(previousRecord?.notes || []).filter((note) => !base.notes.includes(note)),
@@ -257,6 +355,7 @@ export function normalizeSourceRecord(entry, fetched, previousRecord = null, now
     ? `sha256:${sha256(document.normalized_content)}`
     : hashNormalizedContent(document.normalized_content);
   const notes = [...base.notes];
+  const sections = document.content_kind === 'html' ? extractHtmlSections(document.raw_html, base) : [];
   if (document.content_kind === 'pdf') notes.push('PDF fetched and hashed as binary; text extraction intentionally skipped to avoid ingestion dependencies.');
   if (document.content_kind === 'binary') notes.push(`Fetched ${fetched.content_type || 'binary content'} and hashed bytes; text extraction is not supported.`);
 
@@ -267,12 +366,47 @@ export function normalizeSourceRecord(entry, fetched, previousRecord = null, now
     retrieved_at: now,
     content_hash: contentHash,
     freshness_status: freshnessForSuccessfulFetch(previousRecord, contentHash, now, base.stale_after_days),
+    sections,
     notes,
   };
 }
 
+
+function robotsUrlFor(url) {
+  const parsed = new URL(url);
+  return `${parsed.origin}/robots.txt`;
+}
+
+function robotsDisallowsPath(robotsText, url) {
+  const parsed = new URL(url);
+  const lines = String(robotsText || '').split(/\r?\n/).map((line) => line.replace(/#.*/, '').trim()).filter(Boolean);
+  let applies = false;
+  for (const line of lines) {
+    const [rawKey, ...rest] = line.split(':');
+    const key = rawKey.trim().toLowerCase();
+    const value = rest.join(':').trim();
+    if (key === 'user-agent') applies = value === '*';
+    if (applies && key === 'allow' && value && parsed.pathname.startsWith(value)) return false;
+    if (applies && key === 'disallow' && value && parsed.pathname.startsWith(value)) return true;
+  }
+  return false;
+}
+
 async function fetchSource(entry, fetchImpl) {
   try {
+    if (/^https?:\/\//i.test(entry.url)) {
+      const robotsResponse = await fetchImpl(robotsUrlFor(entry.url), {
+        redirect: 'follow',
+        headers: { 'user-agent': 'VionLearningSourceIngestion/0.2 (+local private study app)' },
+        signal: AbortSignal.timeout(10000),
+      }).catch(() => null);
+      if (robotsResponse?.ok) {
+        const robotsText = Buffer.from(await robotsResponse.arrayBuffer()).toString('utf8');
+        if (robotsDisallowsPath(robotsText, entry.url)) {
+          return { ok: false, http_status: robotsResponse.status, content_type: 'text/plain', final_url: entry.url, buffer: Buffer.alloc(0), error: 'robots.txt disallows fetch for this path' };
+        }
+      }
+    }
     const response = await fetchImpl(entry.url, {
       redirect: 'follow',
       headers: { 'user-agent': 'VionLearningSourceIngestion/0.2 (+local private study app)' },
@@ -497,6 +631,12 @@ export function buildFreshnessReport(recordsByTrack, generatedAt = new Date().to
   return `${lines.join('\n')}\n`;
 }
 
+function requiresExtractedSections(record) {
+  return ['aws_docs', 'aws_certification_page', 'aws_faq', 'aws_whitepaper', 'aws_blog', 'aws_workshop'].includes(record.source_type)
+    && ['fresh', 'needs_refresh', 'stale'].includes(record.freshness_status)
+    && /^https?:\/\//i.test(record.url || '');
+}
+
 export function validateIngestedEnvelope(envelope, expectedTrackId) {
   const errors = [];
   if (envelope?.schema_version !== SCHEMA_VERSION) errors.push(`${expectedTrackId} schema_version must be ${SCHEMA_VERSION}`);
@@ -513,6 +653,9 @@ export function validateIngestedEnvelope(envelope, expectedTrackId) {
       if (!isIsoDateTime(record.retrieved_at)) errors.push(`${record.id} retrieved_at must be ISO 8601`);
       if (record.content_hash !== null && !/^sha256:[a-f0-9]{64}$/.test(record.content_hash)) errors.push(`${record.id} invalid content_hash`);
       if (!FRESHNESS_STATUSES.has(record.freshness_status)) errors.push(`${record.id} invalid freshness_status ${record.freshness_status}`);
+      if (requiresExtractedSections(record) && !ensureArray(record.sections).some((section) => normalizeText(section?.text))) {
+        errors.push(`${record.id} must include at least one extracted section for source-backed RAG`);
+      }
     } catch (error) {
       errors.push(error.message);
     }

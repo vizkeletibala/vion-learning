@@ -6,6 +6,15 @@ test('seed content remains original, source-linked, and includes richer CLF-C02 
   const model = loadLearningModel();
   for (const track of Object.values(model.tracks)) {
     assert.ok(track.limitations.length > 0);
+    if (track.id === 'german-b2-exam') {
+      assert.equal(track.sources.length, 2, 'German B2 should expose embedded lesson-1 source provenance without creating quiz/card corpora');
+      assert.equal(track.sources.every((source) => source.track_id === 'german-b2-exam'), true);
+      assert.equal(track.sources.every((source) => source.citation_text && source.source_file && source.freshness_status === 'embedded_source'), true);
+      assert.equal(track.sources.some((source) => source.source_file === 'data/sources/german-b2/lesson-1-corpus.md'), true);
+      assert.deepEqual(track.cards, []);
+      assert.deepEqual(track.questions, []);
+      continue;
+    }
     assert.ok(Array.isArray(track.sources) && track.sources.length > 0);
     assert.ok(track.sources.every((source) => source.track_id === track.id));
     assert.ok(track.sources.every((source) => source.citation_text));

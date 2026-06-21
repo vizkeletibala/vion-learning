@@ -7,10 +7,19 @@ services:
     ports:
       # Private deployment: bind to loopback only, then publish privately with Tailscale Serve.
       # Do not change this to 0.0.0.0 unless you explicitly want non-tailnet access.
-      - "127.0.0.1:9140:3000"
+      - "127.0.0.1:${VION_APP_HOST_PORT:-9140}:3000"
     environment:
-      - NODE_ENV=production
-      - PORT=3000
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      VION_RAG_API_ENABLED: ${VION_RAG_API_ENABLED:-0}
+      VION_RAG_ADMIN_TOKEN: ${VION_RAG_ADMIN_TOKEN:-}
+      VION_RAG_PGHOST: ${VION_RAG_PGHOST:-127.0.0.1}
+      VION_RAG_PGPORT: ${VION_RAG_PGPORT:-55432}
+      VION_RAG_PGDATABASE: ${VION_RAG_PGDATABASE:-vion_rag}
+      # Runtime DB writes remain opt-in: leave VION_RAG_DATABASE_URL unset unless
+      # the rag profile is running and live embedding refreshes are intended.
+      VION_RAG_DATABASE_URL: ${VION_RAG_DATABASE_URL:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - ./var:/app/var
       - ./backups:/app/backups
@@ -20,3 +29,32 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+
+  rag-db:
+    profiles: ["rag"]
+    image: pgvector/pgvector:pg17
+    container_name: vion-rag-pgvector
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vion_rag}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      VION_RAG_APP_PASSWORD: ${VION_RAG_APP_PASSWORD:-}
+      VION_RAG_READONLY_PASSWORD: ${VION_RAG_READONLY_PASSWORD:-}
+      VION_RAG_MIGRATOR_PASSWORD: ${VION_RAG_MIGRATOR_PASSWORD:-}
+    ports:
+      # Loopback-only for host-side migrations/backups. Do not publish publicly.
+      - "127.0.0.1:${VION_RAG_PGPORT:-55432}:5432"
+    volumes:
+      - rag_pgdata:/var/lib/postgresql/data
+      - ./backups:/backups
+      - ./scripts/postgres-init-rag.sh:/docker-entrypoint-initdb.d/010-vion-rag-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-vion_rag} -h 127.0.0.1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  rag_pgdata:

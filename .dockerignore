@@ -1,7 +1,13 @@
 node_modules
 dist
 backups
-var
+var/*
+!var/rag/
+var/rag/*
+!var/rag/*.json
 .git
 .hermes
+.env
+.env.*
+!.env.example
 *.log

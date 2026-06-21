@@ -18,6 +18,7 @@ Only the landing page (`/`) shows both certifications. Every track experience is
 - AWS Console guide structure with goal, prereqs, time, cost warning, path/steps, observe, exam relevance, cleanup, and related quiz IDs.
 - Source ingestion/refresh metadata from `data/sources/*`, stale-warning limitations, and video resource metadata placeholders.
 - Node HTTP API, `/health`, JSON structured logs, seed/reset/export commands, Dockerfile and docker-compose healthcheck.
+- Milestone 3 RAG prototype foundation: section-aware chunk generation, dry-run embedding refresh planning for `text-embedding-3-small`, cited local retrieval, and retrieval eval reports. RAG admin API routes are disabled unless explicitly enabled.
 
 ## Original practice only
 
@@ -53,6 +54,12 @@ npm run build
 npm run ingest:sources
 npm run sources:check
 npm run sources:report
+npm run rag:ingest -- --track clf-c02 --dry-run
+npm run rag:embed -- --track clf-c02
+npm run rag:search -- --track clf-c02 --query "Amazon S3 storage"
+npm run rag:eval -- --track clf-c02
+npm run rag:migrate
+npm run rag:populate-db -- --apply --tracks clf-c02,aif-c01,shared
 npm run seed
 npm run reset
 npm run export
@@ -74,16 +81,80 @@ Then open http://localhost:3000.
 - `POST /api/admin/reset`
 - `GET /api/admin/export`
 
-## Docker
+### RAG CLI, migrations, and admin API
 
-The checked-in compose file is intentionally private-by-default: it publishes the app only on `127.0.0.1:9140`, not on a public interface.
+RAG is deliberately opt-in. Normal app startup does not connect to Postgres, call OpenAI, or require live internet. Local CLI dry-run commands work from checked-in data; generated chunks are written under ignored `var/rag/` unless `--dry-run` is used.
 
 ```bash
-# If the Docker Compose plugin is installed:
-docker compose up --build -d
+# Section-aware ingestion; preserves track_id, source_id, url, section_path,
+# citation_text, content_hash, freshness_status, embedding model, and dimensions.
+npm run rag:ingest -- --track clf-c02 --dry-run
+npm run rag:ingest -- --track clf-c02
+
+# Populate the pgvector schema from staged chunk artifacts. The default is dry-run;
+# add --apply to write rag_tracks, rag_sources, rag_chunks, and rag_ingest_jobs.
+npm run rag:populate-db -- --tracks clf-c02,aif-c01,shared
+VION_RAG_DATABASE_URL="$APP_DATABASE_URL" npm run rag:populate-db -- --apply --tracks clf-c02,aif-c01,shared
+
+# Reviewed pgvector migrations. Without --apply this only prints paths and DB metadata.
+npm run rag:migrate
+# Live apply is explicit and requires a migrator connection string from the environment.
+VION_RAG_DATABASE_URL="$MIGRATOR_DATABASE_URL" npm run rag:migrate -- --apply
+# If the host does not have psql installed, run the reviewed migration through the rag-db container instead.
+docker compose --profile rag exec -T rag-db \
+  psql -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-vion_rag}" -v ON_ERROR_STOP=1 \
+  < db/migrations/001_vion_rag_pgvector.up.sql
+# Rollback path, also explicit.
+VION_RAG_DATABASE_URL="$MIGRATOR_DATABASE_URL" npm run rag:migrate -- --apply --down
+
+# Embedding refresh planning only by default. It uses text-embedding-3-small metadata
+# and marks chunks pending_refresh when content_hash changes; no network or DB writes.
+npm run rag:embed -- --track clf-c02
+
+# Live pgvector/OpenAI writes are opt-in and refresh only chunks whose stored
+# content_hash is missing or changed. Requires the migrations above, OPENAI_API_KEY,
+# and a DB URL for vion_rag_app or another approved runtime writer role.
+OPENAI_API_KEY=... VION_RAG_DATABASE_URL="$APP_DATABASE_URL" npm run rag:embed -- --track clf-c02 --live
+
+# Local cited prototype retrieval. If no cited chunks are retrieved, the answer is refused.
+npm run rag:search -- --track clf-c02 --query "Amazon S3 storage"
+npm run rag:eval -- --track clf-c02
+```
+
+Controlled DB environment variables are recognized but never required for startup or dry-run CLI use:
+
+- `VION_RAG_DATABASE_URL` or `DATABASE_URL` for future pgvector-backed operations.
+- `VION_RAG_PGHOST`, `VION_RAG_PGPORT`, `VION_RAG_PGDATABASE` for operator-visible connection metadata. The Milestone 3 foundation host is loopback `127.0.0.1:55432` and database `vion_rag`.
+- Runtime roles expected by the foundation are `vion_rag_app`, `vion_rag_readonly`, and `vion_rag_migrator`. Do not hardcode passwords or commit `.env` files.
+
+The HTTP admin RAG routes are disabled by default and return 404 unless the server is started with `VION_RAG_API_ENABLED=1` (or tests call `createServer({ rag: { enabled: true } })`). When enabled without `VION_RAG_ADMIN_TOKEN`, requests are accepted only for localhost operator use (`localhost`, `127.0.0.1`, or `[::1]` hostnames). Any non-local/proxied host must satisfy the bearer-token guard by setting `VION_RAG_ADMIN_TOKEN` and sending either an `Authorization: Bearer <token>` or `X-Vion-Rag-Admin-Token: <token>` header. Do not commit this token, put it in `.env`, or expose these routes on public internet paths without an upstream private network/ACL plus the token guard.
+
+- `GET /api/admin/rag/ingest?trackId=clf-c02`
+- `POST /api/admin/rag/embed` with `{ "trackId": "clf-c02", "mode": "dry-run" }`
+- `POST /api/admin/rag/search` with `{ "trackId": "clf-c02", "query": "Amazon S3 storage", "limit": 3 }`
+- `POST /api/admin/rag/eval` with `{ "trackId": "clf-c02", "cases": [...] }`
+
+## Docker and private deployment
+
+The checked-in compose file is intentionally private-by-default: it publishes the app only on `127.0.0.1:9140`, not on a public interface. It also includes an opt-in `rag` profile for a loopback-only pgvector database on `127.0.0.1:55432`.
+
+Operational details for app deployment, pgvector startup, migrations, refresh/re-embed, backups, restores, logs, and smoke checks live in `docs/operations/rag-deployment.md`.
+
+```bash
+# Preferred private deployment path.
+docker compose up --build -d aws-cert-trainer
 curl http://127.0.0.1:9140/health
 
-# This host currently does not have docker compose installed; equivalent docker run:
+# If compose build complains about buildx on the host, prebuild once and reuse the image.
+docker build -t vion-learning:kanban .
+docker compose up -d --no-build aws-cert-trainer
+
+# Optional pgvector profile for live RAG writes.
+docker compose --profile rag up -d rag-db
+
+docker compose ps
+
+# Fallback only if the Docker Compose plugin is unavailable:
 docker build -t vion-learning:kanban .
 docker rm -f aws-cert-trainer 2>/dev/null || true
 docker run -d \
@@ -221,3 +292,30 @@ Quality checks worth keeping an eye on:
 - Correct answers should not cluster in one position across repeated runs.
 - Distractors should be meaningfully different, not generic duplicates with new shoes.
 - Every review screen should teach why the wrong answers are wrong, not merely announce that they are.
+
+## Document upload ingestion
+
+The learning site now exposes a private `/uploads` page for verified document intake. Upload routing is track-scoped, but the upload track list is intentionally broader than the learner track list:
+
+- `clf-c02` and `aif-c01` remain full learner tracks.
+- `german-b2-exam` is a personalized German B2 Exam tutor track built gradually from private user notes.
+- `shared` remains a private/shared intake lane.
+
+Phase-1 upload readiness is limited to these document inputs:
+
+- `pdf`
+- `txt`
+- `markdown` (`.md`, `.markdown`)
+
+ZIP bundle upload/unpacking is explicitly deferred and out of scope for this phase. Do not treat this list as general document-readiness: unsupported containers and rich office formats should remain in the manifest stage until a dedicated extractor, provenance mapping, and safety review exist.
+
+Workflow:
+
+1. Upload a supported document and fill in optional provenance fields.
+2. The server stores the raw file under `var/uploads/<batch_id>/raw/` and writes a manifest with SHA-256 hashes.
+3. User-upload verification bypasses only external source verification; local safety checks, hashes, track scoping, and provenance requirements still apply.
+4. The staging script accepts plain UTF-8 text/markdown manifests directly, otherwise it tries `pdftotext`, then `tesseract` when OCR is needed.
+5. Staged chunks are written to `var/uploads/<batch_id>/tracks/<track_id>-chunks.json`.
+6. Jenkins can then call `scripts/rag-populate-db.mjs --apply --chunks-dir <batch>/tracks` to write the vector DB, optionally with live embeddings.
+
+If the file cannot be extracted by the phase-1 path, the batch should stay in the manifest stage until a supported extractor is available. No citation, no answer; no extracted text, no staging.

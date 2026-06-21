@@ -5,8 +5,13 @@ import { createSourceIndex, createSourceRegistry, loadGeneratedSourceRecords, re
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
-const TRACK_IDS = ['clf-c02', 'aif-c01'];
-const TRACK_ACCENTS = { 'clf-c02': 'blue', 'aif-c01': 'purple' };
+const AWS_TRACK_IDS = ['clf-c02', 'aif-c01'];
+const TRACK_IDS = [...AWS_TRACK_IDS, 'german-b2-exam'];
+const GERMAN_B2_TRACK_ID = 'german-b2-exam';
+const GERMAN_B2_SOURCE_TYPES = ['pdf', 'txt', 'markdown'];
+const GERMAN_B2_LESSON_TABS = ['vocab', 'grammar', 'reading', 'writing'];
+export const LESSON_LIFECYCLE_STATES = ['draft', 'review', 'published'];
+const TRACK_ACCENTS = { 'clf-c02': 'blue', 'aif-c01': 'purple', 'german-b2-exam': 'amber', shared: 'slate' };
 const DIFFICULTY_ORDER = { foundation: 0, intermediate: 1, advanced: 2, review: 3 };
 
 function readJson(relativePath) {
@@ -267,6 +272,243 @@ function buildResourceCards(trackId, resources) {
   });
 }
 
+function chunkArray(items = [], size = 3) {
+  if (!Array.isArray(items) || size <= 0) return [];
+  const chunks = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
+}
+
+function normalizeTextBlock(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function terms(value) {
+  return normalizeTextBlock(value).toLowerCase().split(/[^a-z0-9]+/).filter((token) => token.length > 2);
+}
+
+function resourceSummary(resource) {
+  return normalizeTextBlock([resource.simple_analogy, resource.plain_english_explanation, resource.real_world_use_case].filter(Boolean).join(' '));
+}
+
+const CLF_C02_LEARNING_RESOURCE_MAP = {
+  '1.1': ['AWS Regions', 'Availability Zones (AZs)', 'Edge locations'],
+  '1.2': ['AWS Regions', 'Availability Zones (AZs)', 'AWS Organizations'],
+  '1.3': ['AWS Local Zones', 'AWS Wavelength'],
+  '1.4': ['Amazon EC2', 'AWS Lambda', 'AWS Organizations'],
+  '2.1': ['Amazon EC2', 'AWS Lambda', 'Amazon RDS'],
+  '2.2': ['AWS Key Management Service (KMS)', 'AWS Secrets Manager', 'AWS Certificate Manager (ACM)', 'AWS Shield', 'AWS WAF', 'Amazon GuardDuty', 'Amazon Inspector', 'AWS CloudTrail', 'AWS Security Hub'],
+  '2.3': ['IAM users', 'IAM groups', 'IAM roles', 'IAM policies', 'Multi-factor authentication (MFA)', 'AWS Organizations', 'AWS IAM Identity Center'],
+  '2.4': ['AWS Shield', 'AWS WAF', 'Amazon GuardDuty', 'Amazon Inspector', 'AWS CloudTrail', 'AWS Security Hub', 'AWS Trusted Advisor'],
+  '3.1': ['AWS Management Console', 'AWS CLI', 'SDKs', 'CloudFormation', 'AWS Elastic Beanstalk'],
+  '3.2': ['AWS Regions', 'Availability Zones (AZs)', 'Edge locations', 'AWS Local Zones', 'AWS Wavelength'],
+  '3.3': ['Amazon EC2', 'Auto Scaling', 'Elastic Load Balancing', 'AWS Lambda', 'Amazon ECS', 'Amazon EKS', 'AWS Fargate', 'AWS Lightsail', 'AWS Batch', 'AWS Elastic Beanstalk'],
+  '3.4': ['Amazon RDS', 'Amazon Aurora', 'Amazon DynamoDB', 'Amazon ElastiCache', 'Amazon MemoryDB', 'Amazon Neptune'],
+  '3.5': ['Amazon VPC', 'AWS subnets', 'route tables', 'security groups', 'network ACLs', 'Amazon Route 53', 'Amazon CloudFront', 'AWS Direct Connect', 'AWS VPN', 'Amazon API Gateway'],
+  '3.6': ['Amazon S3', 'Amazon S3 Glacier', 'Amazon EBS', 'Amazon EFS', 'Amazon FSx', 'AWS Storage Gateway', 'AWS Snow Family'],
+  '3.7': ['Amazon SageMaker', 'Amazon Comprehend', 'Amazon Kendra', 'Amazon Lex', 'Amazon Polly', 'Amazon Rekognition', 'Amazon Textract', 'Amazon Transcribe', 'Amazon Translate', 'Amazon Athena', 'AWS Glue', 'Amazon Kinesis', 'Amazon QuickSight', 'Amazon Redshift'],
+  '3.8': ['Amazon EventBridge', 'Amazon SNS', 'Amazon SQS', 'AWS Step Functions', 'Amazon CloudWatch', 'AWS CloudTrail', 'AWS Config', 'AWS Systems Manager', 'AWS Organizations', 'AWS Trusted Advisor', 'AWS Well-Architected Tool'],
+  '4.1': ['AWS Pricing Calculator', 'AWS Cost Explorer', 'AWS Budgets', 'AWS Organizations'],
+  '4.2': ['AWS Cost Explorer', 'AWS Budgets', 'AWS Trusted Advisor', 'AWS Organizations'],
+  '4.3': ['AWS Support', 'AWS Trusted Advisor', 'AWS Organizations'],
+};
+
+function matchResourcesForTask(track, taskId, seedTopics = []) {
+  const resources = track.serviceResources || [];
+  const wanted = CLF_C02_LEARNING_RESOURCE_MAP[taskId] || [];
+  const wantedSet = new Set(wanted.map((name) => name.toLowerCase()));
+  const topicTerms = seedTopics.flatMap((topic) => terms(topic));
+  const exactMatches = resources.filter((resource) => wantedSet.has(resource.name.toLowerCase()));
+  const fuzzyMatches = resources.filter((resource) => {
+    const haystack = normalizeTextBlock([
+      resource.name,
+      resource.family,
+      resource.simple_analogy,
+      resource.plain_english_explanation,
+      resource.real_world_use_case,
+      ...(resource.exam_clue_phrases || []),
+      ...(resource.common_misconceptions || []),
+      resource.comparison,
+    ].filter(Boolean).join(' ')).toLowerCase();
+    return topicTerms.some((term) => term.length > 2 && haystack.includes(term));
+  });
+  return uniqueBy([...exactMatches, ...fuzzyMatches], (resource) => resource.id).slice(0, 6);
+}
+
+function buildLearningChunks(track) {
+  const chunks = [];
+  for (const module of track.outline.modules || []) {
+    for (const task of module.tasks || []) {
+      const taskId = task.task_statement_id || task.id || 'unknown';
+      const topics = task.seed_topics || [];
+      const matchedResources = matchResourcesForTask(track, taskId, topics);
+      const topicGroups = chunkArray(topics, 2);
+      const sourceLinks = unique([
+        ...(matchedResources.flatMap((resource) => [resource.official_docs_url, ...(resource.source_links || [])])),
+      ]).filter(Boolean);
+      const sourceIds = unique(matchedResources.flatMap((resource) => resource.source_ids || []));
+      const resourceBullets = matchedResources.slice(0, 4).map((resource) => `${resource.name}: ${resourceSummary(resource)}`);
+      const fallbackSummary = `Study ${task.title.toLowerCase()} through ${topics.slice(0, 3).join(', ')}.`;
+
+      if (!topicGroups.length) {
+        chunks.push({
+          id: `${taskId}-chunk-1`,
+          module_id: module.module_id,
+          module_title: module.title,
+          domain_id: module.module_id.replace('clf-c02-domain-', ''),
+          domain_name: module.title,
+          task_statement_id: taskId,
+          title: task.title,
+          chunk_label: 'Chunk 1/1',
+          summary: fallbackSummary,
+          bullets: resourceBullets,
+          source_links: sourceLinks,
+          source_ids: sourceIds,
+        });
+        continue;
+      }
+
+      topicGroups.forEach((group, index) => {
+        const matchedForGroup = matchedResources.filter((resource) => {
+          const haystack = normalizeTextBlock([resource.name, resource.family, resource.plain_english_explanation, resource.simple_analogy, ...(resource.exam_clue_phrases || [])].filter(Boolean).join(' ')).toLowerCase();
+          return group.some((topic) => terms(topic).some((term) => term.length > 2 && haystack.includes(term))) || group.some((topic) => haystack.includes(topic.toLowerCase()));
+        });
+        const selectedResources = uniqueBy([...matchedForGroup, ...matchedResources], (resource) => resource.id).slice(0, 3);
+        chunks.push({
+          id: `${taskId}-chunk-${index + 1}`,
+          module_id: module.module_id,
+          module_title: module.title,
+          domain_id: module.module_id.replace('clf-c02-domain-', ''),
+          domain_name: module.title,
+          task_statement_id: taskId,
+          title: `${task.title} · ${group.join(' / ')}`,
+          chunk_label: `Chunk ${index + 1}/${topicGroups.length}`,
+          summary: `Focus on ${group.join(', ')}. ${selectedResources[0] ? selectedResources[0].plain_english_explanation : fallbackSummary}`,
+          bullets: [
+            ...group.map((topic) => `Topic: ${topic}`),
+            ...selectedResources.map((resource) => `${resource.name}: ${resource.simple_analogy} ${resource.real_world_use_case}`),
+          ].slice(0, 6),
+          source_links: unique([
+            ...sourceLinks,
+            ...selectedResources.flatMap((resource) => [resource.official_docs_url, ...(resource.source_links || [])]),
+          ]).filter(Boolean),
+          source_ids: unique([...sourceIds, ...selectedResources.flatMap((resource) => resource.source_ids || [])]),
+        });
+      });
+    }
+  }
+  return chunks;
+}
+
+function normalizeTopicText(value) {
+  return normalizeTextBlock(value).toLowerCase();
+}
+
+function buildTopicPageSections(track, { title, summary, families = [], keywords = [], chunkHints = [], focusServices = [] }) {
+  const chunks = buildLearningChunks(track);
+  const normalizedFamilies = new Set(families);
+  const normalizedKeywords = keywords.map((keyword) => normalizeTopicText(keyword));
+  const normalizedFocusServices = focusServices.map((service) => normalizeTopicText(service));
+  const matchedResources = track.serviceResources.filter((resource) => {
+    if (normalizedFamilies.has(resource.family)) return true;
+    const haystack = normalizeTopicText([resource.name, resource.family, resource.plain_english_explanation, resource.simple_analogy, resource.real_world_use_case, ...(resource.exam_clue_phrases || []), ...(resource.concepts || [])].filter(Boolean).join(' '));
+    return normalizedKeywords.some((keyword) => keyword && haystack.includes(keyword)) || normalizedFocusServices.some((service) => service && haystack.includes(service));
+  });
+  const matchedChunks = chunks.filter((chunk) => {
+    const haystack = normalizeTopicText([chunk.title, chunk.summary, ...(chunk.bullets || []), chunk.domain_name, chunk.task_statement_id].filter(Boolean).join(' '));
+    return chunkHints.some((hint) => haystack.includes(normalizeTopicText(hint))) || matchedResources.some((resource) => haystack.includes(normalizeTopicText(resource.name)));
+  });
+
+  const focusServiceNames = unique([
+    ...focusServices,
+    ...matchedResources.slice(0, 10).map((resource) => resource.name),
+  ]).slice(0, 10);
+
+  const sections = [];
+  if (matchedResources.length) {
+    sections.push({
+      heading: 'Core services',
+      items: matchedResources.slice(0, 8).map((resource) => ({
+        title: resource.name,
+        detail: `${resource.plain_english_explanation} ${resource.real_world_use_case}`,
+        notes: unique([resource.simple_analogy, ...(resource.exam_clue_phrases || []).slice(0, 2)]).filter(Boolean),
+        source_links: unique([resource.official_docs_url, ...(resource.source_links || [])]).filter(Boolean),
+        source_ids: resource.source_ids || [],
+      })),
+    });
+  }
+  if (matchedChunks.length) {
+    sections.push({
+      heading: 'Study blocks',
+      items: matchedChunks.slice(0, 6).map((chunk) => ({
+        title: chunk.title,
+        detail: chunk.summary,
+        notes: chunk.bullets || [],
+        source_links: chunk.source_links || [],
+        source_ids: chunk.source_ids || [],
+      })),
+    });
+  }
+  if (!sections.length) {
+    sections.push({
+      heading: 'Study blocks',
+      items: chunks.slice(0, 4).map((chunk) => ({
+        title: chunk.title,
+        detail: chunk.summary,
+        notes: chunk.bullets || [],
+        source_links: chunk.source_links || [],
+        source_ids: chunk.source_ids || [],
+      })),
+    });
+  }
+
+  const sourceLinks = unique([
+    ...matchedResources.flatMap((resource) => [resource.official_docs_url, ...(resource.source_links || [])]),
+    ...matchedChunks.flatMap((chunk) => chunk.source_links || []),
+  ]).filter(Boolean);
+  const sourceIds = unique([
+    ...matchedResources.flatMap((resource) => resource.source_ids || []),
+    ...matchedChunks.flatMap((chunk) => chunk.source_ids || []),
+  ]);
+  const chunkIds = unique(matchedChunks.map((chunk) => chunk.id));
+
+  return {
+    slug: title === 'Cloud components' ? 'cloud-components' : title === 'Security and compliance' ? 'security' : slugify(title),
+    title,
+    summary,
+    service_names: focusServiceNames,
+    focus_services: focusServiceNames,
+    chunk_ids: chunkIds,
+    source_links: sourceLinks,
+    source_ids: sourceIds,
+    sections,
+  };
+}
+
+function buildTopicPages(track) {
+  if (track.id !== 'clf-c02') return [];
+  return [
+    buildTopicPageSections(track, {
+      title: 'Cloud components',
+      summary: 'A separated study page for compute, storage, networking, observability, and other cloud building blocks that show up in CLF-C02 scenarios.',
+      families: ['Global infrastructure', 'Compute', 'Storage', 'Networking/CDN', 'Databases/analytics', 'Integration/app', 'Management/observability'],
+      keywords: ['cloud', 'region', 'availability zone', 'compute', 'storage', 'networking', 'observability', 'database', 'integration'],
+      chunkHints: ['cloud', 'ec2', 's3', 'vpc', 'cloudwatch', 'route 53', 'load balancer', 'rds', 'dynamodb'],
+      focusServices: ['Amazon EC2', 'Amazon S3', 'Amazon VPC', 'Amazon CloudWatch', 'AWS CloudTrail', 'AWS Organizations'],
+    }),
+    buildTopicPageSections(track, {
+      title: 'Security and compliance',
+      summary: 'A separated study page for security, compliance, identity, protection, audit, and governance topics that CLF-C02 asks about when the question smells like risk.',
+      families: ['IAM/security', 'Management/observability'],
+      keywords: ['security', 'compliance', 'identity', 'audit', 'protection', 'encryption', 'governance', 'mfa', 'cloudtrail', 'waf', 'guardduty', 'kms'],
+      chunkHints: ['security', 'iam', 'cloudtrail', 'guardduty', 'security hub', 'waf', 'kms', 'mfa', 'shared responsibility'],
+      focusServices: ['AWS IAM', 'IAM users', 'IAM roles', 'IAM policies', 'AWS CloudTrail', 'AWS Security Hub', 'Amazon GuardDuty', 'AWS WAF', 'AWS Key Management Service (KMS)'],
+    }),
+  ];
+}
+
 function normalizeQuestion(rawQuestion, sourceIndex) {
   const options = rawQuestion.options.map((candidate) => ({ id: candidate.id, label: candidate.label, explanation: candidate.explanation, is_correct: Boolean(candidate.is_correct) }));
   const correct = options.find((candidate) => candidate.is_correct);
@@ -434,6 +676,357 @@ function buildTrack(trackId) {
   };
 }
 
+function buildSharedTrack() {
+  const generatedSources = loadGeneratedSourceRecords('shared');
+  const fallbackSources = [
+    {
+      id: 'shared:aws-doc:shared-responsibility-model',
+      track_id: 'shared',
+      title: 'Shared Responsibility Model',
+      source_type: 'aws_docs',
+      url: 'https://aws.amazon.com/compliance/shared-responsibility-model/',
+      publisher: 'AWS',
+      aws_service: [],
+      domains: [],
+      concepts: ['shared responsibility', 'security of the cloud', 'security in the cloud'],
+      summary: 'Cross-certification AWS source for understanding how AWS and customers divide cloud security responsibilities. Use as cited background only; certification-specific cards and questions remain in their own tracks.',
+      extracted_facts: [
+        { fact: 'AWS is responsible for security of the cloud, while customers are responsible for security in the cloud.', fact_type: 'responsibility_boundary', source_locator: 'Shared Responsibility Model overview', confidence: 'high' },
+      ],
+      exam_relevance: { exam_code: 'SHARED', relevance_level: 'supporting', why_it_matters: 'Background source that can inform multiple AWS certification tracks when cited explicitly.', question_use: ['study_plan', 'quiz_distractor_context'], separation_note: 'Shared retrieval source only; do not materialize CLF-C02 or AIF-C01 card/question content here.' },
+      last_checked_at: '2026-06-03T00:00:00.000Z',
+      retrieved_at: '2026-06-03T00:00:00.000Z',
+      content_hash: null,
+      license_or_usage_note: 'AWS public documentation; summarize and cite.',
+      citation_text: 'AWS, Shared Responsibility Model, https://aws.amazon.com/compliance/shared-responsibility-model/',
+      freshness_status: 'unverified',
+      notes: ['Shared source seed used for cross-certification retrieval only.'],
+      stale_after_days: 45,
+    },
+  ];
+  const sources = generatedSources.length ? generatedSources : fallbackSources;
+  return {
+    id: 'shared',
+    code: 'SHARED',
+    name: 'Shared AWS source references',
+    accent: TRACK_ACCENTS.shared,
+    last_verified_date: '2026-06-03',
+    official_facts: ['Shared sources provide cited background across certification tracks without carrying certification-specific cards or questions.'],
+    domains: [],
+    outline: { modules: [] },
+    cards: [],
+    questions: [],
+    questionBank: [],
+    conceptRecords: [],
+    serviceResources: [],
+    studyPlans: {},
+    consoleGuides: [],
+    sources,
+    sourceIndex: createSourceIndex(sources),
+    videos: [],
+    milestones: [
+      { track_id: 'shared', id: 'shared-m1', title: 'Review cited shared sources', complete: false },
+    ],
+    limitations: ['Shared retrieval is source-only. It must not invent cards, questions, or certification-specific claims without cited track evidence.'],
+  };
+}
+
+const GERMAN_B2_LESSON1_SOURCE_ID = `${GERMAN_B2_TRACK_ID}:embedded:lesson-1:lesson-1-corpus.md`;
+const GERMAN_B2_LESSON1_NOTES_SOURCE_ID = `${GERMAN_B2_TRACK_ID}:embedded:lesson-1:lesson-1.md`;
+const GERMAN_B2_LESSON1_CHUNK_ID = `${GERMAN_B2_TRACK_ID}:embedded:lesson-1:chunk:lesson-1-corpus`;
+
+function embeddedGermanB2Lesson1Sources() {
+  return [
+    {
+      id: GERMAN_B2_LESSON1_SOURCE_ID,
+      track_id: GERMAN_B2_TRACK_ID,
+      title: 'German B2 lesson 1 corpus',
+      source_type: 'markdown',
+      url: '',
+      source_file: 'data/sources/german-b2/lesson-1-corpus.md',
+      publisher: 'User-provided notes',
+      concepts: ['lesson 1', 'German B2', 'vocabulary', 'grammar', 'reading', 'writing'],
+      summary: 'Embedded lesson-1 corpus with source-backed vocabulary, grammar, reading, and writing exercises.',
+      citation_text: 'data/sources/german-b2/lesson-1-corpus.md',
+      freshness_status: 'embedded_source',
+      refresh_status: 'embedded_source',
+      license_or_usage_note: 'Internal user-provided study material; preserve provenance and do not present as a verified public article.',
+    },
+    {
+      id: GERMAN_B2_LESSON1_NOTES_SOURCE_ID,
+      track_id: GERMAN_B2_TRACK_ID,
+      title: 'German B2 lesson 1 source notes',
+      source_type: 'markdown',
+      url: '',
+      source_file: 'data/sources/german-b2/lesson-1.md',
+      publisher: 'User-provided notes',
+      concepts: ['lesson 1', 'German B2', 'source notes'],
+      summary: 'Embedded lesson-1 study notes used as supporting provenance for the learner-facing lesson.',
+      citation_text: 'data/sources/german-b2/lesson-1.md',
+      freshness_status: 'embedded_source',
+      refresh_status: 'embedded_source',
+      license_or_usage_note: 'Internal user-provided study material; preserve provenance and do not present as a verified public article.',
+    },
+  ];
+}
+
+function embeddedLesson1Source({ sourceId = GERMAN_B2_LESSON1_SOURCE_ID, sourceFile = 'data/sources/german-b2/lesson-1-corpus.md', lines = '' } = {}) {
+  return {
+    track_id: GERMAN_B2_TRACK_ID,
+    source_id: sourceId,
+    source_file: sourceFile,
+    source_type: 'markdown',
+    citation_text: `${sourceFile}${lines ? ` lines ${lines}` : ''}`,
+    freshness_status: 'embedded_source',
+    chunk_id: GERMAN_B2_LESSON1_CHUNK_ID,
+  };
+}
+
+function embeddedLesson1Vocab(id, term, hungarian, extra = {}) {
+  return {
+    id: `embedded-lesson-1-vocab-${id}`,
+    kind: 'vocab',
+    term,
+    hungarian,
+    text: `${term} — ${hungarian}`,
+    ...embeddedLesson1Source({ lines: extra.lines || '9-24' }),
+    ...extra,
+  };
+}
+
+function embeddedLesson1Grammar(id, text, extra = {}) {
+  return {
+    id: `embedded-lesson-1-grammar-${id}`,
+    kind: 'grammar',
+    text,
+    ...embeddedLesson1Source({ lines: extra.lines || '26-60' }),
+    ...extra,
+  };
+}
+
+function embeddedLesson1Writing(id, text, extra = {}) {
+  return {
+    id: `embedded-lesson-1-writing-${id}`,
+    kind: 'writing',
+    text,
+    ...embeddedLesson1Source({ lines: extra.lines || '75-100' }),
+    retrieval: {
+      track_id: GERMAN_B2_TRACK_ID,
+      lesson_id: 'german-b2-exam:lesson:embedded-lesson-1',
+      retrieval_mode: 'embedded_lesson_1_notes',
+      vector_status: 'not_required_for_embedded_source',
+      depends_on_vocab: extra.depends_on_vocab || ['gemeinsam', 'regelmäßig', 'erfolgreich', 'üben', 'lernen'],
+      source_ids: [GERMAN_B2_LESSON1_SOURCE_ID],
+      chunk_ids: [GERMAN_B2_LESSON1_CHUNK_ID],
+    },
+    ...extra,
+  };
+}
+
+function buildEmbeddedGermanB2Lesson1() {
+  const content = [
+    embeddedLesson1Vocab('die-erfahrung', 'die Erfahrung', 'tapasztalat'),
+    embeddedLesson1Vocab('gemeinsam', 'gemeinsam', 'közös, együtt'),
+    embeddedLesson1Vocab('der-zug', 'der Zug', 'vonat'),
+    embeddedLesson1Vocab('die-bahn', 'die Bahn', 'vasút, vonat, vasúttal', { note: 'In mit der Bahn = vonattal / vasúttal' }),
+    embeddedLesson1Vocab('die-veranstaltung', 'die Veranstaltung', 'rendezvény, esemény'),
+    embeddedLesson1Vocab('der-organisator', 'der Organisator', 'szervező'),
+    embeddedLesson1Vocab('die-organisation', 'die Organisation', 'szervezés, szervezet', { note: 'More natural than Organisierung in standard German' }),
+    embeddedLesson1Vocab('der-wettkampf', 'der Wettkampf', 'verseny'),
+    embeddedLesson1Vocab('erfolgreich', 'erfolgreich', 'sikeres'),
+    embeddedLesson1Vocab('der-fitnessraum', 'der Fitnessraum', 'fitneszterem, edzőterem', { note: 'Correct spelling: Fitnessraum' }),
+    embeddedLesson1Vocab('die-weltmeisterschaft', 'die Weltmeisterschaft', 'világbajnokság'),
+    embeddedLesson1Vocab('der-bruder', 'der Bruder', 'testvér / fiútestvér', { note: 'In the sentence, älterer Bruder is more natural than größerer Bruder' }),
+    ...[
+      ['lernen', 'tanulni / megtanulni', 'ich lerne', 'ich lernte', 'ich habe gelernt', false],
+      ['sehen', 'látni / megnézni', 'ich sehe', 'ich sah', 'ich habe gesehen', true],
+      ['haben', 'van / birtokol / rendelkezik', 'ich habe', 'ich hatte', 'ich habe gehabt', true],
+      ['sein', 'lenni', 'ich bin', 'ich war', 'ich bin gewesen', true],
+      ['werden', 'válni / lesz', 'ich werde', 'ich wurde', 'ich bin geworden', true],
+      ['fahren', 'utazni / menni járművel', 'ich fahre', 'ich fuhr', 'ich bin gefahren', true],
+      ['besuchen', 'meglátogatni / felkeresni', 'ich besuche', 'ich besuchte', 'ich habe besucht', false],
+      ['teilnehmen', 'részt venni', 'ich nehme teil', 'ich nahm teil', 'ich habe teilgenommen', true],
+      ['können', 'tud / képes valamire', 'ich kann', 'ich konnte', 'ich habe gekonnt', true],
+      ['müssen', 'muszáj / kell', 'ich muss', 'ich musste', 'ich habe gemusst', true],
+      ['spielen', 'játszani / sportolni', 'ich spiele', 'ich spielte', 'ich habe gespielt', false],
+    ].map(([term, hungarian, present, past, perfect, irregular]) => embeddedLesson1Vocab(term, term, hungarian, {
+      part_of_speech: 'verb',
+      verb_forms: { present, past, perfect },
+      irregular,
+      lines: '28-42',
+    })),
+    embeddedLesson1Grammar('verb-forms', 'Review present, simple past, and perfect forms for lernen, sehen, haben, sein, werden, fahren, besuchen, teilnehmen, können, müssen, and spielen.', { lines: '28-42' }),
+    embeddedLesson1Grammar('teilnehmen-dativ', 'teilnehmen an + Dativ', { lines: '44-48' }),
+    embeddedLesson1Grammar('fahren-perfect', 'For movement, fahren often takes sein in the perfect tense.', { lines: '44-48' }),
+    embeddedLesson1Grammar('werden-perfect', 'werden often has the perfect bin geworden when it means “to become.”', { lines: '44-48' }),
+    embeddedLesson1Grammar('example-sentences', 'Use the source examples: ich bin nach Deutschland gefahren; ich war gestern im Kino und habe den neuen Film gesehen; wir haben den Weihnachtsmarkt besucht; ich habe 10 Jahre Fußball gespielt.', { lines: '50-60' }),
+    {
+      id: 'embedded-lesson-1-reading-context',
+      kind: 'reading',
+      exercise_type: 'source_backed_reading',
+      title: 'Source-backed reading exercise from lesson 1 notes',
+      text: 'Gemeinsam lernt man oft besser. Eine Erfahrung im Ausland kann dabei sehr hilfreich sein. Ich bin nach Deutschland gefahren, um dort Deutsch zu lernen und mehr über die Sprache und die Kultur zu sehen. Mit der Bahn kann man viele Orte besuchen. In einer Veranstaltung oder einem Wettkampf lernt man auch neue Menschen kennen. Wenn man erfolgreich sein will, muss man regelmäßig üben.',
+      questions: [
+        'Wohin ist die Person gefahren?',
+        'Warum ist die Erfahrung wichtig?',
+        'Womit kann man viele Orte besuchen?',
+        'Was braucht man, um erfolgreich zu sein?',
+      ],
+      ...embeddedLesson1Source({ lines: '62-73' }),
+      retrieval: {
+        track_id: GERMAN_B2_TRACK_ID,
+        lesson_id: 'german-b2-exam:lesson:embedded-lesson-1',
+        retrieval_mode: 'embedded_lesson_1_notes',
+        vector_status: 'not_required_for_embedded_source',
+        article_source_status: 'no_researched_article_source_available',
+        source_ids: [GERMAN_B2_LESSON1_SOURCE_ID],
+        chunk_ids: [GERMAN_B2_LESSON1_CHUNK_ID],
+      },
+    },
+    embeddedLesson1Writing('short-essay-language-learning', 'Short essay: Wie lernt man am besten eine Sprache? Verwende mindestens drei Wörter aus Lektion 1: gemeinsam, regelmäßig, erfolgreich, üben, lernen.', { prompt_type: 'short_essay', lines: '75-92' }),
+    embeddedLesson1Writing('learning-experience', 'Schreibe 5–6 Sätze über deine eigene Lernerfahrung: Was lernst du? Wie lernst du? Welche Methode hilft dir am meisten? Lernst du lieber allein oder gemeinsam mit anderen?', { prompt_type: 'short_essay', lines: '94-100', depends_on_vocab: ['die Erfahrung', 'gemeinsam', 'lernen'] }),
+  ];
+  const reviewPacket = {
+    schema_version: 'german-b2-note-review/v1',
+    content_version: 1,
+    review_status: 'review',
+    chunk_ids: [GERMAN_B2_LESSON1_CHUNK_ID],
+    validation: {
+      issues: ['No separate researched German article source is available; reading is rendered as source-backed lesson-note exercise instead of fabricated article text.'],
+      policy: {
+        vocab_requires_hungarian: true,
+        verb_forms_required: ['present', 'past', 'perfect'],
+        irregular_verbs_marked: true,
+        mixed_german_hungarian_allowed: true,
+        edits_require_re_review: true,
+        zip_unpacking_supported: false,
+      },
+    },
+    content,
+  };
+  return {
+    id: 'german-b2-exam:lesson:embedded-lesson-1',
+    track_id: GERMAN_B2_TRACK_ID,
+    sequence: 1,
+    title: 'Lektion 1: Sprache lernen und Erfahrungen',
+    status: 'review',
+    source_type: 'markdown',
+    source_ids: [GERMAN_B2_LESSON1_SOURCE_ID, GERMAN_B2_LESSON1_NOTES_SOURCE_ID],
+    mutable: false,
+    content_version: 1,
+    review_packet: reviewPacket,
+    review_history: [],
+    provenance: lessonProvenance({ trackId: GERMAN_B2_TRACK_ID, sourceType: 'markdown', sourceIds: [GERMAN_B2_LESSON1_SOURCE_ID, GERMAN_B2_LESSON1_NOTES_SOURCE_ID], reviewPacket }),
+    retrieval: {
+      track_id: GERMAN_B2_TRACK_ID,
+      lesson_id: 'german-b2-exam:lesson:embedded-lesson-1',
+      selection_flow: 'embedded_lesson_1_notes -> lesson_1_payload_tabs -> UI sections',
+      vector_status: 'not_required_for_embedded_source',
+      db_vector_status: 'embedding_required_until_live_embeddings_exist',
+      article_source_status: 'no_researched_article_source_available',
+      anti_fabrication_policy: 'no external article or later-lesson vocabulary is generated without cited lesson-1 source chunks',
+    },
+    published_version: null,
+    published_at: null,
+    created_at: '2026-06-17T00:00:00.000Z',
+    updated_at: '2026-06-17T00:00:00.000Z',
+  };
+}
+
+function buildGermanB2Track() {
+  const sources = uniqueBy([...embeddedGermanB2Lesson1Sources(), ...loadGeneratedSourceRecords(GERMAN_B2_TRACK_ID)], (source) => source.id);
+  const embeddedLesson1 = buildEmbeddedGermanB2Lesson1();
+  return {
+    id: GERMAN_B2_TRACK_ID,
+    code: 'GERMAN B2',
+    name: 'German B2 Exam',
+    accent: TRACK_ACCENTS[GERMAN_B2_TRACK_ID],
+    purpose: 'personalized tutor from user notes',
+    goal: 'Prep for the B2 German exam over ~1 year',
+    source_types: GERMAN_B2_SOURCE_TYPES,
+    lesson_lifecycle_states: LESSON_LIFECYCLE_STATES,
+    last_verified_date: null,
+    official_facts: [],
+    domains: [],
+    outline: { modules: [lessonModule(embeddedLesson1)] },
+    lessons: [embeddedLesson1],
+    cards: [],
+    questions: [],
+    questionBank: [],
+    conceptRecords: [],
+    serviceResources: [],
+    studyPlans: {},
+    consoleGuides: [],
+    sources,
+    sourceIndex: createSourceIndex(sources),
+    videos: [],
+    milestones: [
+      { track_id: GERMAN_B2_TRACK_ID, id: `${GERMAN_B2_TRACK_ID}-m1`, title: 'Publish the first reviewed lesson from user notes', complete: false },
+    ],
+    limitations: ['German B2 lessons are created only from user-provided pdf, txt, or markdown notes. Do not invent future lessons or unpack ZIP bundles.'],
+  };
+}
+
+function requiredLessonString(value, field, id) {
+  const normalized = normalizeTextBlock(value);
+  if (!normalized) throw new Error(`${id} missing ${field}`);
+  return normalized;
+}
+
+function assertGermanB2LessonTarget(track) {
+  if (track.id !== GERMAN_B2_TRACK_ID) throw new Error(`${track.id} does not accept personalized user-note lessons`);
+}
+
+function validateLessonSourceType(sourceType) {
+  if (!GERMAN_B2_SOURCE_TYPES.includes(sourceType)) throw new Error(`unsupported source_type ${sourceType}`);
+}
+
+function validateLessonStatus(status) {
+  if (!LESSON_LIFECYCLE_STATES.includes(status)) throw new Error(`unsupported lesson status ${status}`);
+}
+
+function lessonProvenance({ trackId, sourceType, sourceIds = [], reviewPacket = null }) {
+  const contentSourceIds = Array.isArray(reviewPacket?.content)
+    ? reviewPacket.content.map((item) => item.source_id).filter(Boolean)
+    : [];
+  return {
+    track_id: trackId,
+    source_type: sourceType,
+    source_ids: unique([...sourceIds, ...contentSourceIds]),
+    chunk_ids: unique(reviewPacket?.chunk_ids || []),
+    citation_policy: {
+      citation_required: true,
+      preserve_user_upload_provenance: true,
+      no_citation_no_answer: true,
+    },
+  };
+}
+
+function lessonModule(lesson) {
+  return {
+    module_id: lesson.id,
+    title: lesson.title,
+    status: lesson.status,
+    source_type: lesson.source_type,
+    source_ids: lesson.source_ids,
+    content_version: lesson.content_version,
+    tasks: [],
+  };
+}
+
+function syncLessonModule(track, lesson) {
+  const module = track.outline.modules.find((candidate) => candidate.module_id === lesson.id);
+  if (!module) return;
+  module.status = lesson.status;
+  module.content_version = lesson.content_version;
+  module.source_ids = lesson.source_ids;
+}
+
+function pushLessonHistory(lesson, event) {
+  lesson.review_history = Array.isArray(lesson.review_history) ? lesson.review_history : [];
+  lesson.review_history.push({ at: new Date().toISOString(), ...event });
+}
+
 function initialProgress(track) {
   return {
     track_id: track.id,
@@ -499,9 +1092,12 @@ function repeatToCount(items, count) {
 }
 
 export function loadLearningModel() {
-  const tracks = Object.fromEntries(TRACK_IDS.map((id) => [id, buildTrack(id)]));
+  const awsTracks = Object.fromEntries(AWS_TRACK_IDS.map((id) => [id, buildTrack(id)]));
+  const tracks = { ...awsTracks, [GERMAN_B2_TRACK_ID]: buildGermanB2Track() };
   const progress = Object.fromEntries(Object.values(tracks).map((track) => [track.id, initialProgress(track)]));
-  const sourceRegistry = createSourceRegistry(Object.fromEntries(Object.values(tracks).map((track) => [track.id, track.sources])));
+  const recordsByTrack = Object.fromEntries(Object.values(tracks).map((track) => [track.id, track.sources]));
+  recordsByTrack.shared = buildSharedTrack().sources;
+  const sourceRegistry = createSourceRegistry(recordsByTrack);
   return { app: { name: 'Vion Learning', version: '0.1.0' }, tracks, progress, logs: [], runtime: { quiz_serial: 0, track_serials: {} }, sourceRegistry };
 }
 
@@ -509,6 +1105,169 @@ export function getTrack(model, trackId) {
   const track = model.tracks[trackId];
   if (!track) throw new Error(`Unknown track: ${trackId}`);
   return track;
+}
+
+export function appendLesson(model, { trackId, lesson }) {
+  const track = getTrack(model, trackId);
+  assertGermanB2LessonTarget(track);
+  const id = requiredLessonString(lesson?.id, 'lesson.id', GERMAN_B2_TRACK_ID);
+  const title = requiredLessonString(lesson?.title, 'lesson.title', id);
+  const sourceType = requiredLessonString(lesson?.source_type, 'lesson.source_type', id);
+  const status = lesson?.status || 'draft';
+  validateLessonSourceType(sourceType);
+  validateLessonStatus(status);
+  if (status === 'published') throw new Error(`Lesson ${id} cannot be appended as published; submit for review and approve it before publish`);
+  if (track.lessons.some((candidate) => candidate.id === id)) throw new Error(`Lesson ${id} already exists`);
+  const now = new Date().toISOString();
+  const contentVersion = Number(lesson?.content_version || lesson?.review_packet?.content_version || 1);
+  const reviewPacket = lesson?.review_packet
+    ? {
+      mutable: true,
+      ...lesson.review_packet,
+      content_version: contentVersion,
+      review_status: lesson.review_packet.review_status || (status === 'published' ? 'review' : status),
+    }
+    : null;
+  const normalized = {
+    id,
+    track_id: track.id,
+    sequence: track.lessons.length + 1,
+    title,
+    status,
+    source_type: sourceType,
+    source_ids: unique(lesson?.source_ids || []),
+    mutable: true,
+    content_version: contentVersion,
+    review_packet: reviewPacket,
+    review_history: Array.isArray(lesson?.review_history) ? [...lesson.review_history] : [],
+    provenance: lessonProvenance({ trackId: track.id, sourceType, sourceIds: unique(lesson?.source_ids || []), reviewPacket }),
+    published_version: lesson?.published_version || null,
+    created_at: lesson?.created_at || now,
+    updated_at: lesson?.updated_at || lesson?.created_at || now,
+  };
+  track.lessons.push(normalized);
+  track.outline.modules.push(lessonModule(normalized));
+  return normalized;
+}
+
+export function transitionLesson(model, { trackId, lessonId, status }) {
+  const track = getTrack(model, trackId);
+  assertGermanB2LessonTarget(track);
+  validateLessonStatus(status);
+  const lesson = track.lessons.find((candidate) => candidate.id === lessonId);
+  if (!lesson) throw new Error(`Lesson ${lessonId} does not belong to track ${trackId}`);
+  const previousStatus = lesson.status;
+  const now = new Date().toISOString();
+  lesson.review_history = Array.isArray(lesson.review_history) ? lesson.review_history : [];
+  if (status === 'published') {
+    if (previousStatus !== 'review') throw new Error(`Lesson ${lessonId} must be in review before publish`);
+    if (lesson.review_packet?.review_status !== 'approved') throw new Error(`Lesson ${lessonId} must be approved before publish`);
+    lesson.published_version = Number(lesson.content_version || lesson.review_packet?.content_version || 1);
+    lesson.published_at = now;
+    lesson.provenance = lessonProvenance({ trackId: track.id, sourceType: lesson.source_type, sourceIds: lesson.source_ids, reviewPacket: lesson.review_packet });
+    lesson.review_history.push({
+      at: now,
+      action: 'published',
+      from_status: previousStatus,
+      to_status: status,
+      content_version: lesson.published_version,
+      provenance: lesson.provenance,
+    });
+  } else if (previousStatus !== status) {
+    lesson.review_history.push({
+      at: now,
+      action: 'status_transition',
+      from_status: previousStatus,
+      to_status: status,
+      content_version: Number(lesson.content_version || 1),
+    });
+  }
+  lesson.status = status;
+  lesson.updated_at = now;
+  const module = track.outline.modules.find((candidate) => candidate.module_id === lessonId);
+  if (module) {
+    module.status = status;
+    module.content_version = lesson.content_version;
+    module.review_status = lesson.review_packet?.review_status || status;
+  }
+  return lesson;
+}
+
+export function reviewLessonContent(model, { trackId, lessonId, reviewer = 'unknown', decision, notes = '' }) {
+  const track = getTrack(model, trackId);
+  assertGermanB2LessonTarget(track);
+  const lesson = track.lessons.find((candidate) => candidate.id === lessonId);
+  if (!lesson) throw new Error(`Lesson ${lessonId} does not belong to track ${trackId}`);
+  if (lesson.status !== 'review') throw new Error(`Lesson ${lessonId} must be in review before review decision`);
+  if (!['approved', 'changes_requested'].includes(decision)) throw new Error(`unsupported review decision ${decision}`);
+  const issues = lesson.review_packet?.validation?.issues || [];
+  if (decision === 'approved' && issues.length) throw new Error(`Lesson ${lessonId} has validation issues and cannot be approved`);
+  const now = new Date().toISOString();
+  lesson.review_packet = {
+    mutable: true,
+    ...(lesson.review_packet || {}),
+    review_status: decision === 'approved' ? 'approved' : 'needs_edit',
+    reviewed_at: now,
+    reviewed_by: reviewer,
+    review_notes: notes,
+  };
+  lesson.review_history = Array.isArray(lesson.review_history) ? lesson.review_history : [];
+  lesson.review_history.push({
+    at: now,
+    action: decision === 'approved' ? 'review_approved' : 'changes_requested',
+    reviewer,
+    decision,
+    notes,
+    content_version: Number(lesson.content_version || lesson.review_packet?.content_version || 1),
+    from_status: lesson.status,
+    to_status: decision === 'approved' ? 'review' : 'draft',
+  });
+  if (decision === 'changes_requested') lesson.status = 'draft';
+  lesson.updated_at = now;
+  const module = track.outline.modules.find((candidate) => candidate.module_id === lessonId);
+  if (module) {
+    module.status = lesson.status;
+    module.review_status = lesson.review_packet.review_status;
+  }
+  return lesson.review_packet;
+}
+
+export function editLessonContent(model, { trackId, lessonId, review_packet: reviewPacket, editor = 'unknown' }) {
+  const track = getTrack(model, trackId);
+  assertGermanB2LessonTarget(track);
+  const lesson = track.lessons.find((candidate) => candidate.id === lessonId);
+  if (!lesson) throw new Error(`Lesson ${lessonId} does not belong to track ${trackId}`);
+  const previousVersion = Number(lesson.content_version || lesson.review_packet?.content_version || 1);
+  const nextVersion = previousVersion + 1;
+  const now = new Date().toISOString();
+  const nextPacket = {
+    mutable: true,
+    ...(reviewPacket || {}),
+    content_version: nextVersion,
+    review_status: reviewPacket?.validation?.issues?.length ? 'needs_edit' : 'review',
+  };
+  lesson.review_history = Array.isArray(lesson.review_history) ? lesson.review_history : [];
+  lesson.review_history.push({
+    at: now,
+    action: 'edited',
+    editor,
+    from_version: previousVersion,
+    to_version: nextVersion,
+    from_status: lesson.status,
+    to_status: 'review',
+  });
+  lesson.review_packet = nextPacket;
+  lesson.content_version = nextVersion;
+  lesson.provenance = lessonProvenance({ trackId: track.id, sourceType: lesson.source_type, sourceIds: lesson.source_ids, reviewPacket: nextPacket });
+  lesson.status = 'review';
+  lesson.updated_at = now;
+  const module = track.outline.modules.find((candidate) => candidate.module_id === lessonId);
+  if (module) {
+    module.status = lesson.status;
+    module.content_version = nextVersion;
+    module.review_status = nextPacket.review_status;
+  }
+  return lesson;
 }
 
 export function createQuiz(model, { trackId, mode = 'quick', domainId, count } = {}) {
@@ -639,6 +1398,37 @@ export function landingPayload(model) {
   };
 }
 
+function lessonTabsForPayload(lesson) {
+  const content = Array.isArray(lesson.review_packet?.content) ? lesson.review_packet.content : [];
+  return Object.fromEntries(GERMAN_B2_LESSON_TABS.map((tab) => [
+    tab,
+    content.filter((item) => item.kind === tab),
+  ]));
+}
+
+function lessonsForPayload(track) {
+  if (track.id !== GERMAN_B2_TRACK_ID) return [];
+  return (track.lessons || []).map((lesson) => ({
+    id: lesson.id,
+    track_id: lesson.track_id,
+    sequence: lesson.sequence,
+    title: lesson.title,
+    status: lesson.status,
+    source_type: lesson.source_type,
+    source_ids: lesson.source_ids || [],
+    content_version: lesson.content_version,
+    published_version: lesson.published_version || null,
+    published_at: lesson.published_at || null,
+    review_status: lesson.review_packet?.review_status || lesson.status,
+    provenance: lesson.provenance || lessonProvenance({ trackId: track.id, sourceType: lesson.source_type, sourceIds: lesson.source_ids, reviewPacket: lesson.review_packet }),
+    retrieval: lesson.retrieval || null,
+    review_history: lesson.review_history || [],
+    tabs: lessonTabsForPayload(lesson),
+    validation: lesson.review_packet?.validation || null,
+    updated_at: lesson.updated_at,
+  }));
+}
+
 export function trackPayload(model, trackId) {
   const track = getTrack(model, trackId);
   const sourceStatusCounts = track.sources.reduce((acc, source) => {
@@ -647,13 +1437,28 @@ export function trackPayload(model, trackId) {
     return acc;
   }, {});
   return {
-    track: { id: track.id, code: track.code, name: track.name, accent: track.accent, last_verified_date: track.last_verified_date, official_facts: track.official_facts },
+    track: {
+      id: track.id,
+      code: track.code,
+      name: track.name,
+      accent: track.accent,
+      purpose: track.purpose || null,
+      goal: track.goal || null,
+      source_types: track.source_types || [],
+      lesson_lifecycle_states: track.lesson_lifecycle_states || [],
+      last_verified_date: track.last_verified_date,
+      official_facts: track.official_facts,
+    },
     progress: model.progress[trackId],
     domains: track.domains,
     services: unique([...track.cards.flatMap((card) => card.services), ...track.serviceResources.map((resource) => resource.name), ...track.questionBank.flatMap((question) => question.services)]),
     serviceResources: track.serviceResources,
     conceptRecords: track.conceptRecords,
     learningPath: track.outline.modules,
+    lessonTabs: track.id === GERMAN_B2_TRACK_ID ? GERMAN_B2_LESSON_TABS : [],
+    lessons: lessonsForPayload(track),
+    learningChunks: buildLearningChunks(track),
+    topicPages: buildTopicPages(track),
     cards: track.cards,
     questions: track.questions,
     videos: track.videos,
