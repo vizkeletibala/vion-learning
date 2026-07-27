@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { TRACKS, getTrackSections, getPracticeSections, getStatusSections, getTrack, trackPath } from './navigation/navItems.js';
+import { KNOWN_TRACKS, TRACKS, getTrackSections, getPracticeSections, getStatusSections, getTrack, trackPath } from './navigation/navItems.js';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -59,7 +59,10 @@ export function AppNavigation({ pathname }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { trackId, section } = useMemo(() => pathInfo(pathname), [pathname]);
   const currentTrack = getTrack(trackId);
-  const defaultPracticeTrack = trackId || TRACKS[0].id;
+  const defaultPracticeTrack = useMemo(() => {
+    if (trackId && getPracticeSections(trackId).length > 0) return trackId;
+    return TRACKS[0].id;
+  }, [trackId]);
   const currentTrackSections = useMemo(() => trackId ? getTrackSections(trackId) : [], [trackId]);
   const currentPracticeSections = useMemo(() => getPracticeSections(defaultPracticeTrack), [defaultPracticeTrack]);
   const currentStatusSections = useMemo(() => getStatusSections(defaultPracticeTrack), [defaultPracticeTrack]);
@@ -83,7 +86,7 @@ export function AppNavigation({ pathname }) {
               <NavigationMenuTrigger>Tracks</NavigationMenuTrigger>
               <NavigationMenuContent className="navigation-menu__content--wide">
                 <div className="nav-track-grid">
-                  {TRACKS.map((track) => <TrackCard key={track.id} track={track} currentTrackId={trackId} currentSection={section} />)}
+                  {KNOWN_TRACKS.map((track) => <TrackCard key={track.id} track={track} currentTrackId={trackId} currentSection={section} />)}
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -123,7 +126,7 @@ export function AppNavigation({ pathname }) {
           <p className="eyebrow">Current track</p>
           {currentTrackSections.map((item) => <a key={item.id} onClick={closeMobile} href={trackPath(currentTrack.id, item.id)} aria-current={section === item.id ? 'page' : undefined}>{item.label}</a>)}
         </div>}
-        {TRACKS.map((track) => <MobileTrackGroup key={track.id} track={track} currentTrackId={trackId} currentSection={section} />)}
+        {KNOWN_TRACKS.map((track) => <MobileTrackGroup key={track.id} track={track} currentTrackId={trackId} currentSection={section} />)}
         <a onClick={closeMobile} href="/api/admin/export">Export progress</a>
       </nav>}
     </header>

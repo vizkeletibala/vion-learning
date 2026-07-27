@@ -7,6 +7,7 @@ const mainSource = fs.readFileSync(path.resolve('src/main.jsx'), 'utf8');
 const appNavigationSource = fs.readFileSync(path.resolve('src/components/AppNavigation.jsx'), 'utf8');
 const navItemsSource = fs.readFileSync(path.resolve('src/components/navigation/navItems.js'), 'utf8');
 const stylesSource = fs.readFileSync(path.resolve('src/styles.css'), 'utf8');
+const germanB2UploadGuidanceSource = fs.readFileSync(path.resolve('src/lib/germanB2UploadGuidance.js'), 'utf8');
 
 test('learn card Know and Review controls are wired to card mark API with visible state', () => {
   assert.match(mainSource, /async function markCard\(/, 'TrackShell should define a markCard helper');
@@ -55,6 +56,12 @@ test('German B2 navigation hides AWS-specific and empty-content sections', () =>
   assert.match(appNavigationSource, /const currentTrackSections = useMemo\(\(\) => trackId \? getTrackSections\(trackId\) : \[\], \[trackId\]\)/, 'Mobile current-track quick links should also respect track-specific section rules');
 });
 
+test('German B2 lesson picker renders normalized Lektion labels for the visible lessons', () => {
+  assert.match(mainSource, /displayLabel: `Lektion \$\{index \+ 1\}`/, 'German B2 lesson normalization should assign sequential Lektion labels after sorting');
+  assert.match(mainSource, /lesson\.displayLabel \|\| `Lektion \$\{lesson\.displaySequence \|\| lesson\.sequence\}`/, 'Lesson picker buttons should show Lektion labels instead of uploaded file names');
+  assert.match(mainSource, /<h3 className="lesson-title">\{activeLessonTitle\}<\/h3>/, 'Active German B2 lesson title should render the normalized Lektion label');
+});
+
 test('AWS Cloud Practitioner learn page restores the scoped wavy background without enabling it on every track route', () => {
   assert.match(mainSource, /function shouldShowLearningAurora\(pathname\)/, 'App should centralize the route gate for the learning-page background');
   assert.match(mainSource, /const normalizedPath = pathname\.length > 1 \? pathname\.replace\(/, 'Learning background gate should normalize trailing slashes');
@@ -74,6 +81,19 @@ test('overview quick-start visibly transitions to the quiz flow instead of stori
   assert.match(mainSource, /setActiveSection\('quiz'\)/, 'overview quick start should render the quiz section after a successful quiz start');
 });
 
+test('direct quiz routes auto-start a default quick quiz when no quiz is active', () => {
+  assert.match(
+    mainSource,
+    /useEffect\(\(\) => \{\s*if \(activeSection !== 'quiz' \|\| quiz \|\| quizLoading\) return;\s*startQuiz\('quick', undefined, 'quiz'\);\s*\}, \[activeSection, quiz, quizLoading\]\);/s,
+    'TrackShell should auto-start a quick quiz when the user lands directly on the quiz route with no active quiz'
+  );
+  assert.match(
+    mainSource,
+    /activeSection === 'quiz'[\s\S]*Panel title="Quiz engine"[\s\S]*quiz && <Quiz/s,
+    'TrackShell should render the quiz section shell and mounted Quiz component when the quiz tab is active'
+  );
+});
+
 test('quiz and card interactions expose loading and user-facing error states', () => {
   for (const stateName of ['quizLoading', 'quizError', 'answerLoading', 'answerError', 'cardAction']) {
     assert.match(mainSource, new RegExp(stateName), `expected ${stateName} interaction state`);
@@ -90,6 +110,15 @@ test('upload ingestion exposes progress and a visible embedding outcome summary'
   assert.match(mainSource, /Generating live embeddings|Writing sources and chunks/, 'Uploads UI should explain the current ingest phase');
   assert.match(mainSource, /written_embedding_count|unchanged_count/, 'Uploads UI should surface whether embeddings were written or already current');
   assert.match(stylesSource, /\.upload-pipeline__progress/, 'Uploads UI should style the progress bar');
+});
+
+test('German B2 upload page exposes note-to-exercise guidance instead of generic upload copy only', () => {
+  assert.match(mainSource, /germanB2UploadGuidance/, 'UploadWorkbench should import and use the German B2 upload guidance contract');
+  assert.match(germanB2UploadGuidanceSource, /Uploaded notes are seeds, not final webpage copy/i, 'German B2 guidance should warn against publishing raw notes as page copy');
+  assert.match(germanB2UploadGuidanceSource, /Vocabulary rows become flip cards/i, 'German B2 guidance should explain vocab-card output');
+  assert.match(germanB2UploadGuidanceSource, /Grammar notes become tutor exercises/i, 'German B2 guidance should explain grammar-exercise output');
+  assert.match(germanB2UploadGuidanceSource, /markdownTemplate/, 'German B2 guidance should include a concrete markdown template');
+  assert.match(stylesSource, /\.upload-guidance/, 'Upload guidance should have isolated styles');
 });
 
 test('quiz review flow exposes next-question and final-results controls with score and progress impact', () => {

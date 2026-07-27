@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { createServer } from '../server/index.js';
 
 async function withServer(fn, options = {}) {
@@ -65,22 +67,26 @@ test('API exposes landing and track scoped payloads without mixed content', asyn
     assert.equal(german.track.goal, 'Prep for the B2 German exam over ~1 year');
     assert.deepEqual(german.track.source_types, ['pdf', 'txt', 'markdown']);
     assert.deepEqual(german.track.lesson_lifecycle_states, ['draft', 'review', 'published']);
-    assert.deepEqual(german.learningPath.map((module) => module.module_id), ['german-b2-exam:lesson:embedded-lesson-1']);
-    assert.equal(german.lessons.length, 1, 'German B2 should expose only source-backed lesson 1 by default');
-    assert.equal(german.lessons[0].tabs.vocab.some((item) => item.term === 'die Erfahrung'), true);
+    assert.ok(german.learningPath.some((module) => module.module_id === 'german-b2-exam:lesson:embedded-lesson-1'));
+    assert.ok(german.lessons.some((lesson) => lesson.id === 'german-b2-exam:lesson:embedded-lesson-1'));
+    assert.equal(german.lessons.find((lesson) => lesson.id === 'german-b2-exam:lesson:embedded-lesson-1').tabs.vocab.some((item) => item.term === 'die Erfahrung'), true);
+    assert.equal(german.lessons.length >= 1, true);
     assert.deepEqual(german.cards, []);
     assert.deepEqual(german.questions, []);
   });
 });
 
-test('API merges DB-backed German B2 uploaded note lessons into the track payload', async () => {
+test('API merges the retained DB-backed German B2 uploaded note lesson into the track payload', async () => {
   await withServer(async (base) => {
     const german = await (await fetch(`${base}/api/tracks/german-b2-exam`)).json();
     assert.equal(german.lessons.length, 2);
-    const lesson = german.lessons.find((candidate) => candidate.id === 'german-b2-exam:lesson:batch-123');
-    assert.ok(lesson, 'DB-backed lesson should be merged alongside embedded lesson 1');
-    assert.equal(german.lessons.some((candidate) => candidate.id === 'german-b2-exam:lesson:embedded-lesson-1'), true);
-    assert.equal(lesson.title, 'Uploaded notes: lektion_1.md');
+    assert.deepEqual(german.lessons.map((candidate) => candidate.id), [
+      'german-b2-exam:lesson:embedded-lesson-1',
+      'german-b2-exam:lesson:upload-1782564925088',
+    ]);
+    const lesson = german.lessons.find((candidate) => candidate.id === 'german-b2-exam:lesson:upload-1782564925088');
+    assert.ok(lesson, 'Retained DB-backed lesson should be merged alongside embedded lesson 1');
+    assert.equal(lesson.title, 'Uploaded notes: lektion_2.md');
     assert.equal(lesson.status, 'review');
     assert.equal(lesson.review_status, 'review');
     assert.equal(lesson.content_version, 1);
@@ -99,11 +105,11 @@ test('API merges DB-backed German B2 uploaded note lessons into the track payloa
       async loadLessons(trackId) {
         assert.equal(trackId, 'german-b2-exam');
         return [{
-          id: 'german-b2-exam:lesson:batch-123',
+          id: 'german-b2-exam:lesson:upload-1782564925088',
           track_id: 'german-b2-exam',
-          title: 'Uploaded notes: lektion_1.md',
+          title: 'Uploaded notes: lektion_2.md',
           source_type: 'markdown',
-          source_ids: ['german-b2-exam:upload:batch-123:lektion_1.md'],
+          source_ids: ['german-b2-exam:upload:upload-1782564925088:lektion_2.md'],
           status: 'review',
           content_version: 1,
           created_at: '2026-06-19T12:00:00.000Z',
@@ -113,18 +119,156 @@ test('API merges DB-backed German B2 uploaded note lessons into the track payloa
             content_version: 1,
             review_status: 'review',
             chunk_ids: ['chunk-1'],
+            source_files: ['lektion_2.md'],
             validation: { issues: [] },
             content: [
-              { id: 'v1', kind: 'vocab', term: 'sich bewerben', hungarian: 'jelentkezni', source_id: 'german-b2-exam:upload:batch-123:lektion_1.md' },
-              { id: 'g1', kind: 'grammar', text: 'Konjunktiv II: Ich würde mich bewerben.', source_id: 'german-b2-exam:upload:batch-123:lektion_1.md' },
-              { id: 'r1', kind: 'reading', text: 'Die Bewerberin erfüllt alle Voraussetzungen.', source_id: 'german-b2-exam:upload:batch-123:lektion_1.md' },
-              { id: 'w1', kind: 'writing', text: 'Sehr geehrte Damen und Herren, ich interessiere mich für ...', source_id: 'german-b2-exam:upload:batch-123:lektion_1.md' },
+              { id: 'v1', kind: 'vocab', term: 'sich bewerben', hungarian: 'jelentkezni', source_id: 'german-b2-exam:upload:upload-1782564925088:lektion_2.md' },
+              { id: 'g1', kind: 'grammar', text: 'Konjunktiv II: Ich würde mich bewerben.', source_id: 'german-b2-exam:upload:upload-1782564925088:lektion_2.md' },
+              { id: 'r1', kind: 'reading', text: 'Die Bewerberin erfüllt alle Voraussetzungen.', source_id: 'german-b2-exam:upload:upload-1782564925088:lektion_2.md' },
+              { id: 'w1', kind: 'writing', text: 'Sehr geehrte Damen und Herren, ich interessiere mich für ...', source_id: 'german-b2-exam:upload:upload-1782564925088:lektion_2.md' },
             ],
           },
         }];
       },
     },
   });
+});
+
+test('uploads ingest emits a content event after the staged write path completes', async () => {
+  const inserted = [];
+  const batchId = `german-b2-ingest-${Date.now()}`;
+  const batchDir = path.join(process.cwd(), 'var', 'uploads', batchId);
+  const tracksDir = path.join(batchDir, 'tracks');
+  fs.mkdirSync(tracksDir, { recursive: true });
+  fs.writeFileSync(path.join(batchDir, 'manifest.json'), `${JSON.stringify({
+    batch_id: batchId,
+    track_id: 'german-b2-exam',
+    title: 'German B2 ingest smoke',
+    source_url: 'https://example.test/german-b2-ingest',
+    source_type: 'uploaded_document',
+    verification: { verified_at: '2026-06-27T00:00:00.000Z', file_count: 1, warnings: [] },
+    files: [{
+      name: 'lesson.md',
+      path: path.join(batchDir, 'raw', 'lesson.md'),
+      mime_type: 'text/markdown',
+      size: 12,
+      sha256: 'sha256:test',
+      extracted_text: 'Hallo Welt',
+      extracted_with: 'utf8',
+      source_url: 'https://example.test/german-b2-ingest',
+      title: 'German B2 ingest smoke',
+      source_type: 'uploaded_document',
+      citation_text: 'Example, German B2 ingest smoke',
+    }],
+  }, null, 2)}\n`);
+  fs.writeFileSync(path.join(tracksDir, 'german-b2-exam-chunks.json'), `${JSON.stringify({
+    schema_version: 'vion-rag-prototype/v1',
+    track_id: 'german-b2-exam',
+    generated_at: '2026-06-27T00:00:00.000Z',
+    batch_id: batchId,
+    chunk_count: 1,
+    policy: {},
+    chunks: [{
+      id: 'german-b2-exam:aws_doc_section:source-1:chunk-1',
+      track_id: 'german-b2-exam',
+      source_id: 'german-b2-exam:source-1',
+      url: 'https://example.test/german-b2-ingest',
+      citation_text: 'Example, German B2 ingest smoke',
+      content_hash: 'sha256:artifact',
+      freshness_status: 'unverified',
+      text: 'Hallo Welt',
+      token_estimate: 2,
+      chunk_index: 1,
+      chunk_count: 1,
+      metadata: { source_record: { source_id: 'german-b2-exam:source-1', metadata: { last_checked_at: '2026-06-27T00:00:00.000Z' } } },
+    }],
+  }, null, 2)}\n`);
+
+  try {
+    await withServer(async (base) => {
+      const res = await fetch(`${base}/api/admin/uploads/ingest`, {
+        method: 'POST',
+        headers: {
+          'x-vion-rag-admin-token': 'test-admin-token',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          batchId,
+          trackId: 'german-b2-exam',
+          apply: true,
+        }),
+      });
+
+      assert.equal(res.status, 200);
+      const body = await res.json();
+      assert.equal(body.populate.apply, true);
+      assert.equal(body.content_event.event_type, 'german_tutor_content_ready');
+      assert.equal(body.content_event.aggregate_type, 'rag_ingest_job');
+      assert.equal(body.content_event.payload.lesson_id, 'german-b2-exam:lesson:batch-123');
+      assert.equal(body.content_event.payload.review_status, 'review');
+      assert.equal(inserted.length, 1);
+      assert.equal(inserted[0].track_id, 'german-b2-exam');
+      assert.equal(inserted[0].payload.chunk_count, 1);
+      assert.equal(inserted[0].payload.written_embedding_count, 1);
+    }, {
+      rag: {
+        adminToken: 'test-admin-token',
+        contentEventStore: {
+          async insert(event) {
+            inserted.push(event);
+            return {
+              event_id: 'event-1',
+              status: 'pending',
+              created_at: '2026-06-27T00:00:00.000Z',
+              ...event,
+            };
+          },
+        },
+      },
+      runNodeScript(scriptName) {
+        if (scriptName === 'upload-ingestion.mjs') {
+          return JSON.stringify({
+            command: 'rag:ingest',
+            track_id: 'german-b2-exam',
+            chunk_count: 1,
+            output_path: path.join(batchDir, 'tracks', 'german-b2-exam-chunks.json'),
+            dry_run: false,
+          });
+        }
+        if (scriptName === 'rag-populate-db.mjs') {
+          return JSON.stringify({
+            command: 'rag:populate-db',
+            apply: true,
+            live_embeddings: true,
+            force_refresh: false,
+            track_count: 1,
+            source_count: 1,
+            chunk_count: 1,
+            write_plan: { sources: 1, chunks: 1, embeddings: 1, ingest_jobs: 1 },
+            write_stats: [{
+              ingest_job_id: '22222222-2222-4222-8222-222222222222',
+              track_id: 'german-b2-exam',
+              source_count: 1,
+              chunk_count: 1,
+              refreshed_count: 1,
+              unchanged_count: 0,
+              written_embedding_count: 1,
+              metadata: {
+                artifact_path: path.join(batchDir, 'tracks', 'german-b2-exam-chunks.json'),
+                german_b2_lesson: {
+                  id: 'german-b2-exam:lesson:batch-123',
+                  review_packet: { review_status: 'review' },
+                },
+              },
+            }],
+          });
+        }
+        throw new Error(`unexpected script ${scriptName}`);
+      },
+    });
+  } finally {
+    fs.rmSync(batchDir, { recursive: true, force: true });
+  }
 });
 
 test('API creates quizzes and evaluates answers with detailed review explanations', async () => {

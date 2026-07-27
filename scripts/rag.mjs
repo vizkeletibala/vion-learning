@@ -41,8 +41,14 @@ function chunksPath(trackId) {
   return path.join('var', 'rag', `${trackId}-chunks.json`);
 }
 
-function migrationPath(direction = 'up') {
-  return path.join('db', 'migrations', `001_vion_rag_pgvector.${direction}.sql`);
+function migrationPaths(direction = 'up') {
+  const migrationsDir = path.join('db', 'migrations');
+  const suffix = `.${direction}.sql`;
+  const files = fs.readdirSync(migrationsDir)
+    .filter((file) => file.endsWith(suffix))
+    .sort()
+    .map((file) => path.join(migrationsDir, file));
+  return direction === 'down' ? files.reverse() : files;
 }
 
 async function createLiveDbWriter(db) {
@@ -57,11 +63,14 @@ async function createLiveDbWriter(db) {
 function applyMigration(direction) {
   const connectionString = process.env.VION_RAG_DATABASE_URL || process.env.DATABASE_URL;
   if (!connectionString) throw new Error('VION_RAG_DATABASE_URL or DATABASE_URL is required for --apply migrations');
-  const filePath = migrationPath(direction);
-  const result = spawnSync('psql', [connectionString, '-v', 'ON_ERROR_STOP=1', '-f', filePath], { encoding: 'utf8' });
-  if (result.error) throw new Error(`psql migration failed to start: ${result.error.message}. Install the PostgreSQL client or run psql from the rag-db container.`);
-  if (result.status !== 0) throw new Error(`psql migration failed (${result.status}): ${result.stderr || result.stdout}`);
-  return { filePath, stdout: result.stdout };
+  const applied = [];
+  for (const filePath of migrationPaths(direction)) {
+    const result = spawnSync('psql', [connectionString, '-v', 'ON_ERROR_STOP=1', '-f', filePath], { encoding: 'utf8' });
+    if (result.error) throw new Error(`psql migration failed to start: ${result.error.message}. Install the PostgreSQL client or run psql from the rag-db container.`);
+    if (result.status !== 0) throw new Error(`psql migration failed (${result.status}) for ${filePath}: ${result.stderr || result.stdout}`);
+    applied.push({ file_path: filePath, stdout: result.stdout });
+  }
+  return { applied };
 }
 
 function readOrBuildChunks(model, trackId, args) {
@@ -88,11 +97,12 @@ async function main() {
   if (command === 'ingest') {
     const result = buildRagChunks(model, { trackId });
     const outputPath = args.output || chunksPath(trackId);
-    if (!args['dry-run']) {
+    const dryRun = Boolean(args['dry-run']);
+    if (!dryRun) {
       fs.mkdirSync(path.dirname(outputPath), { recursive: true });
       fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`);
     }
-    printJson({ command: 'rag:ingest', track_id: trackId, chunk_count: result.chunk_count, output_path: args['dry-run'] ? null : outputPath, dry_run: Boolean(args['dry-run']), db, policy: result.policy });
+    printJson({ command: 'rag:ingest', track_id: trackId, chunk_count: result.chunk_count, output_path: dryRun ? null : outputPath, dry_run: dryRun, db: dryRun ? { ...db, enabled: false } : db, policy: result.policy });
     return;
   }
 
@@ -123,9 +133,9 @@ async function main() {
     const direction = args.down ? 'down' : 'up';
     if (args.apply) {
       const result = applyMigration(direction);
-      printJson({ command: 'rag:migrate', applied: true, direction, db, file_path: result.filePath });
+      printJson({ command: 'rag:migrate', applied: true, direction, db, migrations: result.applied.map((item) => item.file_path) });
     } else {
-      printJson({ command: 'rag:migrate', applied: false, direction, db, up: migrationPath('up'), down: migrationPath('down'), requires_credentials_for_apply: true });
+      printJson({ command: 'rag:migrate', applied: false, direction, db, up: migrationPaths('up'), down: migrationPaths('down'), requires_credentials_for_apply: true });
     }
     return;
   }

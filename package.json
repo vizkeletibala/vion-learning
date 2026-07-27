@@ -13,6 +13,7 @@
     "ingest:sources": "node scripts/source-ingestion.mjs ingest",
     "sources:check": "node scripts/source-ingestion.mjs check",
     "sources:report": "node scripts/source-ingestion.mjs report",
+    "graphify:refresh": "scripts/graphify-refresh.sh",
     "rag:ingest": "node scripts/rag.mjs ingest",
     "rag:embed": "node scripts/rag.mjs embed",
     "rag:search": "node scripts/rag.mjs search",
@@ -21,7 +22,7 @@
     "rag:populate-db": "node scripts/rag-populate-db.mjs",
     "uploads:verify": "node scripts/upload-ingestion.mjs verify",
     "uploads:stage": "node scripts/upload-ingestion.mjs stage",
-    "uploads:ingest": "node scripts/upload-ingestion.mjs stage",
+    "uploads:ingest": "node scripts/upload-ingestion.mjs ingest",
     "seed": "node scripts/seed.mjs",
     "reset": "node scripts/seed.mjs --reset",
     "export": "node scripts/export.mjs"

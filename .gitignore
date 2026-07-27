@@ -6,3 +6,6 @@ var/
 
 # Generated ad-hoc report artifacts
 /docs/reports/*-t_*.md
+
+# Graphify local cache artifacts
+/graphify-out/

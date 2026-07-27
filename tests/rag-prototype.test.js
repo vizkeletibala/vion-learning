@@ -207,6 +207,19 @@ test('RAG pgvector migrations define vector schema, provenance indexes, and leas
   assert.match(downSql, /DROP TABLE IF EXISTS rag_sources/i);
 });
 
+test('content event migration creates outbox and job step audit schema', () => {
+  const migrationsDir = path.join(process.cwd(), 'db', 'migrations');
+  const upSql = fs.readFileSync(path.join(migrationsDir, '002_content_events.up.sql'), 'utf8');
+  const downSql = fs.readFileSync(path.join(migrationsDir, '002_content_events.down.sql'), 'utf8');
+
+  assert.match(upSql, /CREATE TABLE IF NOT EXISTS content_event_outbox/);
+  assert.match(upSql, /idempotency_key text NOT NULL UNIQUE/);
+  assert.match(upSql, /CREATE TABLE IF NOT EXISTS rag_job_steps/);
+  assert.match(upSql, /GRANT SELECT, INSERT, UPDATE, DELETE ON content_event_outbox, rag_job_steps TO vion_rag_app/);
+  assert.match(downSql, /DROP TABLE IF EXISTS rag_job_steps/);
+  assert.match(downSql, /DROP TABLE IF EXISTS content_event_outbox/);
+});
+
 test('RAG search requires citations and refuses generated answers when evidence is absent', () => {
   const model = loadLearningModel();
   const { chunks } = buildRagChunks(model, { trackId: 'clf-c02', maxTokens: 80, overlapTokens: 20 });
@@ -398,7 +411,7 @@ test('RAG eval reports retrieval failures without inventing benchmark results', 
 });
 
 test('RAG HTTP admin endpoints are disabled by default and opt-in for local prototype use', async () => {
-  await withServer({}, async (base) => {
+  await withServer({ rag: { enabled: false } }, async (base) => {
     const disabled = await fetch(`${base}/api/admin/rag/search`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -516,6 +529,21 @@ test('RAG CLI exposes controlled commands without requiring DB credentials for d
   assert.equal(payload.track_id, 'clf-c02');
   assert.equal(payload.db.enabled, false);
   assert.ok(payload.chunk_count > 20);
+
+  const migrate = spawnSync(process.execPath, ['scripts/rag.mjs', 'migrate'], {
+    cwd: new URL('..', import.meta.url),
+    encoding: 'utf8',
+  });
+  assert.equal(migrate.status, 0, migrate.stderr);
+  const migratePayload = JSON.parse(migrate.stdout);
+  assert.deepEqual(migratePayload.up, [
+    'db/migrations/001_vion_rag_pgvector.up.sql',
+    'db/migrations/002_content_events.up.sql',
+  ]);
+  assert.deepEqual(migratePayload.down, [
+    'db/migrations/002_content_events.down.sql',
+    'db/migrations/001_vion_rag_pgvector.down.sql',
+  ]);
 });
 
 test('RAG CLI eval covers CLF-C02 exam domains with citations or explicit refusals only', () => {

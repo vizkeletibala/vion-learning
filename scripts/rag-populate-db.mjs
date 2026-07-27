@@ -208,9 +208,10 @@ function ingestJobMetadata({ artifact, sourceCount, liveEmbeddings }) {
 }
 
 async function insertIngestJob(client, { trackId, artifact, sourceCount, chunkCount, refreshedCount, unchangedCount, liveEmbeddings, now }) {
-  await client.query(
+  const result = await client.query(
     `INSERT INTO rag_ingest_jobs (track_id, status, chunk_count, refreshed_count, unchanged_count, started_at, completed_at, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+     RETURNING ingest_job_id, track_id, status, chunk_count, refreshed_count, unchanged_count, started_at, completed_at, metadata`,
     [
       trackId,
       'succeeded',
@@ -222,6 +223,7 @@ async function insertIngestJob(client, { trackId, artifact, sourceCount, chunkCo
       JSON.stringify(ingestJobMetadata({ artifact, sourceCount, liveEmbeddings })),
     ],
   );
+  return result.rows[0];
 }
 
 async function connectDatabase(connectionString) {
@@ -297,7 +299,7 @@ export async function populateRagDatabase({
         await writer.upsertChunks(chunkRows);
       }
 
-      await insertIngestJob(client, {
+      const ingestJob = await insertIngestJob(client, {
         trackId: artifact.track_id,
         artifact,
         sourceCount: sourceRows.length,
@@ -309,12 +311,14 @@ export async function populateRagDatabase({
       });
 
       writeStats.push({
+        ingest_job_id: ingestJob.ingest_job_id,
         track_id: artifact.track_id,
         source_count: sourceRows.length,
         chunk_count: chunkRows.length,
         refreshed_count: refreshedCount,
         unchanged_count: unchangedCount,
         written_embedding_count: embeddingCount,
+        metadata: ingestJob.metadata || {},
       });
     }
 

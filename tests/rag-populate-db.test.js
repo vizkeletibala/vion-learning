@@ -95,6 +95,9 @@ test('German B2 staged artifacts can be converted into lesson metadata persisted
   const fakeClient = {
     async query(sql, params) {
       queries.push({ sql, params });
+      if (sql.includes('INSERT INTO rag_ingest_jobs')) {
+        return { rows: [{ ingest_job_id: 'generated-id', metadata: JSON.parse(params[7]) }] };
+      }
       return { rows: [] };
     },
   };
@@ -119,6 +122,8 @@ test('German B2 staged artifacts can be converted into lesson metadata persisted
   fs.rmSync(chunksDir, { recursive: true, force: true });
 
   assert.equal(result.apply, true);
+  assert.equal(result.write_stats[0].ingest_job_id, 'generated-id');
+  assert.equal(result.write_stats[0].metadata.german_b2_lesson.review_packet.schema_version, 'german-b2-note-review/v1');
   const ingestInsert = queries.find((entry) => entry.sql.includes('INSERT INTO rag_ingest_jobs'));
   assert.ok(ingestInsert);
   const metadata = JSON.parse(ingestInsert.params[7]);

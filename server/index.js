@@ -50,7 +50,19 @@ function parseMultipartForm(req, { targetDir }) {
     const fields = {};
     const files = [];
     const pendingWrites = [];
-    fs.mkdirSync(targetDir, { recursive: true });
+    try {
+      fs.mkdirSync(targetDir, { recursive: true });
+      fs.accessSync(targetDir, fs.constants.W_OK);
+      const mode = fs.statSync(targetDir).mode;
+      if ((mode & 0o222) === 0) {
+        const error = new Error(`permission denied: upload target is not writable: ${targetDir}`);
+        error.code = 'EACCES';
+        throw error;
+      }
+    } catch (error) {
+      reject(error);
+      return;
+    }
     const busboy = Busboy({ headers: req.headers });
     busboy.on('field', (name, value) => {
       fields[name] = value;
@@ -150,6 +162,117 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function normalizeContentEvent(body = {}) {
+  const eventType = String(body.event_type || body.eventType || '').trim();
+  const aggregateType = String(body.aggregate_type || body.aggregateType || '').trim();
+  const aggregateId = String(body.aggregate_id || body.aggregateId || '').trim();
+  if (!eventType) throw new Error('content_event_requires_event_type');
+  if (!aggregateType) throw new Error('content_event_requires_aggregate_type');
+  if (!aggregateId) throw new Error('content_event_requires_aggregate_id');
+  const payload = body.payload && typeof body.payload === 'object' && !Array.isArray(body.payload) ? body.payload : {};
+  const eventVersion = Number(body.event_version || body.eventVersion || 1);
+  const idempotencyKey = String(body.idempotency_key || body.idempotencyKey || '').trim() || `${eventType}:${aggregateType}:${aggregateId}:${sha256(stableJson({
+    batch_id: body.batch_id || body.batchId || null,
+    ingest_job_id: body.ingest_job_id || body.ingestJobId || null,
+    payload,
+    source_artifact_hash: body.source_artifact_hash || body.sourceArtifactHash || null,
+    track_id: body.track_id || body.trackId || null,
+  })).slice(0, 16)}`;
+  return {
+    event_type: eventType,
+    aggregate_type: aggregateType,
+    aggregate_id: aggregateId,
+    track_id: body.track_id || body.trackId || null,
+    batch_id: body.batch_id || body.batchId || null,
+    ingest_job_id: body.ingest_job_id || body.ingestJobId || null,
+    idempotency_key: idempotencyKey,
+    event_version: Number.isFinite(eventVersion) && eventVersion > 0 ? eventVersion : 1,
+    payload,
+    source_artifact_path: body.source_artifact_path || body.sourceArtifactPath || null,
+    source_artifact_hash: body.source_artifact_hash || body.sourceArtifactHash || null,
+  };
+}
+
+function serializeContentEventRow(row = {}) {
+  return {
+    event_id: row.event_id,
+    event_type: row.event_type,
+    aggregate_type: row.aggregate_type,
+    aggregate_id: row.aggregate_id,
+    track_id: row.track_id,
+    batch_id: row.batch_id,
+    ingest_job_id: row.ingest_job_id,
+    idempotency_key: row.idempotency_key,
+    event_version: Number(row.event_version || 1),
+    payload: row.payload || {},
+    source_artifact_path: row.source_artifact_path,
+    source_artifact_hash: row.source_artifact_hash,
+    status: row.status || 'pending',
+    attempt_count: Number(row.attempt_count || 0),
+    next_attempt_at: row.next_attempt_at,
+    created_at: row.created_at,
+    delivered_at: row.delivered_at,
+  };
+}
+
+function createPgContentEventStore(client) {
+  return {
+    async insert(event) {
+      const result = await client.query(
+        `INSERT INTO content_event_outbox (
+           event_type, aggregate_type, aggregate_id, track_id, batch_id, ingest_job_id,
+           idempotency_key, event_version, payload, source_artifact_path, source_artifact_hash
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11)
+         ON CONFLICT (idempotency_key) DO UPDATE SET
+           payload = EXCLUDED.payload,
+           source_artifact_path = EXCLUDED.source_artifact_path,
+           source_artifact_hash = EXCLUDED.source_artifact_hash
+         RETURNING event_id, event_type, aggregate_type, aggregate_id, track_id, batch_id, ingest_job_id,
+                   idempotency_key, event_version, payload, source_artifact_path, source_artifact_hash,
+                   status, attempt_count, next_attempt_at, created_at, delivered_at`,
+        [
+          event.event_type,
+          event.aggregate_type,
+          event.aggregate_id,
+          event.track_id,
+          event.batch_id,
+          event.ingest_job_id,
+          event.idempotency_key,
+          event.event_version,
+          JSON.stringify(event.payload || {}),
+          event.source_artifact_path,
+          event.source_artifact_hash,
+        ],
+      );
+      return result.rows[0];
+    },
+  };
+}
+
+async function insertContentEvent(body, rag = {}) {
+  const event = normalizeContentEvent(body);
+  if (rag.contentEventStore?.insert) return serializeContentEventRow(await rag.contentEventStore.insert(event));
+  const db = ragDbConfig();
+  const connectionString = process.env[db.connectionEnv] || process.env.VION_RAG_DATABASE_URL || process.env.DATABASE_URL;
+  if (!connectionString) throw new Error('VION_RAG_DATABASE_URL or DATABASE_URL is required to write content events');
+  const { Client } = await import('pg');
+  const client = new Client({ connectionString });
+  await client.connect();
+  try {
+    return serializeContentEventRow(await createPgContentEventStore(client).insert(event));
+  } finally {
+    await client.end();
+  }
+}
+
 function serveStatic(req, res) {
   const dist = path.join(ROOT, 'dist');
   const url = new URL(req.url, 'http://localhost');
@@ -165,11 +288,12 @@ function serveStatic(req, res) {
 }
 
 function ragApiEnabled(config) {
-  return Boolean(config?.enabled || process.env.VION_RAG_API_ENABLED === '1');
+  if (typeof config?.enabled === 'boolean') return config.enabled;
+  return process.env.VION_RAG_API_ENABLED === '1';
 }
 
 function configuredRagAdminToken(config) {
-  return config?.adminToken || process.env.VION_RAG_ADMIN_TOKEN || '';
+  return config?.adminToken || '';
 }
 
 function localRagAdminRequest(req) {
@@ -304,7 +428,7 @@ async function trackPayloadWithDbLessons(baseModel, trackId, lessonStore) {
   return trackPayload(mergedModel, trackId);
 }
 
-export function createServer({ log = true, rag = {}, germanB2LessonStore = null } = {}) {
+export function createServer({ log = true, rag = {}, germanB2LessonStore = null, runNodeScript: runNodeScriptOverride = runNodeScript } = {}) {
   const lessonStore = createGermanB2LessonStore(germanB2LessonStore || {});
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
@@ -375,12 +499,35 @@ export function createServer({ log = true, rag = {}, germanB2LessonStore = null 
         if (!fs.existsSync(manifestFile)) return json(res, 404, { error: `missing_upload_manifest:${manifestFile}` });
         const manifest = readJson(manifestFile);
         const trackId = body.trackId || body.track_id || manifest.track_id || 'shared';
-        const stageOutput = JSON.parse(runNodeScript('upload-ingestion.mjs', ['stage', '--batch-dir', batchDir, '--track', trackId]));
+        const stageOutput = JSON.parse(runNodeScriptOverride('upload-ingestion.mjs', ['stage', '--batch-dir', batchDir, '--track', trackId]));
         const populateArgs = ['--tracks', trackId, '--chunks-dir', path.join(batchDir, 'tracks')];
         if (body.apply || body.liveEmbeddings || body.live_embeddings) populateArgs.push('--apply');
         if (body.liveEmbeddings || body.live_embeddings) populateArgs.push('--live-embeddings');
-        const populateResult = JSON.parse(runNodeScript('rag-populate-db.mjs', populateArgs));
-        return json(res, 200, { batch_dir: batchDir, manifest, stage: stageOutput, populate: populateResult });
+        const populateResult = JSON.parse(runNodeScriptOverride('rag-populate-db.mjs', populateArgs));
+        const contentEvent = (populateResult.apply && Array.isArray(populateResult.write_stats) && populateResult.write_stats.length)
+          ? await insertContentEvent({
+            event_type: body.eventType || body.event_type || 'german_tutor_content_ready',
+            aggregate_type: 'rag_ingest_job',
+            aggregate_id: populateResult.write_stats[0].ingest_job_id || `${trackId}:${batchId}`,
+            track_id: trackId,
+            batch_id: batchId,
+            ingest_job_id: populateResult.write_stats[0].ingest_job_id || null,
+            payload: {
+              batch_id: batchId,
+              track_id: trackId,
+              chunk_count: populateResult.chunk_count,
+              source_count: populateResult.source_count,
+              written_embedding_count: populateResult.write_stats[0].written_embedding_count || 0,
+              live_embeddings: Boolean(populateResult.live_embeddings),
+              artifact_path: populateResult.write_stats[0].metadata?.artifact_path || path.join(batchDir, 'tracks', `${trackId}-chunks.json`),
+              lesson_id: populateResult.write_stats[0].metadata?.german_b2_lesson?.id || null,
+              review_status: populateResult.write_stats[0].metadata?.german_b2_lesson?.review_packet?.review_status || null,
+            },
+            source_artifact_path: populateResult.write_stats[0].metadata?.artifact_path || path.join(batchDir, 'tracks', `${trackId}-chunks.json`),
+            source_artifact_hash: fs.existsSync(path.join(batchDir, 'tracks', `${trackId}-chunks.json`)) ? sha256(fs.readFileSync(path.join(batchDir, 'tracks', `${trackId}-chunks.json`))) : null,
+          }, rag)
+          : null;
+        return json(res, 200, { batch_dir: batchDir, manifest, stage: stageOutput, populate: populateResult, content_event: contentEvent });
       }
       if (ragApiEnabled(rag) && url.pathname.startsWith('/api/admin/rag/')) {
         const authorization = ragAdminRequestAuthorized(req, rag);

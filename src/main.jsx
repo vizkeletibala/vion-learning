@@ -4,6 +4,7 @@ import { AppNavigation } from './components/AppNavigation.jsx';
 import { TRACKS, UPLOAD_TRACKS, getTrack, getTrackSections } from './components/navigation/navItems.js';
 import { AuroraBackground } from './components/ui/aurora-background.jsx';
 import { WavyBackground } from './components/ui/wavy-background.jsx';
+import { germanB2UploadGuidance } from './lib/germanB2UploadGuidance.js';
 import './styles.css';
 
 const API = '';
@@ -182,6 +183,7 @@ function UploadWorkbench({ trackId }) {
   const [uploadError, setUploadError] = useState(null);
   const [uploadPipeline, setUploadPipeline] = useState({ status: 'idle', action: null, progress: 0, phase: '', liveEmbeddings: false, summary: null });
   const selectedTrack = getTrack(trackId);
+  const uploadGuidance = trackId === GERMAN_B2_TRACK_ID ? germanB2UploadGuidance : null;
 
   useEffect(() => {
     if (uploadPipeline.status !== 'running') return undefined;
@@ -292,6 +294,10 @@ function UploadWorkbench({ trackId }) {
   function onUploadFileChange(event) {
     const [file] = event.target.files || [];
     setUploadFile(file || null);
+    setUploadBatchId('');
+    setUploadResult(null);
+    setUploadError(null);
+    setUploadPipeline({ status: 'idle', action: null, progress: 0, phase: '', liveEmbeddings: false, summary: null });
   }
 
   return <section className="upload-workbench grid two">
@@ -345,6 +351,19 @@ function UploadWorkbench({ trackId }) {
       {uploadError && <p className="warning" role="alert">{uploadError}</p>}
       <p className="muted">Verification stores the raw file, computes a hash, and stages it for text extraction or OCR before vector DB writes. No citation, no answer; no verified document, no ingest.</p>
     </Panel>
+    {uploadGuidance && <Panel title={uploadGuidance.title}>
+      <div className="upload-guidance">
+        <p className="warning">{uploadGuidance.warning}</p>
+        <ul>
+          {uploadGuidance.outputRules.map((rule) => <li key={rule}>{rule}</li>)}
+        </ul>
+        <p className="muted">Accepted source types: {uploadGuidance.acceptedSourceTypes.join(', ')}.</p>
+        <details>
+          <summary>German B2 markdownTemplate</summary>
+          <pre>{uploadGuidance.markdownTemplate}</pre>
+        </details>
+      </div>
+    </Panel>}
     <Panel title="Batch manifest and pipeline result">
       {uploadBatchId ? <p><strong>Batch:</strong> {uploadBatchId}</p> : <p className="muted">Nothing verified yet. Start by uploading a file.</p>}
       {uploadResult ? <pre className="upload-result">{JSON.stringify(uploadResult, null, 2)}</pre> : <p className="muted">The manifest will show the verification summary, staged chunk artifact, and populate-db result.</p>}
@@ -378,15 +397,19 @@ function germanB2LessonTabs(lesson) {
 }
 
 function normalizeGermanB2Lessons(data) {
-  return Array.isArray(data?.lessons)
-    ? data.lessons
-      .map((lesson, index) => ({
-        ...lesson,
-        sequence: germanB2LessonSequence(lesson, index),
-        tabs: germanB2LessonTabs(lesson),
-      }))
-      .sort((left, right) => left.sequence - right.sequence || String(left.title || left.id || '').localeCompare(String(right.title || right.id || '')) || String(left.id || '').localeCompare(String(right.id || '')))
-    : [];
+  if (!Array.isArray(data?.lessons)) return [];
+  return data.lessons
+    .map((lesson, index) => ({
+      ...lesson,
+      sequence: germanB2LessonSequence(lesson, index),
+      tabs: germanB2LessonTabs(lesson),
+    }))
+    .sort((left, right) => left.sequence - right.sequence || String(left.title || left.id || '').localeCompare(String(right.title || right.id || '')) || String(left.id || '').localeCompare(String(right.id || '')))
+    .map((lesson, index) => ({
+      ...lesson,
+      displaySequence: index + 1,
+      displayLabel: `Lektion ${index + 1}`,
+    }));
 }
 
 function formatLessonDate(value) {
@@ -445,7 +468,7 @@ function GermanB2Lessons({ data }) {
   }, [lessons, activeLessonId]);
   const activeLesson = lessons.find((lesson) => lesson.id === activeLessonId) || lessons[0];
   const tabItems = activeLesson?.tabs?.[activeLessonTab] || [];
-  const activeLessonTitle = activeLesson?.title || activeLesson?.id || 'Untitled lesson';
+  const activeLessonTitle = activeLesson?.displayLabel || activeLesson?.title || activeLesson?.id || 'Untitled lesson';
   const activeLessonSourceIds = activeLesson?.source_ids?.length ? activeLesson.source_ids : activeLesson?.provenance?.source_ids || [];
   const activeLessonMetadata = [
     activeLesson?.status ? `Status: ${activeLesson.status}` : null,
@@ -469,9 +492,9 @@ function GermanB2Lessons({ data }) {
   return <section className="german-b2-lessons">
     <Panel title="German B2 source-backed lessons">
       <div className="lesson-picker" aria-label="Available German B2 lessons">
-        {lessons.map((lesson) => <button className={`button ${lesson.id === activeLesson.id ? 'button-primary' : 'button-ghost'}`} key={lesson.id} onClick={() => setActiveLessonId(lesson.id)}>Lesson {lesson.sequence}: {lesson.title || lesson.id}</button>)}
+        {lessons.map((lesson) => <button className={`button ${lesson.id === activeLesson.id ? 'button-primary' : 'button-ghost'}`} key={lesson.id} onClick={() => setActiveLessonId(lesson.id)}>{lesson.displayLabel || `Lektion ${lesson.displaySequence || lesson.sequence}`}</button>)}
       </div>
-      <h3 className="lesson-title">Lesson {activeLesson.sequence}: {activeLessonTitle}</h3>
+      <h3 className="lesson-title">{activeLessonTitle}</h3>
       {activeLessonMetadata.length > 0 && <p className="muted">{activeLessonMetadata.join(' · ')}</p>}
       {renderGermanB2Retrieval(activeLesson?.retrieval)}
       {activeLesson?.validation?.issues?.length > 0 && <p className="warning">{activeLesson.validation.issues.join(' ')}</p>}
@@ -487,9 +510,10 @@ function GermanB2Lessons({ data }) {
           const flipped = Boolean(flippedCards[cardKey]);
           return <article className="vocab-card" key={cardKey}>
             <button className={`flip-card ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlippedCards((state) => ({ ...state, [cardKey]: !state[cardKey] }))}>
-              <span className="flip-card__side flip-card__front">{item.term || item.text}</span>
-              <span className="flip-card__side flip-card__back">{item.hungarian || item.text || 'No Hungarian translation in source notes'}</span>
+              <span className="flip-card__side flip-card__front">{item.front || item.term || item.text}</span>
+              <span className="flip-card__side flip-card__back">{item.back || item.hungarian || item.text || 'No Hungarian translation in source notes'}</span>
             </button>
+            {item.learner_task && <p>{item.learner_task}</p>}
             {item.verb_forms && <p className="muted">{[item.verb_forms.present, item.verb_forms.past, item.verb_forms.perfect].filter(Boolean).join(' · ')}</p>}
           </article>;
         })}
@@ -498,15 +522,15 @@ function GermanB2Lessons({ data }) {
       </>}
       {activeLessonTab === 'grammar' && <div className="lesson-item-list">
         <p className="muted">Grammar exercises: {tabItems.length}/about 10 from this lesson's source notes.</p>
-        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-grammar-${index}`}><p className="eyebrow">Exercise {index + 1}</p><p>{item.text}</p></article>)}
+        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-grammar-${index}`}><p className="eyebrow">{item.generated_exercise?.type || item.exercise_type || `Exercise ${index + 1}`}</p><p>{item.generated_exercise?.prompt || item.text}</p>{item.source_example && <p className="muted"><strong>Source example:</strong> {item.source_example}</p>}{item.notice && <p className="muted"><strong>Notice:</strong> {item.notice}</p>}</article>)}
         {renderGermanB2GroupedSourceProvenance(tabItems)}
       </div>}
       {activeLessonTab === 'reading' && <div className="lesson-item-list">
-        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-reading-${index}`}><p className="eyebrow">{item.exercise_type === 'source_backed_reading' ? 'source-backed reading exercise' : `Uploaded-note reading seed ${index + 1}`}</p><p>{item.text}</p>{item.questions?.length > 0 && <ul>{item.questions.map((question) => <li key={question}>{question}</li>)}</ul>}{renderGermanB2Retrieval(item.retrieval)}{renderGermanB2SourceProvenance(item)}</article>)}
+        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-reading-${index}`}><p className="eyebrow">{item.exercise_type === 'source_backed_reading' ? 'source-backed reading exercise' : `Uploaded-note reading seed ${index + 1}`}</p><p>{item.passage || item.text}</p>{item.generated_questions?.length > 0 ? <ul>{item.generated_questions.map((question) => <li key={question.question || question}>{question.question || question}</li>)}</ul> : item.questions?.length > 0 && <ul>{item.questions.map((question) => <li key={question}>{question}</li>)}</ul>}{renderGermanB2Retrieval(item.retrieval)}{renderGermanB2SourceProvenance(item)}</article>)}
       </div>}
       {activeLessonTab === 'writing' && <div className="lesson-item-list writing-variants">
         <p className="muted">Supported variants: Short answer · Short essay · Long essay. Only source-backed prompts are shown below.</p>
-        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-writing-${index}`}><p className="eyebrow">{writingVariant(item)}</p><p>{item.text}</p>{renderGermanB2Retrieval(item.retrieval)}{renderGermanB2SourceProvenance(item)}</article>)}
+        {tabItems.map((item, index) => <article className="lesson-item" key={item.id || `${activeLesson.id}-writing-${index}`}><p className="eyebrow">{item.prompt_type || writingVariant(item)}</p><p>{item.prompt || item.text}</p>{item.expected_length && <p className="muted"><strong>Expected length:</strong> {item.expected_length}</p>}{item.required_reuse?.length > 0 && <p className="muted"><strong>Required reuse:</strong> {item.required_reuse.join(', ')}</p>}{item.checklist?.length > 0 && <ul>{item.checklist.map((entry) => <li key={entry}>{entry}</li>)}</ul>}{renderGermanB2Retrieval(item.retrieval)}{renderGermanB2SourceProvenance(item)}</article>)}
       </div>}
     </Panel>
   </section>;
@@ -546,6 +570,10 @@ function TrackShell({ trackId, section }) {
   const isGermanB2Track = trackId === GERMAN_B2_TRACK_ID;
   useEffect(() => { setActiveSection(section); }, [section]);
   useEffect(() => { if (data?.progress?.cards) setCardStates(data.progress.cards); }, [data]);
+  useEffect(() => {
+    if (activeSection !== 'quiz' || quiz || quizLoading) return;
+    startQuiz('quick', undefined, 'quiz');
+  }, [activeSection, quiz, quizLoading]);
 
   if (loading) return <main className="page"><p>Loading {trackId.toUpperCase()}…</p></main>;
   if (error || data?.error) return <main className="page"><p>Track {trackId.toUpperCase()} is unavailable.</p><a href="/">Back to track choice</a></main>;
@@ -706,6 +734,20 @@ function TrackShell({ trackId, section }) {
         </div>
       </Panel>
     </>}
+    {activeSection === 'quiz' && <section>
+      <Panel title="Quiz engine">
+        <div className="actions">
+          <button className="button button-primary" disabled={quizLoading} onClick={() => startQuiz('quick')}>Quick 10</button>
+          <button className="button button-secondary" disabled={quizLoading} onClick={() => startQuiz('domain', data.domains[0]?.id)}>Domain 15</button>
+          <button className="button button-secondary" disabled={quizLoading} onClick={() => startQuiz('full')}>Full 65 timed</button>
+          <button className="button button-secondary" disabled={quizLoading} onClick={() => startQuiz('weakness')}>Weakness drill</button>
+          <button className="button button-secondary" disabled={quizLoading} onClick={() => startQuiz('mixed')}>Mixed review</button>
+        </div>
+        {quizLoading && <p>Loading quiz…</p>}
+      </Panel>
+      {answerError && <p className="warning" role="alert">{answerError}</p>}
+      {quiz && <Quiz quiz={quiz} quizIndex={quizIndex} onAnswer={answer} review={review} reviews={quizReviews} finished={quizFinished} onNext={nextQuestion} onFinish={finishQuiz} onRetry={retryQuiz} answerLoading={answerLoading} />}
+    </section>}
     {activeSection === 'topics' && <section className="topic-hub-grid">{topicPages.length ? topicPages.map((page) => <article className="topic-hub-card cinematic-surface" key={page.slug}><p className="eyebrow">Focused study page</p><h3>{page.title}</h3><p>{page.summary}</p><p><strong>Focus services:</strong> {page.focus_services.slice(0, 5).join(' · ')}</p><p><strong>Source links:</strong> {page.source_links.slice(0, 2).map((source) => <a key={source} href={source}>{new URL(source).hostname}</a>)}</p><a className="button" href={`/tracks/${trackId}/topics/${page.slug}`}>Open dedicated page</a></article>) : <p className="muted">No dedicated topic pages are available for this track yet.</p>}</section>}
     {activeSection === 'study-plan' && <section className="grid three">{Object.entries(data.studyPlans).map(([days, plan]) => <Panel key={days} title={`${days} day plan`}>{plan.slice(0, 5).map((p) => <p key={p.day}><strong>Day {p.day}:</strong> {p.title}</p>)}</Panel>)}</section>}
     {activeSection === 'console' && <section className="cards">{data.consoleGuides.map((guide) => <article className="learning-card cinematic-surface" key={guide.id}><h3>{guide.title}</h3><p>{guide.goal}</p><p className="warning">Cost warning: {guide.cost_warning}</p><ol>{guide.steps.map((s) => <li key={s}>{s}</li>)}</ol><p><strong>Cleanup:</strong> {guide.cleanup.join(' · ')}</p><p>{guide.exam_relevance}</p></article>)}</section>}
